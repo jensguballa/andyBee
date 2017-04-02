@@ -1,0 +1,13 @@
+html {
+    min-height: 100%;
+}
+
+.statusbar {
+    width: 100%;
+    bottom: 0;
+    position: absolute;
+    border-top: 1px solid #ccc;
+    background-color: #f0f0f0;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}

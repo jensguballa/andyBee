@@ -1,0 +1,23 @@
+<nav class="navbar navbar-inverse" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" ng-click="isNavCollapsed = !isNavCollapsed">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">andyBee</a>
+    </div>
+    <div class="collapse navbar-collapse" ng-class="!navCollapsed && 'in'">
+        <ul class="nav navbar-nav">
+            <li class="dropdown" uib-dropdown>
+              <a uib-dropdown-toggle href="#">File <span class="caret"></span></a>
+              <ul class="dropdown-menu" uib-dropdown-menu role="menu">
+                <li role="menuitem"><a href="#" ng-click="app.open_db_dialog()">Open database ...</a></li>
+                <li role="menuitem"><a href="/upload_gpx" title="Import GPX">Import GPX ...</a></li>
+              </ul>
+            </li>
+            <li><a href="#">Options <span class="caret"></span></a></li>
+        </ul>
+    </div>
+</nav>

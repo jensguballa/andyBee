@@ -1,0 +1,45 @@
+{% extends "bootstrap/base.html" %}
+
+{% block styles %}
+    <link href="/static/css/external/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/andyBee.css" rel="stylesheet">
+{% endblock %}
+
+{% block head %}
+    {{super()}}
+    <script src="/static/js/external/angular-1.6.3.min.js"></script>
+    <script src="/static/js/external/angular-animate.min.js"></script>
+    <script src="/static/js/external/angular-sanitize.min.js"></script>
+    <script src="/static/js/external/ui-bootstrap-tpls-2.5.0.min.js"></script>
+    <script src="/static/js/andyBee.js"></script>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+
+{% block title %}AndyBee{% endblock %}
+{% block html_attribs %}{{ super() }} ng-app="andyBeeApp"{% endblock html_attribs %}
+{% block body_attribs %}{{ super() }} ng-controller="andyBeeCtrl as app"{% endblock %}
+
+{% block navbar %}
+    {# {nav.andyBeeNavbar.render(renderer='andybee_renderer')} #}
+    {% include "navbar.html" %}
+{% endblock %}
+
+
+
+{% block content %}
+
+<div uib-alert ng-repeat="alert in app.alerts" ng-class="'alert-' + (alert.type || 'warning')" close="app.close_alert($index)">{{alert.msg|angular}}</div>
+
+<div class="alert alert-danger alert-dismissable" ng-repeat="msg in app.error_msgs">
+  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  {{ msg|angular }}
+</div>
+
+<div class="statusbar pull-left text-muted container">
+    DB: {{ app.db_file|angular }}
+</div>
+
+{% endblock %}
