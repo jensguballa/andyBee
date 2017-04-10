@@ -7,3 +7,10 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
+CONFIG_DB = os.path.join(basedir, 'databases/config/config.db')
+CONFIG_URI_PREFIX = 'sqlite:///'
+
+CACHE_DB_DIR = os.path.join(basedir, 'databases/')
+CACHE_URI_PREFIX = 'sqlite:///'
+
+

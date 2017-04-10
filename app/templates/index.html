@@ -14,13 +14,10 @@
     <script src="/static/js/andyBee.js"></script>
 {% endblock %}
 
-{% block scripts %}
-{% endblock %}
-
 
 {% block title %}AndyBee{% endblock %}
 {% block html_attribs %}{{ super() }} ng-app="andyBeeApp"{% endblock html_attribs %}
-{% block body_attribs %}{{ super() }} ng-controller="andyBeeCtrl as app"{% endblock %}
+{% block body_attribs %}{{ super() }} ng-controller="andyBeeCtrl as app" {% if default_db is defined %}ng-init="app.open_db('{{default_db}}')"{% endif %}{% endblock %}
 
 {% block navbar %}
     {# {nav.andyBeeNavbar.render(renderer='andybee_renderer')} #}
@@ -31,15 +28,36 @@
 
 {% block content %}
 
-<div uib-alert ng-repeat="alert in app.alerts" ng-class="'alert-' + (alert.type || 'warning')" close="app.close_alert($index)">{{alert.msg|angular}}</div>
-
-<div class="alert alert-danger alert-dismissable" ng-repeat="msg in app.error_msgs">
-  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-  {{ msg|angular }}
+<div id="content">
+<uib-tabset>
+    <uib-tab index="0" heading="Cache List">
+        <table>
+            <tr>
+                <th>Cache</th><th>Title</th>
+            </tr>
+            <tr ng-repeat="cache in app.caches">
+                <td>{{ cache.gc_code|angular }}</td>
+                <td>{{ cache.title|angular }}</td>
+            </tr>
+        </table> 
+    </uib-tab>
+    <uib-tab index="1" heading="Map">
+        Hier kommt die Karte hin
+    </uib-tab>
+    <uib-tab index="2" heading="Cache Details">
+        Hier ist Platz für die Cache Details
+    </uib-tab>
+    <uib-tab index="4" heading="Console">
+        <div uib-alert ng-repeat="alert in app.alerts" ng-class="'alert-' + (alert.type || 'warning')" close="app.close_alert($index)">{{alert.msg|angular}}</div>
+    </uib-tab>
+</uib-tabset>    
 </div>
 
-<div class="statusbar pull-left text-muted container">
+<div id="statusbar" class="statusbar pull-left text-muted container">
     DB: {{ app.db_file|angular }}
 </div>
+{% endblock %}
 
+{% block scripts %}
+<!--script>app.startup();</script-->
 {% endblock %}

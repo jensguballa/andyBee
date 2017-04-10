@@ -1,6 +1,5 @@
 from lxml import etree
 from app import db, models
-from app.models import get_or_create
 import re
 
 GPX_NS = "http://www.topografix.com/GPX/1/0"

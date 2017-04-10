@@ -1,10 +1,11 @@
-import os, json
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, jsonify
 from flask_nav import Nav
 from flask_nav.elements import *
 from werkzeug import secure_filename
-from app import app
+from app import app, db
+from app.preferences import pref
 from app.gpx import import_gpx
+from app.models import Cache
 
 from config import *
 
@@ -53,7 +54,8 @@ nav.init_app(app)
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html')
+    default_db = pref.get_startup_db()
+    return render_template('index.html', default_db=default_db)
 
 @app.route('/upload_gpx', methods = ['GET', 'POST'])
 def upload_gpx():
@@ -73,5 +75,18 @@ def get_db_list():
     return json.dumps(sorted(list))
 
 
+@app.route('/opendb', methods=['GET', 'POST'])
+def open_db():
+#    print(request.form['db_name'])
+#    if db_name is not None:
+#        file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
+#        if os.path.isfile(file_path):
+#            db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+#            cache_list = []
+#            for cache in db.session.query(Cache):
+#                cache_list.append({'gc_code': cache.waypoint.name,
+#                        'title': cache.name})
+#            return json.dumps(cache_list)
+    return ""
 
 

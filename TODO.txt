@@ -1,0 +1,22 @@
+
+
+RESTful Interface:
+
+GET http://[hostname]/andyBee/api/v1.0/databases
+  Retrieve a list of databases
+
+GET http://[hostname]/andyBee/api/v1.0/databases/[db_name]
+  Retrieve a list of caches for the given database
+
+GET http://[hostname]/andyBee/api/v1.0/databases/[db_name]/[cache_id]
+  Retrieve cache details
+
+
+GET http://[hostname]/andyBee/api/v1.0/config
+  Retrieves a config profile
+
+PUT http://[hostname]/andyBee/api/v1.0/config
+
+
+
+

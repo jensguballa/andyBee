@@ -17,7 +17,12 @@
                 <li role="menuitem"><a href="/upload_gpx" title="Import GPX">Import GPX ...</a></li>
               </ul>
             </li>
-            <li><a href="#">Options <span class="caret"></span></a></li>
+            <li class="dropdown" uib-dropdown>
+              <a uib-dropdown-toggle href="#">Option <span class="caret"></span></a>
+              <ul class="dropdown-menu" uib-dropdown-menu role="menu">
+                <li role="menuitem"><a href="#" ng-click="app.pref_dialog()">Edit Preferences ...</a></li>
+              </ul>
+            </li>
         </ul>
     </div>
 </nav>
