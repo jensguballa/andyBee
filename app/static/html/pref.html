@@ -11,9 +11,9 @@
     <div class="form-group">
         <label for="opendb_file">Startup Behaviour</label>
         <form name="myForm">
-          <label><input type="radio" ng-model="pref.data.auto_load" value="0">Don't open any DB at startup</label><br/>
-          <label><input type="radio" ng-model="pref.data.auto_load" value="1">Open the last used DB at startup</label><br/>
-          <label><input type="radio" ng-model="pref.data.auto_load" value="2">Open the default DB at startup</label><br/>
+          <label><input type="radio" ng-model="pref.data.auto_load" value="0" convert-to-number>Don't open any DB at startup</label><br/>
+          <label><input type="radio" ng-model="pref.data.auto_load" value="1" convert-to-number>Open the last used DB at startup</label><br/>
+          <label><input type="radio" ng-model="pref.data.auto_load" value="2" convert-to-number>Open the default DB at startup</label><br/>
         </form> 
         <input type="text" class="form-control" id="pref_defaultdb" ng-model="pref.data.default_db" placeholder="Enter the default DB">
     </div>    
