@@ -1,4 +1,4 @@
-var app = angular.module('andyBeeApp', ['ngAnimate', 'ngSanitize', 'ui.bootstrap']);
+var app = angular.module('andyBeeApp', ['ngAnimate', 'ngSanitize', 'ui.bootstrap', 'ngResource']);
 
 
 app.factory("prefService", ['$http', function($http) {
@@ -13,7 +13,7 @@ app.factory("prefService", ['$http', function($http) {
 }]);
 
 
-app.controller('andyBeeCtrl', ['$uibModal', '$http', '$log', 'prefService', function ($uibModal, $http, $log, prefService) {
+app.controller('andyBeeCtrl', ['$uibModal', '$http', '$log', 'Preferences', function ($uibModal, $http, $log, Preferences) {
     var $app = this;
     $app.db_file = '';
     $app.alerts = [];
@@ -68,42 +68,64 @@ app.controller('andyBeeCtrl', ['$uibModal', '$http', '$log', 'prefService', func
 
     $app.pref_dialog = function() {
 
-        var modalInstance = $uibModal.open({
-            animation: false,
-            controller: function () {
-                var $pref = this;
-                $http.get('/andyBee/api/v1.0/config').then(
-                        function (resp) {
-                            $pref.data = resp.data;
-                        },
-                        function (resp) {
-                            var msg = "Error. Server status: " + resp.status + " URL: " + resp.config.url + " at: " + new Date();
-                            $log.error(msg);
-                            $app.alerts.push({msg: msg, type: "danger"});
-                        }
-                );
-            },
-            controllerAs: "pref",
-            templateUrl: '/static/html/pref.html',
-            resolve: {
-                pref: function (prefService) {
-                    return prefService.get_pref();
+        Preferences.get({id: 1}, open_modal, log_RESTful_error);
+
+        ////////// 
+
+        function open_modal (resp) {
+            var modalInstance = $uibModal.open({
+                animation: false,
+                controller: PrefCtrl,
+                controllerAs: "pref",
+                templateUrl: '/static/html/pref.html',
+                resolve: {
+                    preference: resp.preference
                 }
-            }
-        });
-        modalInstance.result.then(
-                function () {
-                    ;
-                },
-                function () {;}
-        );
+            });
+            modalInstance.result.then(update_preferences, dummy_func);
+        }
+
+        function update_preferences (preference) {
+            Preferences.update({id: 1}, {preference: preference}, dummy_func, log_RESTful_error);
+        }
 
     };
+
+    ////////////////
+
+
+    function log_RESTful_error(resp) {
+        var msg = "Error. " + resp.config.method + " " + resp.config.url + " " + resp.status + " at: " + new Date();
+        $log.error(msg);
+        $app.alerts.push({msg: msg, type: "danger"});
+    }
+
+    function dummy_func () {
+    }
+
 }]);
 
-app.controller('PrefCtrl', ['$uibModal', 'prefService', function ($uibModal, prefService) {
+PrefCtrl.$inject = ['$uibModalInstance', 'preference'];
+function PrefCtrl($uibModalInstance, preference) {
     var pref = this;
+    pref.data = preference;
+    pref.dismiss = function () {
+        $uibModalInstance.dismiss(); 
+    };
+    pref.close = function() {
+        $uibModalInstance.close(pref.data);
+    };
+}
 
-}]);
+
+/// Section for factories
+//angular
+//    .module('andyBeeApp', ['ngResource'])
+app.factory('Preferences', Preferences);
+
+Preferences.$inject = ['$resource'];
+function Preferences ($resource) {
+    return $resource('/andyBee/api/v1.0/config/:id', null, {update: {method: 'PUT'}});
+}
 
 

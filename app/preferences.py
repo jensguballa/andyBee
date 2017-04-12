@@ -6,7 +6,7 @@ from app import api, app
 from flask_restful import abort, Resource
 from marshmallow import Schema, fields
 
-from flask import request
+from flask import request, jsonify
 
 _PrefBase = declarative_base()
 
@@ -43,13 +43,16 @@ class _PrefDB(_PrefBase):
         return "<Preferences id='%d' owner='%s'>" % (self.id, self.owner)
 
 class PrefSchema(Schema):
+    id = fields.Integer()
     owner = fields.String()
     default_db = fields.String()
     auto_load = fields.Integer()
 
-class Preferences():
+class PrefSingle(Schema):
+    preference = fields.Nested(PrefSchema)
 
-    schema = PrefSchema()
+
+class Preferences():
 
     def __init__(self, app):
         self.app = app
@@ -78,24 +81,24 @@ class Preferences():
                 db = None
         return db
 
-    def update(self, data):
-        self._db.session.query(_PrefDB).filter_by(id=1).update(data)
+    def update(self, id, data):
+        self._db.session.query(_PrefDB).filter_by(id=id).update(data['preference'])
         self._db.session.commit()
 
-    def get_as_json(self):
-        return self.schema.dump(self._db.session.query(_PrefDB).get(1))
+    def get_as_json(self, id):
+        return PrefSingle().dump({'preference': self._db.session.query(_PrefDB).get(id)})
 
 class PrefApi(Resource):
 
-    def get(self):
-        return pref.get_as_json()
+    def get(self, id):
+        return pref.get_as_json(id)
 
-    def put(self):
-        obj, status_code = json_to_object(pref.schema)
+    def put(self, id):
+        obj, status_code = json_to_object(PrefSingle())
         if status_code != 200:
             return obj, status_code
-        pref.update(obj)
+        pref.update(id, obj)
 
-api.add_resource(PrefApi, '/andyBee/api/v1.0/config')
+api.add_resource(PrefApi, '/andyBee/api/v1.0/config/<int:id>')
 pref = Preferences(app)
 
