@@ -1,16 +1,6 @@
 
 var app = angular.module('andyBeeApp', ['ngAnimate', 'ngSanitize', 'ui.bootstrap']);
 
-app.controller('NavbarCtrl', ['$scope', function ($scope) {
-    $scope.jens = "Jens";
-}]);
-
-
-
-
-
-
-
 app.controller('ModalDemoCtrl', function ($scope, $uibModal, $log) {
 
 $scope.items = ['item1', 'item2', 'item3'];
@@ -62,4 +52,20 @@ app.controller('ModalInstanceCtrl', function ($scope, $modalInstance, items) {
     $modalInstance.dismiss('cancel');
   };
 });
+
+/// Section for factories
+angular
+    .module('andyBeeApp', ['ngResource'])
+    .factory('Preferences', Preferences);
+
+
+Preferences.$inject = ['$resource'];
+function Preferences ($resource) {
+    return $resource('');
+    ////////
+
+
+}
+
+
 
