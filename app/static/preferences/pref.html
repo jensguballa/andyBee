@@ -1,0 +1,24 @@
+
+<div class="modal-header">
+    <button type="button" class="close" ng-click="pref.dismiss()" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3 class="modal-title" id="modal-title">Edit Preferences</h3>
+</div>
+<div class="modal-body">
+    <div class="form-group">
+        <label for="pref_owner">Your geocaching.com account name</label>
+        <input type="text" class="form-control" id="pref_owner" ng-model="pref.data.owner" placeholder="Owner name">
+    </div>    
+    <div class="form-group">
+        <label for="opendb_file">Startup Behaviour</label>
+        <form name="myForm">
+          <label><input type="radio" ng-model="pref.data.auto_load" value="0" convert-to-number>Don't open any DB at startup</label><br/>
+          <label><input type="radio" ng-model="pref.data.auto_load" value="1" convert-to-number>Open the last used DB at startup</label><br/>
+          <label><input type="radio" ng-model="pref.data.auto_load" value="2" convert-to-number>Open the default DB at startup</label><br/>
+        </form> 
+        <input type="text" class="form-control" id="pref_defaultdb" ng-model="pref.data.default_db" placeholder="Enter the default DB">
+    </div>    
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="pref.close()">OK</button>
+    <button class="btn btn-warning" type="button" ng-click="pref.dismiss()">Cancel</button>
+</div>

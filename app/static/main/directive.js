@@ -1,8 +1,9 @@
-
 (function () {
 angular
     .module('andyBeeApp')
-    .directive('convertToNumber', function() {
+    .directive('convertToNumber', convertToNumber);
+            
+    function convertToNumber () {
         return {
             require: 'ngModel',
             link: function(scope, element, attrs, ngModel) {
@@ -14,6 +15,6 @@ angular
                 });
             }
         };
-    });
+    }
 
 })();

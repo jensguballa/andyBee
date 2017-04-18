@@ -1,27 +1,7 @@
 (function () {
 angular
-    .module('andyBeeApp', ['ngAnimate', 'ngSanitize', 'ui.bootstrap', 'ngResource', 'RESTful'])
-    .controller('andyBeeCtrl', andyBeeCtrl)
-    .controller('PrefCtrl', PrefCtrl);
-
-//    function andyBeeCtrl ($scope, Preferences) {
-//    }
-//    andyBeeCtrl.$inject = ['$scope', 'Preferences'];
-
-/////
-//.directive('convertToNumber', function() {
-//    return {
-//        require: 'ngModel',
-//        link: function(scope, element, attrs, ngModel) {
-//            ngModel.$parsers.push(function(val) {
-//                return val != null ? parseInt(val, 10) : null;
-//            });
-//            ngModel.$formatters.push(function(val) {
-//                return val != null ? '' + val : null;
-//            });
-//        }
-//    };
-//});
+    .module('andyBeeApp')
+    .controller('andyBeeCtrl', andyBeeCtrl);
             
     andyBeeCtrl.$inject = ['$uibModal', '$http', '$log', 'Preferences'];
     function andyBeeCtrl ($uibModal, $http, $log, Preferences) {
@@ -79,42 +59,23 @@ angular
         };
 
         $app.pref_dialog = function() {
-
             Preferences.get_request(open_modal);
-
-            ////////// 
-
             function open_modal (resp) {
                 $uibModal.open({
                     animation: false,
-                    controller: PrefCtrl,
+                    controller: 'PrefCtrl',
                     controllerAs: "pref",
                     templateUrl: '/static/html/pref.html',
-                }).result.then(function(){}, function(){});
+                    resolve: {
+                        preference: Preferences.get_data()
+                    }
+                }).result.then(Preferences.update_data, function(){});
             }
-
         };
 
         ////////////////
 
-
-
     }
-
-
-    PrefCtrl.$inject = ['$uibModalInstance', 'Preferences'];
-    function PrefCtrl($uibModalInstance, Preferences) {
-        var pref = this;
-        pref.data = Preferences.get_data();
-        pref.dismiss = function () {
-            $uibModalInstance.dismiss(); 
-        };
-        pref.close = function() {
-            Preferences.update_data(pref.data);
-            $uibModalInstance.close();
-        };
-    }
-
 
 })();
 
