@@ -65,7 +65,7 @@ angular
                     animation: false,
                     controller: 'PrefCtrl',
                     controllerAs: "pref",
-                    templateUrl: '/static/html/pref.html',
+                    templateUrl: '/static/preferences/pref.html',
                     resolve: {
                         preference: Preferences.get_data()
                     }
