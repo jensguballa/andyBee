@@ -7,7 +7,7 @@
     function OpenDbCtrl($uibModalInstance, GeocacheService) {
         var pref = this;
         pref.files = GeocacheService.db_list;
-        pref.selected = '';
+        pref.selected = GeocacheService.db_name;
 
         pref.dismiss = function () {
             $uibModalInstance.dismiss(); 

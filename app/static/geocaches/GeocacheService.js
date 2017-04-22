@@ -4,8 +4,8 @@
         .module('andyBeeApp')
         .factory('GeocacheService', GeocacheService);
 
-    GeocacheService.$inject = ['$resource'];
-    function GeocacheService ($resource) {
+    GeocacheService.$inject = ['$resource', 'Preferences'];
+    function GeocacheService ($resource, Preferences) {
         var rest_dblist = $resource('/andyBee/api/v1.0/db/');
         var rest_geocache = $resource('/andyBee/api/v1.0/db/:db_name/geocaches/:geocache_id');
         var fact = {
@@ -38,6 +38,7 @@
 
             function geocache_list_response (result) {
                 fact.db_name = result.db_name;
+                Preferences.set_used_db(result.db_name);
                 fact.nbr_caches = result.nbr_caches;
                 fact.geocache_list = result.geocaches;
                 fact.markers = [];

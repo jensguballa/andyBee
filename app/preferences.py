@@ -47,6 +47,7 @@ class PrefSchema(Schema):
     owner = fields.String()
     default_db = fields.String()
     auto_load = fields.Integer()
+    used_db = fields.String()
 
 class PrefSingle(Schema):
     preference = fields.Nested(PrefSchema)
@@ -82,6 +83,7 @@ class Preferences():
         return db
 
     def update(self, id, data):
+        print("DB01: ", data)
         self._db.session.query(_PrefDB).filter_by(id=id).update(data['preference'])
         self._db.session.commit()
 

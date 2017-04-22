@@ -1,6 +1,5 @@
 (function () {
     angular
-//        .module('Preferences')
         .module('andyBeeApp')
         .factory('Preferences', Preferences);
 
@@ -12,6 +11,8 @@
             get_request: get_request,
             get_data: get_data,
             update_data: update_data,
+            set_used_db: set_used_db,
+            preference: {}
         };
         return pref;
 
@@ -32,6 +33,11 @@
         function update_data (data) {
             pref.preference = data;
             rest.update({id: 1}, {preference: pref.preference}, dummy_func, log_RESTful_error);
+        }
+
+        function set_used_db (db_name) {
+            pref.preference.used_db = db_name;
+            rest.update({id: 1}, {preference: {used_db: db_name}}, dummy_func, log_RESTful_error);
         }
 
     }
