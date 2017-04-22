@@ -10,6 +10,6 @@ Most important item comes first. :-)
     o Preferences, e.g homezone, height of map, ...
     o More work on map, dedicated icons, etc.
     o Option to display 161m circles on the map
-    o Menu sticky, Mobile: close menu
+    o Menu sticky
     o Console (configurable, delete all entries, ...)
 

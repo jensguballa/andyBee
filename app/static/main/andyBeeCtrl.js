@@ -10,7 +10,6 @@ angular
         var $app = this;
         $app.isNavCollapsed = true;
         $app.geocache = GeocacheService;
-        $app.db_file = '';
         $app.alerts = [];
         $app.close_alert = function (index) {
             $app.alerts.splice(index, 1);

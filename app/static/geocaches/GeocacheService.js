@@ -37,6 +37,8 @@
             rest_geocache.get({db_name: db_name}, geocache_list_response, function(){});
 
             function geocache_list_response (result) {
+                fact.db_name = result.db_name;
+                fact.nbr_caches = result.nbr_caches;
                 fact.geocache_list = result.geocaches;
                 fact.markers = [];
                 var i, len;

@@ -77,7 +77,7 @@
 </div>
 
 <div id="statusbar" class="statusbar pull-left text-muted container">
-    DB: {{ app.db_file|angular }}
+    DB: {{ app.geocache.db_name|angular }}, Geocaches: {{ app.geocache.nbr_caches|angular }}
 </div>
 {% endblock %}
 

@@ -4,6 +4,7 @@ from flask_restful import Resource
 from app import app, api, db
 from marshmallow import Schema, fields
 from app.models import Cache
+from sqlalchemy import func
 
 class DbList(Schema):
     dbs = fields.List(fields.String())
@@ -37,7 +38,9 @@ class Geocache(Schema):
     lon        = fields.Function(lambda cache: cache.waypoint.lon)
 
 class GeocacheList(Schema):
-    geocaches = fields.List(fields.Nested(Geocache))
+    geocaches  = fields.List(fields.Nested(Geocache))
+    db_name    = fields.String()
+    nbr_caches = fields.Integer()
 
 
 class GeocacheListApi(Resource):
@@ -47,7 +50,11 @@ class GeocacheListApi(Resource):
             file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
             if os.path.isfile(file_path):
                 db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
-                data, errors = GeocacheList().dump({'geocaches': db.session.query(Cache)})
+                data, errors = GeocacheList().dump({
+                    'geocaches': db.session.query(Cache),
+                    'db_name': db_name,
+                    'nbr_caches': db.session.query(func.count(Cache.id)).scalar()
+                    })
                 if errors:
                     return jsonify(errors), 422
                 return data
