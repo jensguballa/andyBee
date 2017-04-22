@@ -3,47 +3,47 @@ angular
     .module('andyBeeApp')
     .controller('andyBeeCtrl', andyBeeCtrl);
             
-    andyBeeCtrl.$inject = ['$uibModal', '$http', '$log', 'Preferences'];
-    function andyBeeCtrl ($uibModal, $http, $log, Preferences) {
+    andyBeeCtrl.$inject = ['$uibModal', '$http', '$log', '$timeout', 'Preferences', 'GeocacheService', 'leafletData'];
+    function andyBeeCtrl ($uibModal, $http, $log, $timeout, Preferences, GeocacheService, leafletData) {
+
 
         var $app = this;
+        $app.geocache = GeocacheService;
         $app.db_file = '';
         $app.alerts = [];
         $app.close_alert = function (index) {
             $app.alerts.splice(index, 1);
         };
 
-        $app.open_db_dialog = function() {
-
-            var modalInstance = $uibModal.open({
-                animation: false,
-                controller: function () {
-                    var $opendb = this;
-                    $opendb.selected = "";
-                    $http.get('/getdblist').then(
-                            function (resp) {
-                                $opendb.files = resp.data;
-                            },
-                            function (resp) {
-                                var msg = "Error. Server status: " + resp.status + " URL: " + resp.config.url + " at: " + new Date();
-                                $log.error(msg);
-                                $app.alerts.push({msg: msg, type: "danger"});
-                            }
-                    );
-                },
-                controllerAs: "opendb",
-                templateUrl: '/static/html/opendb.html'
+        $app.refreshMap = function () {
+            leafletData.getMap().then(function(map) {
+                $timeout(function() {
+                  map.invalidateSize();
+                }, 300);
             });
-            modalInstance.result.then(
-                    function (selected_file) {
-                        $app.open_db(selected_file);
-    //                    $app.db_file = selected_file;
-    //                    $http.get('/opendb', {params: {db: selected_file}});
-                    },
-                    function () {;}
-            );
+        }
 
-        };
+        $app.open_db_dialog = open_db_dialog;
+            
+        function open_db_dialog () {
+            GeocacheService.get_dblist(open_modal);
+            function open_modal (resp) {
+                $uibModal.open({
+                    animation: false,
+                    controller: 'OpenDbCtrl',
+                    controllerAs: 'opendb',
+                    templateUrl: '/static/geocaches/opendb.html',
+//                    resolve: {
+//                        preference: Preferences.get_data()
+//                    }
+                }).result.then(aaa, function(){});
+
+                function aaa (db_name) {
+                    GeocacheService.get_geocache_list(db_name);
+                }
+
+            }
+        }
 
         $app.open_db = function(db_name) {
             $http.post('/opendb', {db_name:db_name}).then(
@@ -58,7 +58,8 @@ angular
             );
         };
 
-        $app.pref_dialog = function() {
+        $app.pref_dialog = pref_dialog;
+        function pref_dialog () {
             Preferences.get_request(open_modal);
             function open_modal (resp) {
                 $uibModal.open({
@@ -71,7 +72,7 @@ angular
                     }
                 }).result.then(Preferences.update_data, function(){});
             }
-        };
+        }
 
         ////////////////
 

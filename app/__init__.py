@@ -23,6 +23,6 @@ Bootstrap(app)
 
 from flask_triangle import Triangle
 Triangle(app)
-from app import preferences
+from app import preferences, geocaches
 from app import views, models
 

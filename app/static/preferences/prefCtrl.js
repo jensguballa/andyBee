@@ -1,6 +1,7 @@
 (function () {
     angular
-        .module('Preferences')
+//        .module('Preferences')
+        .module('andyBeeApp')
         .controller('PrefCtrl', PrefCtrl);
 
     PrefCtrl.$inject = ['$uibModalInstance', 'preference'];

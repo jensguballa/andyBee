@@ -1,5 +1,5 @@
 (function () {
     angular
-        .module('Preferences', ['ngResource']);
+        .module('Preferences', ['ngResource', 'andyBeeApp']);
 })();
 
