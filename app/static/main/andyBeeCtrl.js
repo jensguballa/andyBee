@@ -8,6 +8,7 @@ angular
 
 
         var $app = this;
+        $app.isNavCollapsed = true;
         $app.geocache = GeocacheService;
         $app.db_file = '';
         $app.alerts = [];

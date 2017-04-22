@@ -1,14 +1,14 @@
 <nav class="navbar navbar-inverse" role="navigation">
     <div class="navbar-header">
-        <button type="button" class="navbar-toggle" ng-click="isNavCollapsed = !isNavCollapsed">
+        <button type="button" class="navbar-toggle" ng-click="app.isNavCollapsed = !app.isNavCollapsed">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#">andyBee</a>
+        <span class="navbar-brand" href="#">andyBee</span>
     </div>
-    <div class="collapse navbar-collapse" ng-class="!navCollapsed && 'in'">
+    <div class="collapse navbar-collapse" uib-collapse="app.isNavCollapsed">
         <ul class="nav navbar-nav">
             <li class="dropdown" uib-dropdown>
               <a uib-dropdown-toggle href="#">File <span class="caret"></span></a>

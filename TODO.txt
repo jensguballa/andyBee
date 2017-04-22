@@ -1,22 +1,15 @@
+TODO list, backlog.
 
+Most important item comes first. :-)
 
-RESTful Interface:
-
-GET http://[hostname]/andyBee/api/v1.0/databases
-  Retrieve a list of databases
-
-GET http://[hostname]/andyBee/api/v1.0/databases/[db_name]
-  Retrieve a list of caches for the given database
-
-GET http://[hostname]/andyBee/api/v1.0/databases/[db_name]/[cache_id]
-  Retrieve cache details
-
-
-GET http://[hostname]/andyBee/api/v1.0/config
-  Retrieves a config profile
-
-PUT http://[hostname]/andyBee/api/v1.0/config
-
-
-
+    o Import of GPX-files
+    o Proper opening/creation of DBs, remember last opened DB.
+    o Export to GPX-file
+    o Cache details
+    o Status line
+    o Preferences, e.g homezone, height of map, ...
+    o More work on map, dedicated icons, etc.
+    o Option to display 161m circles on the map
+    o Menu sticky, Mobile: close menu
+    o Console (configurable, delete all entries, ...)
 
