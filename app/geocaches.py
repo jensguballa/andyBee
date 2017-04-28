@@ -1,10 +1,12 @@
 import os.path, json
+import werkzeug
 from flask import jsonify
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 from app import app, api, db
 from marshmallow import Schema, fields
 from app.models import Cache
 from sqlalchemy import func
+from app.gpx import import_gpx
 
 class DbList(Schema):
     dbs = fields.List(fields.String())
@@ -60,4 +62,24 @@ class GeocacheListApi(Resource):
                 return data
 
 api.add_resource(GeocacheListApi, '/andyBee/api/v1.0/db/<string:db_name>/geocaches')
+
+
+
+class GpxImportApi(Resource):
+
+    def post(self, db_name):
+        if db_name is not None:
+            file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
+            if os.path.isfile(file_path):
+                db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+                parse = reqparse.RequestParser()
+                parse.add_argument('gpx_file', type=werkzeug.datastructures.FileStorage, location='files')
+                args = parse.parse_args()
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'jens')
+                gpx_file = args['gpx_file']
+                import_gpx(gpx_file)
+                return {} 
+
+api.add_resource(GpxImportApi, '/andyBee/api/v1.0/db/<string:db_name>/gpx_import')
+
 

@@ -11,6 +11,7 @@
 {% block head %}
     {{super()}}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--script src="http://code.jquery.com/jquery-1.9.1.js"></script-->
     <!--script src="/static/js/external/leaflet.js"></script-->
     <script src="/static/external/leaflet_0.7.7/leaflet.js"></script>
     <script src="/static/js/external/angular-1.6.3.min.js"></script>
@@ -19,6 +20,9 @@
     <script src="/static/js/external/angular-resource.min.js"></script>
     <script src="/static/js/external/ui-bootstrap-tpls-2.5.0.min.js"></script>
     <script src="/static/js/external/angular-leaflet-directive.js"></script>
+    <script src="/static/external/ng-file-upload-bower-12.2.13/ng-file-upload-shim.min.js"></script>
+    <script src="/static/external/ng-file-upload-bower-12.2.13/ng-file-upload.min.js"></script>
+
     <script src="/static/main/andyBee.js"></script>
     <script src="/static/main/andyBeeCtrl.js"></script>
     <!--script src="/static/main/logFact.js"></script-->
@@ -28,6 +32,8 @@
     <script src="/static/preferences/prefCtrl.js"></script>
     <script src="/static/geocaches/GeocacheService.js"></script>
     <script src="/static/geocaches/openDbCtrl.js"></script>
+    <script src="/static/gpx/importGpxCtrl.js"></script>
+    <script src="/static/gpx/gpxService.js"></script>
 {% endblock %}
 
 

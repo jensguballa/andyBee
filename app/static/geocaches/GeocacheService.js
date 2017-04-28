@@ -41,15 +41,17 @@
                 Preferences.set_used_db(result.db_name);
                 fact.nbr_caches = result.nbr_caches;
                 fact.geocache_list = result.geocaches;
-                fact.markers = [];
+//                fact.markers = [];
+                var markers = [];
                 var i, len;
                 for (i = 0, len = result.geocaches.length; i < len; i++) {
-                    fact.markers.push({
+                    markers.push({
                         lat: result.geocaches[i].lat,
                         lng: result.geocaches[i].lon,
                         message: result.geocaches[i].title
                     });
                 }
+                fact.markers = markers;
             }
         }
 

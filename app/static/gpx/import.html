@@ -1,0 +1,16 @@
+<form name="import_form">
+<div class="modal-header">
+    <button type="button" class="close" ng-click="dismiss()" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3 class="modal-title" id="modal-title">Import GPX</h3>
+</div>
+<div class="modal-body">
+    <div class="form-group">
+        <label for="upload_file">GPX file to upload</label>
+        <input ngf-select="" name="file" ngf-max-size="20MB" required="" type="file" file-model="import.gpx_file">
+    </div>    
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="import_gpx(import)">OK</button>
+    <button class="btn btn-warning" type="button" ng-click="dismiss()">Cancel</button>
+</div>
+</form>
