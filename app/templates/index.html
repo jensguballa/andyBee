@@ -1,48 +1,48 @@
 {% extends "bootstrap/base.html" %}
 
 {% block styles %}
-    <link href="/static/css/external/bootstrap.min.css" rel="stylesheet">
-    <!--link href="/static/css/external/leaflet.css" rel="stylesheet"-->
-    <link href="/static/external/leaflet_0.7.7/leaflet.css" rel="stylesheet">
-    <!--link href="http://tombatossals.github.io/angular-leaflet-directive/bower_components/leaflet/dist/leaflet.css" rel="stylesheet"-->
+    <link href="/static/external/node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/external/node_modules/leaflet/dist/leaflet.css" rel="stylesheet">
+    <link href="/static/external/node_modules/ng-table/bundles/ng-table.min.css" rel="stylesheet">
     <link href="/static/css/andyBee.css" rel="stylesheet">
 {% endblock %}
 
 {% block head %}
     {{super()}}
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--script src="http://code.jquery.com/jquery-1.9.1.js"></script-->
-    <!--script src="/static/js/external/leaflet.js"></script-->
-    <script src="/static/external/leaflet_0.7.7/leaflet.js"></script>
-    <script src="/static/js/external/angular-1.6.3.min.js"></script>
-    <script src="/static/js/external/angular-animate.min.js"></script>
-    <script src="/static/js/external/angular-sanitize.min.js"></script>
-    <script src="/static/js/external/angular-resource.min.js"></script>
-    <script src="/static/js/external/ui-bootstrap-tpls-2.5.0.min.js"></script>
-    <script src="/static/js/external/angular-leaflet-directive.js"></script>
-    <script src="/static/external/ng-file-upload-bower-12.2.13/ng-file-upload-shim.min.js"></script>
-    <script src="/static/external/ng-file-upload-bower-12.2.13/ng-file-upload.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/static/external/node_modules/leaflet/dist/leaflet.js"></script>
+    <script src="/static/external/node_modules/angular/angular.min.js"></script>
+    <script src="/static/external/node_modules/angular-animate/angular-animate.min.js"></script>
+    <script src="/static/external/node_modules/angular-sanitize/angular-sanitize.min.js"></script>
+    <script src="/static/external/node_modules/angular-resource/angular-resource.min.js"></script>
+    <script src="/static/external/node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js"></script>
+    <script src="/static/external/node_modules/angular-leaflet-directive/dist/angular-leaflet-directive.min.js"></script>
+    <script src="/static/external/node_modules/ng-file-upload/dist/ng-file-upload-shim.min.js"></script>
+    <script src="/static/external/node_modules/ng-file-upload/dist/ng-file-upload.min.js"></script>
+    <script src="/static/external/node_modules/ng-table/bundles/ng-table.min.js"></script>
 
-    <script src="/static/main/andyBee.js"></script>
-    <script src="/static/main/andyBeeCtrl.js"></script>
-    <!--script src="/static/main/logFact.js"></script-->
-    <script src="/static/main/directive.js"></script>
-    <!--script src="/static/preferences/prefMod.js"></script-->
-    <script src="/static/preferences/prefFact.js"></script>
-    <script src="/static/preferences/prefCtrl.js"></script>
-    <script src="/static/geocaches/GeocacheService.js"></script>
-    <script src="/static/geocaches/openDbCtrl.js"></script>
-    <script src="/static/gpx/importGpxCtrl.js"></script>
-    <script src="/static/gpx/gpxService.js"></script>
+    <script src="/static/main/andyBee.module.js"></script>
+    <script src="/static/main/andyBee.controller.js"></script>
+    <script src="/static/main/andyBee.directive.js"></script>
+    <script src="/static/preferences/preference.service.js"></script>
+    <script src="/static/preferences/preference.controller.js"></script>
+    <script src="/static/geocaches/geocache.service.js"></script>
+    <script src="/static/geocaches/geocache_opendb.controller.js"></script>
+    <script src="/static/geocaches/geocache_list.controller.js"></script>
+    <script src="/static/geocaches/geocache_detail.controller.js"></script>
+    <script src="/static/geocaches/geocache_map.controller.js"></script>
+    <script src="/static/gpx/gpx_import.controller.js"></script>
+    <script src="/static/gpx/gpx.service.js"></script>
+    <script src="/static/logging/logging.service.js"></script>
+    <script src="/static/logging/logging.controller.js"></script>
 {% endblock %}
 
 
 {% block title %}AndyBee{% endblock %}
 {% block html_attribs %}{{ super() }} ng-app="andyBeeApp"{% endblock html_attribs %}
-{% block body_attribs %}{{ super() }} ng-controller="andyBeeCtrl as app" {% if default_db is defined %}ng-init="app.open_db('{{default_db}}')"{% endif %}{% endblock %}
+{% block body_attribs %}{{ super() }} ng-controller="andyBeeCtrl as app" {% if default_db is defined %}ng-init="app.init_db = '{{default_db}}'"{% endif %}{% endblock %}
 
 {% block navbar %}
-    {# {nav.andyBeeNavbar.render(renderer='andybee_renderer')} #}
     {% include "navbar.html" %}
 {% endblock %}
 
@@ -53,31 +53,16 @@
 <div id="content">
 <uib-tabset>
     <uib-tab index="0" heading="Cache List">
-        <table class="table table-striped table-bordered table-hover table-responsive">
-            <tr>
-                <th>Cache</th>
-                <th>D</th>
-                <th>T</th>
-                <th>Title</th>
-                <th>Placed by</th>
-            </tr>
-            <tr ng-repeat="cache in app.geocache.geocache_list">
-                <td>{{ cache.gc_id|angular }}</td>
-                <td>{{ cache.difficulty|angular }}</td>
-                <td>{{ cache.terrain|angular }}</td>
-                <td>{{ cache.title|angular }}</td>
-                <td>{{ cache.placed_by|angular }}</td>
-            </tr>
-        </table> 
+        {% include "cache_list.html" %}
     </uib-tab>
     <uib-tab index="1" heading="Map" ng-click="app.refreshMap()">
-        <leaflet width="100%" height="480px" markers="app.geocache.markers"></leaflet>
+        {% include "map.html" %}
     </uib-tab>
     <uib-tab index="2" heading="Cache Details">
-        Hier ist Platz für die Cache Details
+        {% include "cache_details.html" %}
     </uib-tab>
-    <uib-tab index="4" heading="Console">
-        <div uib-alert ng-repeat="alert in app.alerts" ng-class="'alert-' + (alert.type || 'warning')" close="app.close_alert($index)">{{alert.msg|angular}}</div>
+    <uib-tab index="3" heading="Console">
+        {% include "console.html" %}
     </uib-tab>
 </uib-tabset>    
 </div>

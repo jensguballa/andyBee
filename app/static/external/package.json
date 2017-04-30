@@ -1,0 +1,22 @@
+{
+  "name": "Yarn",
+  "version": "1.0.0",
+  "description": "Some description here",
+  "main": "index.js",
+  "author": "Jens Guballa",
+  "license": "MIT",
+  "dependencies": {
+    "angular": "1.6.3",
+    "angular-animate": "^1.6.4",
+    "angular-file-upload": "^2.5.0",
+    "angular-leaflet-directive": "^0.10.0",
+    "angular-resource": "^1.6.4",
+    "angular-sanitize": "^1.6.4",
+    "angular-ui-bootstrap": "^2.5.0",
+    "bootstrap": "^3.3.7",
+    "leaflet": "0.7.7",
+    "ng-file-upload": "^12.2.13",
+    "ng-table": "^3.0.1",
+    "ui-bootstrap": "^0.1.10"
+  }
+}

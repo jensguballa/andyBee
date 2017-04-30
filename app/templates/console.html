@@ -1,0 +1,3 @@
+<div ng-controller="LoggingCtrl as logging">
+    <div uib-alert ng-repeat="alert in logging.serv.logs" ng-class="'alert-' + (alert.type || 'warning')" close="logging.serv.remove_log($index)">{{alert.msg|angular}}</div>
+</div>

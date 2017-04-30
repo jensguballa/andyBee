@@ -1,0 +1,7 @@
+<div ng-controller="GeocacheListCtrl as geolist">
+    <table ng-table-dynamic="geolist.tableParams with geolist.cols" class="table table-condensed table-bordered table-striped">
+        <tr ng-repeat="row in $data">
+            <td ng-repeat="col in $columns">{{"{{row[col.field]}}"}}</td>
+        </tr>
+    </table>
+</div>

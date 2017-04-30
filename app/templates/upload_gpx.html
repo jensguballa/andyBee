@@ -1,8 +1,0 @@
-{% extends "base.html" %}
-
-{% block content %}
-<h3>Import GPX</h3>
-<form method=POST enctype=multipart/form-data action="{{ url_for('upload_gpx') }}">
-    <input type=file name="file"><input type=submit value="Import">
-</form>
-{% endblock %}
