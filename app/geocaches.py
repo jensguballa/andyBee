@@ -23,8 +23,32 @@ class DbListApi(Resource):
 
 api.add_resource(DbListApi, '/andyBee/api/v1.0/db')
 
+class Attribute(Schema):
+    name    = fields.String()
+    inc     = fields.Boolean()
 
-class Geocache(Schema):
+class Log(Schema):
+    date    = fields.String()
+    type    = fields.String()
+    finder  = fields.String()
+    text    = fields.String()
+    text_encoded = fields.String()
+    lat     = fields.Float()
+    lon     = fields.Float()
+    
+class Waypoint(Schema):
+    lat     = fields.Float()
+    lon     = fields.Float()
+    time    = fields.String()
+    name    = fields.String()
+    desc    = fields.String()
+    url     = fields.String()
+    urlname = fields.String()
+    sym     = fields.String()
+    type    = fields.String()
+    cmt     = fields.String()
+
+class GeocacheBasic(Schema):
     id         = fields.Integer()
     available  = fields.Boolean()
     archived   = fields.Boolean()
@@ -39,8 +63,21 @@ class Geocache(Schema):
     lat        = fields.Function(lambda cache: cache.waypoint.lat)
     lon        = fields.Function(lambda cache: cache.waypoint.lon)
 
+
+class GeocacheFull(GeocacheBasic):
+    attributes = fields.List(fields.Nested(Attribute))
+    country    = fields.String()
+    state      = fields.String()
+    short_desc = fields.String()
+    short_html = fields.String()
+    long_desc  = fields.String()
+    long_html  = fields.String()
+    encoded_hints = fields.String()
+    logs       = fields.List(fields.Nested(Log))
+    waypoints  = fields.List(fields.Nested(Waypoint))
+
 class GeocacheList(Schema):
-    geocaches  = fields.List(fields.Nested(Geocache))
+    geocaches  = fields.List(fields.Nested(GeocacheBasic))
     db_name    = fields.String()
     nbr_caches = fields.Integer()
 
@@ -63,7 +100,23 @@ class GeocacheListApi(Resource):
 
 api.add_resource(GeocacheListApi, '/andyBee/api/v1.0/db/<string:db_name>/geocaches')
 
+class GeocacheSingle(Schema):
+    geocache   = fields.Nested(GeocacheFull)
 
+class GeocacheApi(Resource):
+    def get(self, db_name, id):
+        if db_name is not None:
+            file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
+            if os.path.isfile(file_path):
+                db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+                data, errors = GeocacheSingle().dump({
+                    'geocache': db.session.query(Cache).get(id)
+                    })
+                if errors:
+                    return jsonify(errors), 422
+                return data
+
+api.add_resource(GeocacheApi, '/andyBee/api/v1.0/db/<string:db_name>/geocaches/<int:id>')
 
 class GpxImportApi(Resource):
 

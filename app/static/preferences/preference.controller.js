@@ -6,7 +6,7 @@
     PreferenceCtrl.$inject = ['$uibModalInstance', 'PreferenceService'];
     function PreferenceCtrl($uibModalInstance, PreferenceService) {
         var vm = this;
-        vm.data = preference;
+        vm.data = PreferenceService;
         vm.dismiss = dismiss_modal;
         vm.close = close_modal;
 

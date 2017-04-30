@@ -38,10 +38,10 @@ def parse_wpt(node):
         elif child.tag == GPX+"urlname":
             wpt.urlname = child.text
         elif child.tag == GPX+"sym":
-#            wpt.sym = get_or_create(db, models.WaypointSym, name=child.text)
+            wpt.sym = db.get_or_create(models.WaypointSym, name=child.text)
             pass
         elif child.tag == GPX+"type":
-#            wpt.type = get_or_create(db, models.WaypointType, name=child.text)
+            wpt.type = db.get_or_create(models.WaypointType, name=child.text)
             pass
         elif child.tag == GPX+"cmt":
             wpt.cmt = child.text
@@ -60,23 +60,23 @@ def parse_cache(node):
         elif child.tag == GS+"placed_by":
             cache.placed_by = child.text
         elif child.tag == GS+"owner":
-#            cache.owner = get_or_create(db, models.Cacher, name=child.text)
+            cache.owner = db.get_or_create(models.Cacher, name=child.text)
             pass
         elif child.tag == GS+"type":
- #           cache.type = get_or_create(db, models.CacheType, name=child.text)
+            cache.type = db.get_or_create(models.CacheType, name=child.text)
             pass
         elif child.tag == GS+"container":
-#            cache.container = get_or_create(db, models.CacheContainer, name=child.text)
+            cache.container = db.get_or_create(models.CacheContainer, name=child.text)
             pass
         elif child.tag == GS+"difficulty":
             cache.difficulty = float(child.text)
         elif child.tag == GS+"terrain":
             cache.terrain = float(child.text)
         elif child.tag == GS+"country":
-#            cache.country = get_or_create(db, models.CacheCountry, name=child.text)
+            cache.country = db.get_or_create(models.CacheCountry, name=child.text)
             pass
         elif child.tag == GS+"state":
-#            cache.state = get_or_create(db, models.CacheState, name=child.text)
+            cache.state = db.get_or_create(models.CacheState, name=child.text)
             pass
         elif child.tag == GS+"short_description":
             cache.short_desc = child.text
@@ -89,7 +89,7 @@ def parse_cache(node):
         elif child.tag == GS+"attributes":
             for node_attr in child:
                 if node_attr.tag == GS+"attribute":
-#                    cache.attributes.append(parse_attribute(node_attr))
+                    cache.attributes.append(parse_attribute(node_attr))
                     pass
         elif child.tag == GS+"logs":
             for node_log in child:
@@ -99,7 +99,7 @@ def parse_cache(node):
 
 
 def parse_attribute(node):
-    return get_or_create(db, models.Attribute, 
+    return db.get_or_create(models.Attribute, 
             gc_id=int(node.get("id")),
             inc=(node.get("inc") == "1"),
             name=node.text)
@@ -111,10 +111,10 @@ def parse_log(node):
         if log_node.tag == GS+"date":
             log.date = log_node.text
         elif log_node.tag == GS+"type":
- #           log.type = get_or_create(db, models.LogType, name=log_node.text)
+            log.type = db.get_or_create(models.LogType, name=log_node.text)
             pass
         elif log_node.tag == GS+"finder":
-#            log.finder = get_or_create(db, models.Cacher, name=log_node.text)
+            log.finder = db.get_or_create(models.Cacher, name=log_node.text)
             pass
         elif log_node.tag == GS+"text":
             log.text = log_node.text
