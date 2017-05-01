@@ -9,6 +9,8 @@
         var vm = this;
         vm.cols = [];
         vm.tableParams = new NgTableParams();
+        vm.show_details = show_details;
+        vm.show_map = show_map;
 
         var rating = [
             {id: 1.0, title: '1', },
@@ -33,6 +35,13 @@
             vm.tableParams.settings({dataset: GeocacheService.geocache_list});
         });
 
+        function show_details (id) {
+            var jens = id;
+        }
+
+        function show_map (id) {
+            var jens = id;
+        }
     }
 
 
