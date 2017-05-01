@@ -9,6 +9,11 @@
         var rest_dblist = $resource('/andyBee/api/v1.0/db/');
         var rest_geocache = $resource('/andyBee/api/v1.0/db/:db_name/geocaches/:geocache_id');
         var serv = {
+            // which of the tabs (list, map, detail, console) is active
+            detail: {},
+            selected_tab: 0,
+            show_details: show_details,
+
             // stuff related to the list of DBs
             db_list: [],
             get_dblist: get_dblist,
@@ -18,8 +23,6 @@
             geocache_list: [],
             get_geocache_list: get_geocache_list,
 
-            // map related stuff
-            markers: [],
         };
 
         return serv;
@@ -40,20 +43,18 @@
                 serv.db_name = result.db_name;
                 PreferenceService.set_used_db(result.db_name);
                 serv.nbr_caches = result.nbr_caches;
-
                 serv.geocache_list = result.geocaches;
-//                serv.markers = [];
-                var markers = [];
-                var i, len;
-                for (i = 0, len = result.geocaches.length; i < len; i++) {
-                    markers.push({
-                        lat: result.geocaches[i].lat,
-                        lng: result.geocaches[i].lon,
-                        message: result.geocaches[i].title
-                    });
-                }
-                serv.markers = markers;
                 $rootScope.$broadcast('geocaches_updated');
+            }
+        }
+
+        function show_details (id) {
+            serv.selected_tab = 2; // switch to the details tab
+            rest_geocache.get({db_name: serv.db_name, geocache_id: id}, geocache_response, LoggingService.log_RESTful_error);
+
+            function geocache_response (result) {
+                serv.detail = result.geocache;
+                $rootScope.$broadcast('geocache_details_updated');
             }
         }
 

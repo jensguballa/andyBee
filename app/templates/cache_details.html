@@ -1,3 +1,31 @@
-<div ng-controller="GeocacheDetailCtrl as detail">
-    Hier ist Platz für die Cache Details
+<div ng-controller="GeocacheDetailCtrl as geocache">
+    <uib-tabset>
+        <uib-tab index="0" heading="Overview">
+            <div>{{geocache.serv.detail.gc_id|angular}}: {{geocache.serv.detail.title|angular}}</div>
+            <div>{{geocache.serv.detail.type}}</div>
+            <div>Location: {{geocache.serv.detail.state|angular}}, {{geocache.serv.detail.country|angular}}</div>
+            <div>A cache by: {{geocache.serv.detail.placed_by|angular}}, Owner: {{geocache.serv.detail.owner|angular}}</div>
+            <div>Cache Size: {{geocache.serv.detail.controller|angular}} Difficulty: {{geocache.serv.detail.difficulty|angular}} Terrain: {{geocache.serv.detail.terrain|angular}}</div>
+            <div>Attributes:
+                <div ng-repeat="att in geocache.serv.detail.attributes">{{att.name|angular}}, {{att.inc|angular}}</div>
+            </div>
+        </uib-tab>
+        <uib-tab index="1" heading="Description">
+            <div>{{geocache.serv.detail.short_desc|angular}}</div>
+            <div>{{geocache.serv.detail.long_desc|angular}}</div>
+            <div>Hint: {geocache.serv.detail.encoded_hints|angular}}</div>
+        </uib-tab>
+        <uib-tab index="2" heading="Logs">
+            <div ng-repeat="log in geocache.serv.detail.logs">
+                <hr>
+                <div>Date: {{log.date|angular}}</div>
+                <div>{{log.type|angular}}</div>
+                <div>Logged by: {{log.finder|angular}}</div>
+                <hr>
+                <div>{{log.text|angular}}</div>
+            </div>
+        </uib-tab>
+        <uib-tab index="3" heading="Waypoints">
+        </uib-tab>
+    </uib-tabset>    
 </div>

@@ -7,6 +7,7 @@
     GeocacheDetailCtrl.$inject = ['$scope', 'GeocacheService',];
     function GeocacheDetailCtrl($scope, GeocacheService) {
         var vm = this;
+        vm.serv = GeocacheService;
 
     }
 

@@ -36,11 +36,11 @@
         });
 
         function show_details (id) {
-            var jens = id;
+            GeocacheService.show_details(id); // cache detail tab
         }
 
         function show_map (id) {
-            var jens = id;
+            GeocacheService.selected_tab = 1; // cache detail tab
         }
     }
 
