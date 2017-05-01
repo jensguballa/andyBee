@@ -1,7 +1,7 @@
 import os.path, json
 import werkzeug
 from flask import jsonify
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, request
 from app import app, api, db
 from marshmallow import Schema, fields
 from app.models import Cache
@@ -20,6 +20,18 @@ class DbListApi(Resource):
         if errors:
             return jsonify(errors), 422
         return data
+
+    def post(self):
+        parse = reqparse.RequestParser()
+        parse.add_argument('db_name', type=str, location='json')
+        args = parse.parse_args()
+        db_name = args['db_name']
+        if db_name is not None:
+            file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
+            if not os.path.isfile(file_path):
+                db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+                db.create_all()
+                return jsonify({'db_name': db_name})
 
 api.add_resource(DbListApi, '/andyBee/api/v1.0/db')
 
@@ -128,7 +140,7 @@ class GpxImportApi(Resource):
                 parse = reqparse.RequestParser()
                 parse.add_argument('gpx_file', type=werkzeug.datastructures.FileStorage, location='files')
                 args = parse.parse_args()
-                filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'jens')
+                # filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'jens')
                 gpx_file = args['gpx_file']
                 import_gpx(gpx_file)
                 return {} 
