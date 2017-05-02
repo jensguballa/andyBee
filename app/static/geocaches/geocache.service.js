@@ -14,8 +14,8 @@
         var rest_geocache = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id');
         var serv = {
             // which of the tabs (list, map, detail, console) is active
-            detail: {},
             selected_tab: 0,
+            detail: {},
             show_details: show_details,
 
             // stuff related to the list of DBs
