@@ -51,7 +51,7 @@
 
             function db_allocated (result) {
                 serv.db_name = result.db_name;
-                PreferenceService.set_used_db(result.db_name);
+                PreferenceService.update_used_db(result.db_name);
                 serv.nbr_caches = 0;
                 serv.geocache_list = [];
                 $rootScope.$broadcast('geocaches_updated');
@@ -59,7 +59,7 @@
 
             function geocache_list_response (result) {
                 serv.db_name = result.db_name;
-                PreferenceService.set_used_db(result.db_name);
+                PreferenceService.update_used_db(result.db_name);
                 serv.nbr_caches = result.nbr_caches;
                 serv.geocache_list = result.geocaches;
                 $rootScope.$broadcast('geocaches_updated');
