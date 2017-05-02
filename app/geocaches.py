@@ -23,15 +23,15 @@ class DbListApi(Resource):
 
     def post(self):
         parse = reqparse.RequestParser()
-        parse.add_argument('db_name', type=str, location='json')
+        parse.add_argument('db', type=str, location='json')
         args = parse.parse_args()
-        db_name = args['db_name']
+        db_name = args['db']
         if db_name is not None:
             file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
             if not os.path.isfile(file_path):
                 db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
                 db.create_all()
-                return jsonify({'db_name': db_name})
+                return jsonify({'db': db_name})
 
 api.add_resource(DbListApi, '/andyBee/api/v1.0/db')
 
