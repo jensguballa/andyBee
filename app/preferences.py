@@ -83,7 +83,6 @@ class Preferences():
         return db
 
     def update(self, id, data):
-        print("DB01: ", data)
         self._db.session.query(_PrefDB).filter_by(id=id).update(data['preference'])
         self._db.session.commit()
 

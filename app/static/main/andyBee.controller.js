@@ -3,8 +3,8 @@ angular
     .module('andyBeeApp')
     .controller('andyBeeCtrl', andyBeeCtrl);
             
-    andyBeeCtrl.$inject = ['$uibModal', '$timeout', 'PreferenceService', 'GeocacheService', 'GpxService', 'leafletData'];
-    function andyBeeCtrl ($uibModal, $timeout, PreferenceService, GeocacheService, GpxService, leafletData) {
+    andyBeeCtrl.$inject = ['$uibModal', '$timeout', 'GeocacheService', 'GpxService', 'leafletData'];
+    function andyBeeCtrl ($uibModal, $timeout, GeocacheService, GpxService, leafletData) {
 
         var vm = this;
         vm.geocache = GeocacheService;
@@ -23,18 +23,12 @@ angular
         ////////////////
 
         function pref_dialog () {
-            PreferenceService.get_request(open_modal);
-            function open_modal (resp) {
-                $uibModal.open({
-                    animation: false,
-                    controller: 'PreferenceCtrl',
-                    controllerAs: "pref",
-                    templateUrl: '/static/preferences/pref.html',
-                    resolve: {
-                        preference: PreferenceService.get_data()
-                    }
-                }).result.then(PreferenceService.update_data, function(){});
-            }
+            $uibModal.open({
+                animation: false,
+                controller: 'PreferenceCtrl',
+                controllerAs: "pref",
+                templateUrl: '/static/preferences/pref.html',
+            }).result.then(function(){}, function(){});
         }
 
         function open_db_dialog () {

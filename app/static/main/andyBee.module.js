@@ -8,7 +8,7 @@
 
         get_preferences.$inject = ['PreferenceService']
         function get_preferences (PreferenceService) {
-            PreferenceService.get_request(function(){});
+            PreferenceService.read(function(){});
         }
 
 })();
