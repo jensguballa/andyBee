@@ -28,15 +28,19 @@
             var type = args.type || 'danger'; 
             var str = new Date() + '; Error: "' + args.msg + '";';
             if (args.http_response) {
-                str += ' HTTP Status Code: ' + args.http_response.status + '; Request: ' 
-                    + args.http_response.config.method + " " + args.http_response.config.url + ';';
+                str += ' HTTP Status Code: ' + args.http_response.status + ' - ' 
+                    + args.http_response.statusText 
+                    + '; Request: ' + args.http_response.config.method 
+                    + " - " + args.http_response.config.url + ';';
                 if (args.http_response.data.msg) {
                     str += ' Server replied: "' + args.http_response.data.msg + '";';
                     args.http_response.data.msg = undefined;
                 }
-                var object_str = JSON.stringify(args.http_response.data);
-                if (object_str) {
-                    str += " Additional data: '" + object_str + "';";
+                if (typeof args.http_response.data == 'object') {
+                    var object_str = JSON.stringify(args.http_response.data);
+                    if (object_str) {
+                        str += " Additional data: '" + object_str + "';";
+                    }
                 }
             }
 
