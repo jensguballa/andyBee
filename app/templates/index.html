@@ -24,6 +24,7 @@
     <script src="/static/main/andyBee.module.js"></script>
     <script src="/static/main/andyBee.controller.js"></script>
     <script src="/static/main/andyBee.directive.js"></script>
+    <script src="/static/main/andyBee.constants.js"></script>
     <script src="/static/preferences/preference.service.js"></script>
     <script src="/static/preferences/preference.controller.js"></script>
     <script src="/static/geocaches/geocache.service.js"></script>
@@ -35,12 +36,14 @@
     <script src="/static/gpx/gpx.service.js"></script>
     <script src="/static/logging/logging.service.js"></script>
     <script src="/static/logging/logging.controller.js"></script>
+    <script src="/static/logging/logging_severe.controller.js"></script>
+    <script src="/static/db/db.service.js"></script>
 {% endblock %}
 
 
 {% block title %}AndyBee{% endblock %}
 {% block html_attribs %}{{ super() }} ng-app="andyBeeApp"{% endblock html_attribs %}
-{% block body_attribs %}{{ super() }} ng-controller="andyBeeCtrl as app" {% if default_db is defined %}ng-init="app.init_db = '{{default_db}}'"{% endif %}{% endblock %}
+{% block body_attribs %}{{ super() }} ng-controller="andyBeeCtrl as app"{% endblock %}
 
 {% block navbar %}
     {% include "navbar.html" %}

@@ -3,10 +3,11 @@
         .module('andyBeeApp')
         .controller('PreferenceCtrl', PreferenceCtrl);
 
-    PreferenceCtrl.$inject = ['$uibModalInstance', 'PreferenceService'];
-    function PreferenceCtrl($uibModalInstance, PreferenceService) {
+    PreferenceCtrl.$inject = ['$uibModalInstance', 'data', 'dbs'];
+    function PreferenceCtrl($uibModalInstance, data, dbs) {
         var vm = this;
-        vm.data = angular.copy(PreferenceService.data);
+        vm.data = data;
+        vm.dbs = dbs;
         vm.dismiss = dismiss_modal;
         vm.close = close_modal;
 
@@ -15,9 +16,7 @@
         };
 
         function close_modal () {
-            $uibModalInstance.close();
-            PreferenceService.data = angular.copy(vm.data);
-            PreferenceService.update();
+            $uibModalInstance.close(vm.data);
         };
     }
 })();

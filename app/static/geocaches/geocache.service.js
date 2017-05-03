@@ -1,16 +1,10 @@
-
 (function () {
     angular
         .module('andyBeeApp')
         .factory('GeocacheService', GeocacheService);
 
-    GeocacheService.$inject = ['$rootScope', '$resource', 'PreferenceService', 'LoggingService'];
-    function GeocacheService ($rootScope, $resource, PreferenceService, LoggingService) {
-        var rest_dblist = $resource('/andyBee/api/v1.0/db/', null, {
-            post: {
-                method: 'POST'
-            }
-        });
+    GeocacheService.$inject = ['$rootScope', '$resource', 'PreferenceService', 'LoggingService', 'DbService'];
+    function GeocacheService ($rootScope, $resource, PreferenceService, LoggingService, DbService) {
         var rest_geocache = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id');
         var serv = {
             // which of the tabs (list, map, detail, console) is active
@@ -19,9 +13,8 @@
             show_details: show_details,
 
             // stuff related to the list of DBs
-            db_list: [],
-            get_dblist: get_dblist,
             db_name: '',
+            resolve_db_name: resolve_db_name,
 
             // stuff related to geocaches within a db
             geocache_list: [],
@@ -31,17 +24,12 @@
 
         return serv;
 
-        function get_dblist (success_cb) {
-            rest_dblist.get(dblist_response, LoggingService.log_RESTful_error);
-
-            function dblist_response (result) {
-                serv.db_list = result.dbs;
-                success_cb();
-            }
+        function resolve_db_name () {
+            return serv.db_name;
         }
 
         function get_geocache_list (db_name) {            
-            if (inArray(db_name, serv.db_list)) {
+            if (DbService.is_in_dblist(db_name)) {
                 rest_geocache.get({db: db_name}, geocache_list_response, LoggingService.log_RESTful_error);
             }
             else {
@@ -76,15 +64,6 @@
             }
         }
 
-
-        function inArray(needle, haystack) {
-            var length = haystack.length;
-            for (var i = 0; i < length; i++) {
-                if (haystack[i] == needle)
-                    return true;
-            }
-            return false;
-        }
     }
 
 })();

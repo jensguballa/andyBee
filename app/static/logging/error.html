@@ -1,0 +1,11 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="error.dismiss()" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3 class="modal-title" id="modal-title">Ops, a problem occured</h3>
+</div>
+<div class="modal-body bd-danger">
+    <div class="lead">{{error.msg}}</div>
+    <div>Look at the console for more information about the problem.</div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-danger" type="button" ng-click="error.dismiss()">Close</button>
+</div>

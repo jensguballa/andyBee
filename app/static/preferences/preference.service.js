@@ -7,10 +7,11 @@
     function PreferenceService ($resource, LoggingService) {
         var rest = $resource('/andyBee/api/v1.0/config/:id', null, {update: {method: 'PUT'}});
         var serv = {
+            data: {},
             read: read,
             update: update,
             update_used_db: update_used_db,
-            data: {}
+            resolve_data_copy: resolve_data_copy
         };
         return serv;
 
@@ -25,13 +26,21 @@
             }
         }
 
-        function update () {
-            rest.update({id: 1}, {preference: serv.data}, LoggingService.dummy_func, LoggingService.log_RESTful_error);
+        function update (data) {
+            rest.update({id: 1}, {preference: serv.data}, on_update_response, LoggingService.log_RESTful_error);
+            
+            function on_update_response () {
+                serv.data = data;
+            }
         }
 
         function update_used_db (db_name) {
             serv.data.used_db = db_name;
             rest.update({id: 1}, {preference: {used_db: db_name}}, LoggingService.dummy_func, LoggingService.log_RESTful_error);
+        }
+
+        function resolve_data_copy () {
+            return angular.copy(serv.data);
         }
 
     }

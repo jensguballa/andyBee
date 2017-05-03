@@ -3,11 +3,11 @@
         .module('andyBeeApp')
         .controller('GeocacheOpenDbCtrl', GeocacheOpenDbCtrl);
 
-    GeocacheOpenDbCtrl.$inject = ['$uibModalInstance', 'GeocacheService'];
-    function GeocacheOpenDbCtrl($uibModalInstance, GeocacheService) {
+    GeocacheOpenDbCtrl.$inject = ['$uibModalInstance', 'dbs', 'selected'];
+    function GeocacheOpenDbCtrl($uibModalInstance, dbs, selected) {
         var vm = this;
-        vm.files = GeocacheService.db_list;
-        vm.selected = GeocacheService.db_name;
+        vm.files = dbs;
+        vm.selected = selected;
         vm.dismiss = dismiss_modal;
         vm.close = close_modal;
 

@@ -15,7 +15,9 @@
           <label><input type="radio" ng-model="pref.data.auto_load" value="1" convert-to-number>Open the last used DB at startup</label><br/>
           <label><input type="radio" ng-model="pref.data.auto_load" value="2" convert-to-number>Open the default DB at startup</label><br/>
         </form> 
-        <input type="text" class="form-control" id="pref_defaultdb" ng-model="pref.data.default_db" placeholder="Enter the default DB">
+        <!--input type="text" class="form-control" id="pref_defaultdb" ng-model="pref.data.default_db" placeholder="Enter the default DB"-->
+
+        <select ng-model="pref.data.default_db" ng-options="file for file in pref.dbs"></select>
     </div>    
 </div>
 <div class="modal-footer">
