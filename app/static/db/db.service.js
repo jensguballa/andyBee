@@ -3,8 +3,8 @@
         .module('andyBeeApp')
         .factory('DbService', DbService);
 
-    DbService.$inject = ['$resource', 'LoggingService'];
-    function DbService ($resource, LoggingService) {
+    DbService.$inject = ['$resource', 'LoggingService', 'ERROR'];
+    function DbService ($resource, LoggingService, ERROR) {
         var rest = $resource('/andyBee/api/v1.0/db/', null, {
             post: {
                 method: 'POST'
@@ -26,9 +26,9 @@
             return serv.db_list;
         }
 
-        function read (success_cb, fail_cb) {
-            fail_cb = fail_cb || LoggingService.log_RESTful_error;
-            rest.get(on_get_response, fail_cb);
+        function read (success_cb, error_cb) {
+            error_cb = error_cb || on_get_error;
+            rest.get(on_get_response, error_cb);
 
             function on_get_response (result) {
                 serv.db_list = result.dbs;
@@ -36,11 +36,19 @@
                     success_cb();
                 }
             }
+
+            function on_get_error (result) {
+                LoggingService.log({
+                    msg: ERROR.FAILURE_DB_LIST_FROM_SERVER, 
+                    http_response: result,
+                    modal: true,
+                });
+            }
         }
 
-        function create (db_name, success_cb, fail_cb) {
-            fail_cb = fail_cb || LoggingService.log_RESTful_error;
-            rest.post({db: db_name}, on_post_response, fail_cb);
+        function create (db_name, success_cb, error_cb) {
+            error_cb = error_cb || LoggingService.log_RESTful_error;
+            rest.post({db: db_name}, on_post_response, error_cb);
 
             function on_post_response (result) {
                 if (success_cb) {

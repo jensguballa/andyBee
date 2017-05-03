@@ -36,7 +36,7 @@
         });
 
         function show_details (id) {
-            GeocacheService.show_details(id); // cache detail tab
+            GeocacheService.read(id); // cache detail tab
         }
 
         function show_map (id) {

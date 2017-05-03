@@ -9,7 +9,7 @@
         open_startup_db.$inject = ['PreferenceService', 'GeocacheService', 'DbService', 'LoggingService', 'ERROR']
         function open_startup_db (PreferenceService, GeocacheService, DbService, LoggingService, ERROR) {
             var db_name;
-            PreferenceService.read(on_read_result, on_read_error);
+            PreferenceService.read(on_read_result);
 
             function on_read_result() {
                 var auto_load = PreferenceService.data.auto_load;
@@ -26,17 +26,9 @@
                 }
             }
 
-            function on_read_error (result) {
-                LoggingService.log({
-                    msg: ERROR.FAILURE_PREFERENCES_FROM_SERVER, 
-                    http_response: result,
-                    modal: true,
-                });
-            }
-
             function on_dblist_response () {
                 if (DbService.is_in_dblist(db_name)) {
-                    GeocacheService.get_geocache_list(db_name);
+                    GeocacheService.read_list(db_name);
                 }
                 else {
                     LoggingService.log({

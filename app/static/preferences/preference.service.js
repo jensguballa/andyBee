@@ -30,6 +30,7 @@
                 LoggingService.log({
                     msg: ERROR.FAILURE_PREFERENCES_FROM_SERVER, 
                     http_response: result,
+                    modal: true
                 });
             }
         }
@@ -72,9 +73,9 @@
 
             function on_update_error (result) {
                 LoggingService.log({
-                    msg: ERROR.FAILURE_PREFERENCES_UPDATE, 
+                    msg: ERROR.FAILURE_PREFERENCES_USED_DB, 
                     http_response: result,
-                    modal: true
+                    type: 'warning'
                 });
             }
         }

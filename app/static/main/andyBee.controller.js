@@ -23,7 +23,7 @@ angular
         ////////////////
 
         function pref_dialog () {
-            DbService.read(on_read_response, on_read_error);
+            DbService.read(on_read_response);
 
             function on_read_response () {
                 $uibModal.open({
@@ -42,17 +42,10 @@ angular
                 PreferenceService.update(data);
             }
 
-            function on_read_error (result) {
-                LoggingService.log({
-                    msg: ERROR.FAILURE_DB_LIST_FROM_SERVER, 
-                    http_response: result,
-                    modal: true,
-                });
-            }
         }
 
         function open_db_dialog () {
-            DbService.read(on_read_response, on_read_error);
+            DbService.read(on_read_response);
 
             function on_read_response (resp) {
                 $uibModal.open({
@@ -67,17 +60,10 @@ angular
                 }).result.then(on_dialog_ok, function(){});
 
                 function on_dialog_ok (db_name) {
-                    GeocacheService.get_geocache_list(db_name);
+                    GeocacheService.read_list(db_name);
                 }
             }
 
-            function on_read_error (result) {
-                LoggingService.log({
-                    msg: ERROR.FAILURE_DB_LIST_FROM_SERVER, 
-                    http_response: result,
-                    modal: true,
-                });
-            }
         }
 
         function import_gpx_dialog () {
