@@ -44,14 +44,14 @@ class _PrefDB(_PrefBase):
         return "<Preferences id='%d' owner='%s'>" % (self.id, self.owner)
 
 class PrefSchema(Schema):
-    id = fields.Integer()
+    id = fields.Integer(required=True)
     owner = fields.String()
     default_db = fields.String()
     auto_load = fields.Integer()
     used_db = fields.String()
 
 class PrefSingle(Schema):
-    preference = fields.Nested(PrefSchema)
+    preference = fields.Nested(PrefSchema, required=True)
 
 
 class Preferences():
@@ -88,7 +88,7 @@ class PrefApi(Resource):
         if status_code != 200:
             return obj, status_code
         pref.update(id, obj)
-
+        return {}
 api.add_resource(PrefApi, '/andyBee/api/v1.0/config/<int:id>')
 pref = Preferences(app)
 

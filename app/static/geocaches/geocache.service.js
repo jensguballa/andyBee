@@ -94,7 +94,7 @@
 
             function on_get_error (result) {
                 LoggingService.log({
-                    msg: ERROR.FAILURE_DB_CREATE, 
+                    msg: ERROR.FAILURE_GEOCACHE_FROM_SERVER, 
                     http_response: result,
                     modal: true
                 });

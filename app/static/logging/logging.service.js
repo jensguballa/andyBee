@@ -36,7 +36,7 @@
                     str += ' Server replied: "' + args.http_response.data.msg + '";';
                     args.http_response.data.msg = undefined;
                 }
-                if (typeof args.http_response.data == 'object') {
+                if (typeof args.http_response.data == 'object' && !angular.equals(args.http_response.data, {})) {
                     var object_str = JSON.stringify(args.http_response.data);
                     if (object_str) {
                         str += " Additional data: '" + object_str + "';";

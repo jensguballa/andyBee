@@ -10,7 +10,6 @@ from app.gpx import import_gpx
 
 class DbList(Schema):
     dbs = fields.List(fields.String())
-    aaa = fields.Integer(required=True)
 
 
 class DbListApi(Resource):

@@ -58,7 +58,7 @@
         function update_used_db (db_name, success_cb, error_cb) {
             error_cb = error_cb || on_update_error;
             if (db_name != serv.data.used_db) {
-                rest.update({id: 1}, {preference: {used_db: db_name}}, on_update_response, error_cb);
+                rest.update({id: 1}, {preference: {id:1, used_db: db_name}}, on_update_response, error_cb);
             }
             else if (success_cb) {
                 success_cb();
