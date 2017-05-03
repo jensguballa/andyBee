@@ -67,6 +67,9 @@ angular
         }
 
         function import_gpx_dialog () {
+            if (!vm.geocache.db_name) {
+                return;
+            }
             $uibModal.open({
                 animation: false,
                 controller: 'GpxImportCtrl',
