@@ -34,7 +34,8 @@
             }
             else {
                 // new DB to allocate.
-                rest_dblist.post({db: db_name}, db_allocated, LoggingService.log_RESTful_error);
+                DbService.create(db_name, db_allocated);
+                //rest_dblist.post({db: db_name}, db_allocated, LoggingService.log_RESTful_error);
             }
 
             function db_allocated (result) {

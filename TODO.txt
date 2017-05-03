@@ -3,7 +3,6 @@ TODO list, backlog.
 Most important item comes first. :-)
 
     o Import of GPX-files
-    o Proper opening/creation of DBs, remember last opened DB.
     o Export to GPX-file
     o Cache details
     o Status line
@@ -13,4 +12,5 @@ Most important item comes first. :-)
     o Menu sticky
     o Console (configurable, delete all entries, ...)
     o Use https for map tiles
+    o Catch exceptions in case DB-access fails
 
