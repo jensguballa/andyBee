@@ -70,18 +70,6 @@ class Preferences():
         self._db.session.query(_PrefDB).filter_by(id=1).update({'used_db': db})
         self._db.session.commit()
 
-    def get_startup_db(self):
-        db = None
-        pref = self._db.session.query(_PrefDB).get(1)
-        if pref.auto_load == 1:
-            db = pref.default_db
-        elif pref.auto_load == 2:
-            db = pref.used_db
-        if db is not None:
-            if os.path.isfile(os.path.join(self.app.config['CACHE_DB_DIR'],db)) == None:
-                db = None
-        return db
-
     def update(self, id, data):
         self._db.session.query(_PrefDB).filter_by(id=id).update(data['preference'])
         self._db.session.commit()
