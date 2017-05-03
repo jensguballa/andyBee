@@ -37,7 +37,7 @@
 
         function update (data, success_cb, error_cb) {
             error_cb = error_cb || on_update_error;
-            rest.update({id: 1}, {preference: serv.data}, on_update_response, error_cb);
+            rest.update({id: 1}, {preference: data}, on_update_response, error_cb);
             
             function on_update_response () {
                 serv.data = data;
