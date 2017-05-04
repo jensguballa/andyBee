@@ -3,10 +3,112 @@
     <h3 class="modal-title" id="modal-title">Basic Filter</h3>
 </div>
 <div class="modal-body">
-    <div class="form-group">
-    </div>    
-    <div class="form-group">
-    </div>    
+
+    <uib-accordion is-disabled>
+        <div uib-accordion-group class="panel-default">
+            <uib-accordion-heading>Difficulty, Terrain, Type</uib-accordion-heading>
+            <div class="row">
+                <div class="form-group form-inline col-xs-3">
+                    <input type="checkbox">
+                    <label> Difficulty</label>
+                </div>
+                <div class="form-group form-inline col-xs-9">
+                    <select class="form-control">
+                        <option value="0">Geater than or equal to ("&gt;=")</option>
+                        <option value="1">Equal to ("=")</option>
+                        <option value="2">Less than or equal to ("&lt;=")</option>
+                    </select>
+                    <select class="form-control">
+                        <option>1</option>
+                        <option>1.5</option>
+                        <option>2</option>
+                        <option>2.5</option>
+                        <option>3</option>
+                        <option>3.5</option>
+                        <option>4</option>
+                        <option>4.5</option>
+                        <option>5</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group form-inline col-xs-3">
+                    <input type="checkbox">
+                    <label> Terrain</label>
+                </div>
+                <div class="form-group form-inline col-xs-9">
+                    <select class="form-control">
+                        <option value="0">Geater than or equal to ("&gt;=")</option>
+                        <option value="1">Equal to ("=")</option>
+                        <option value="2">Less than or equal to ("&lt;=")</option>
+                    </select>
+                    <select class="form-control">
+                        <option>1</option>
+                        <option>1.5</option>
+                        <option>2</option>
+                        <option>2.5</option>
+                        <option>3</option>
+                        <option>3.5</option>
+                        <option>4</option>
+                        <option>4.5</option>
+                        <option>5</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group form-inline col-xs-3">
+                    <input type="checkbox">
+                    <label> Cache Type</label>
+                </div>
+                <div class="col-xs-9"></div>
+            </div>
+            <div style="margin-left:20px; padding:10px; border:1px solid #ddd; border-radius:5px;">
+                <div class="row">
+                    <div class="form-group form-inline col-xs-4"><input type="checkbox"> <label> Traditional</label></div>
+                    <div class="form-group form-inline col-xs-4"><input type="checkbox"> <label> Letterbox Hybrid</label></div>
+                    <div class="form-group form-inline col-xs-4"><input type="checkbox"> <label> Event Cache</label></div>
+                </div>
+                <div class="row">
+                    <div class="form-group form-inline col-xs-4"><input type="checkbox"> <label> Multi Cache</label></div>
+                    <div class="form-group form-inline col-xs-4"><input type="checkbox"> <label> Wherigo</label></div>
+                    <div class="form-group form-inline col-xs-4"><input type="checkbox"> <label> Mega Event</label></div>
+                </div>
+                <div class="row">
+                    <div class="form-group form-inline col-xs-4"><input type="checkbox"> <label> Unknown</label></div>
+                    <div class="form-group form-inline col-xs-4"><input type="checkbox"> <label> Earth Cache</label></div>
+                    <div class="form-group form-inline col-xs-4"><input type="checkbox"> <label> CITO</label></div>
+                </div>
+                <div class="row">
+                    <div class="form-group form-inline col-xs-4"><input type="checkbox"> <label> Virtual</label></div>
+                    <div class="form-group form-inline col-xs-4"><input type="checkbox"> <label> Adventure Maze</label></div>
+                    <div class="form-group form-inline col-xs-4"><input type="checkbox"> <label> Webcam</label></div>
+                </div>
+                <div class="row">
+                    <div class="form-group form-inline col-xs-4"><input type="checkbox"> <label> A.P.E.</label></div>
+                    <div class="form-group form-inline col-xs-4"><input type="checkbox"> <label> Locationless</label></div>
+                    <div class="col-xs-4"></div>
+                </div>
+            </div>
+                
+        </div>
+        <div uib-accordion-group class="panel-default">
+            <uib-accordion-heading>Container, Description, Status</uib-accordion-heading>
+        </div>
+        <div uib-accordion-group class="panel-default">
+            <uib-accordion-heading>Placement, Location</uib-accordion-heading>
+        </div>
+        <div uib-accordion-group class="panel-default">
+            <uib-accordion-heading>Notes, User Data, Waypoints, Corrected</uib-accordion-heading>
+        </div>
+        <div uib-accordion-group class="panel-default">
+            <uib-accordion-heading>Attributes</uib-accordion-heading>
+        </div>
+        <div uib-accordion-group class="panel-default">
+            <uib-accordion-heading>Updated, Found</uib-accordion-heading>
+        </div>
+    </uib-accordion>
+
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" type="button" ng-click="basic.close()">OK</button>
