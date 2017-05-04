@@ -3,9 +3,10 @@
         .module('andyBeeApp')
         .factory('GeocacheService', GeocacheService);
 
-    GeocacheService.$inject = ['$rootScope', '$resource', 'PreferenceService', 'LoggingService', 'DbService', 'ERROR'];
-    function GeocacheService ($rootScope, $resource, PreferenceService, LoggingService, DbService, ERROR) {
+    GeocacheService.$inject = ['$rootScope', '$resource', 'PreferenceService', 'LoggingService', 'DbService', 'FilterService', 'ERROR'];
+    function GeocacheService ($rootScope, $resource, PreferenceService, LoggingService, DbService, FilterService, ERROR) {
         var rest = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id');
+        var geocache_list_unfiltered = [];
         var serv = {
             // which of the tabs (list, map, detail, console) is active
             selected_tab: 0,
@@ -17,6 +18,7 @@
             resolve_db_name: resolve_db_name,
 
             // stuff related to geocaches within a db
+
             geocache_list: [],
             read_list: read_list,
 
@@ -43,7 +45,8 @@
                 serv.db_name = db_name;
                 PreferenceService.update_used_db(db_name);
                 serv.nbr_caches = result.nbr_caches;
-                serv.geocache_list = result.geocaches;
+                geocache_list_unfiltered = result.geocaches;
+                serv.geocache_list = FilterService.apply_basic_filter(result.geocaches);
                 $rootScope.$broadcast('geocaches_updated');
                 if (success_cb) {
                     success_cb();
@@ -62,6 +65,7 @@
                 serv.db_name = db_name;
                 PreferenceService.update_used_db(db_name);
                 serv.nbr_caches = 0;
+                geocache_list_unfiltered = result.geocaches;
                 serv.geocache_list = [];
                 $rootScope.$broadcast('geocaches_updated');
                 if (success_cb) {

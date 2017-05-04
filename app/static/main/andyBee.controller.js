@@ -3,8 +3,8 @@ angular
     .module('andyBeeApp')
     .controller('andyBeeCtrl', andyBeeCtrl);
             
-    andyBeeCtrl.$inject = ['$uibModal', '$timeout', 'ERROR', 'GeocacheService', 'GpxService', 'PreferenceService', 'DbService', 'LoggingService', 'leafletData'];
-    function andyBeeCtrl ($uibModal, $timeout, ERROR, GeocacheService, GpxService, PreferenceService, DbService, LoggingService, leafletData) {
+    andyBeeCtrl.$inject = ['$uibModal', '$timeout', 'ERROR', 'GeocacheService', 'GpxService', 'PreferenceService', 'DbService', 'LoggingService', 'FilterService', 'leafletData'];
+    function andyBeeCtrl ($uibModal, $timeout, ERROR, GeocacheService, GpxService, PreferenceService, DbService, LoggingService, FilterService, leafletData) {
 
         var vm = this;
         vm.geocache = GeocacheService;
@@ -19,6 +19,7 @@ angular
         vm.open_db_dialog = open_db_dialog;
         vm.import_gpx_dialog = import_gpx_dialog;
         vm.pref_dialog = pref_dialog;
+        vm.basic_filter_dialog = basic_filter_dialog;
 
         ////////////////
 
@@ -90,6 +91,21 @@ angular
             }
         }
 
+        function basic_filter_dialog () {
+
+            $uibModal.open({
+                animation: false,
+                controller: 'BasicFilterCtrl',
+                controllerAs: "basic",
+                templateUrl: '/static/filter/basic.html',
+            }).result.then(on_dialog_ok, function(){});
+
+            function on_dialog_ok () {
+                //var list = FilterService.apply_basic_filter(GeocacheService.geocache_list);
+                var jens = 0;
+            }
+
+        }
         ////////////////
 
     }
