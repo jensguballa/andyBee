@@ -101,7 +101,7 @@ angular
             }).result.then(on_dialog_ok, function(){});
 
             function on_dialog_ok () {
-                //var list = FilterService.apply_basic_filter(GeocacheService.geocache_list);
+                var list = FilterService.apply_basic_filter(GeocacheService.geocache_list);
                 var jens = 0;
             }
 

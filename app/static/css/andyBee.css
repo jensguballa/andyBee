@@ -2,6 +2,10 @@ html {
     min-height: 100%;
 }
 
+.bold {
+    font-weight: bold;
+}
+
 #content {
     margin: 0 5px 35px 5px;
     padding-bottom: 40px;

@@ -44,8 +44,8 @@ class Attribute(Schema):
 
 class Log(Schema):
     date    = fields.String()
-    type    = fields.String()
-    finder  = fields.String()
+    type    = fields.Function(lambda log: log.type.name)
+    finder  = fields.Function(lambda log: log.finder.name)
     text    = fields.String()
     text_encoded = fields.String()
     lat     = fields.Float()
@@ -69,11 +69,13 @@ class GeocacheBasic(Schema):
     archived   = fields.Boolean()
     title      = fields.String(attribute="name") 
     placed_by  = fields.String()
-    owner      = fields.String()
-    type       = fields.String()
-    container  = fields.String()
+    owner      = fields.Function(lambda cache: cache.owner.name)
+    type       = fields.Function(lambda cache: cache.type.name)
+    container  = fields.Function(lambda cache: cache.container.name)
     difficulty = fields.Float()
     terrain    = fields.Float()
+    country    = fields.Function(lambda cache: cache.country.name)
+    state      = fields.Function(lambda cache: cache.state.name)
     gc_id      = fields.Function(lambda cache: cache.waypoint.name)
     lat        = fields.Function(lambda cache: cache.waypoint.lat)
     lon        = fields.Function(lambda cache: cache.waypoint.lon)
@@ -81,8 +83,6 @@ class GeocacheBasic(Schema):
 
 class GeocacheFull(GeocacheBasic):
     attributes = fields.List(fields.Nested(Attribute))
-    country    = fields.String()
-    state      = fields.String()
     short_desc = fields.String()
     short_html = fields.String()
     long_desc  = fields.String()
