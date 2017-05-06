@@ -14,10 +14,6 @@ from app.models import DbBase
 from app.db import Db
 db = Db(DbBase)
 
-#pref = None
-#from app.preferences import Preferences
-#pref = Preferences(app) 
-
 from flask_bootstrap import Bootstrap
 Bootstrap(app)
 
