@@ -9,16 +9,16 @@ from flask_restful import Api
 api = Api(app)
 
 
-#from flask_sqlalchemy import SQLAlchemy
-from app.models import DbBase 
+from app.geocache_model import GeocacheDb 
 from app.db import Db
-db = Db(DbBase)
+geocache_db = Db(GeocacheDb)
+
 
 from flask_bootstrap import Bootstrap
 Bootstrap(app)
 
 from flask_triangle import Triangle
 Triangle(app)
-from app import preferences, geocaches
-from app import views, models
+from app import config_api, geocache_api
+from app import views
 

@@ -5,7 +5,7 @@
 
     PreferenceService.$inject = ['$resource', 'LoggingService', 'ERROR'];
     function PreferenceService ($resource, LoggingService, ERROR) {
-        var rest = $resource('/andyBee/api/v1.0/config/:id', null, {update: {method: 'PUT'}});
+        var rest = $resource('/andyBee/api/v1.0/config/:id/preference', null, {update: {method: 'PUT'}});
         var serv = {
             data: {},
             read: read,

@@ -1,11 +1,10 @@
-from sqlalchemy import Table, Column, Integer, String, Float, Text, Boolean, ForeignKey
+from sqlalchemy import Table, Column, Integer, Float, Text, Boolean, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-DbBase = declarative_base()
+GeocacheDb = declarative_base()
 
-
-class Waypoint(DbBase):
+class Waypoint(GeocacheDb):
     __tablename__ = 'waypoint'
     id       = Column(Integer, primary_key=True)                  
     lat      = Column(Float)
@@ -28,15 +27,15 @@ class Waypoint(DbBase):
         return "<Waypoint id='%d' lat='%r' lon='%r' cache_id='%d'>" % (self.id,
                 self.lat, self.lon, self.cache_id)
 
-class WaypointSym(DbBase):
+class WaypointSym(GeocacheDb):
     __tablename__ = 'waypoint_sym'
     id       = Column(Integer, primary_key=True)
     name     = Column(Text, unique=True)
 
     def __repr__(self):
-        return "<WaypointType id='%d' name='%s'>" % (self.id, self.name)
+        return "<WaypointSym id='%d' name='%s'>" % (self.id, self.name)
 
-class WaypointType(DbBase):
+class WaypointType(GeocacheDb):
     __tablename__ = 'waypoint_type'
     id       = Column(Integer, primary_key=True)
     name     = Column(Text, unique=True)
@@ -46,7 +45,7 @@ class WaypointType(DbBase):
 
 
 
-class Cache(DbBase):
+class Cache(GeocacheDb):
     __tablename__ = 'cache'
     id            = Column(Integer, primary_key=True)                  
     available     = Column(Boolean, default=1)                         
@@ -80,7 +79,7 @@ class Cache(DbBase):
                 "True" if self.archived else "False")
 
 
-class Cacher(DbBase):
+class Cacher(GeocacheDb):
     __tablename__ = 'cacher'
     id   = Column(Integer, primary_key=True)
     name = Column(Text, unique=True)
@@ -88,7 +87,7 @@ class Cacher(DbBase):
     def __repr__(self):
         return "<Cacher id='%d' name='%s'>" % (self.id, self.name)
     
-class CacheType(DbBase):
+class CacheType(GeocacheDb):
     __tablename__ = 'cache_type'
     id   = Column(Integer, primary_key=True)
     name = Column(Text, unique=True)
@@ -96,7 +95,7 @@ class CacheType(DbBase):
     def __repr__(self):
         return "<CacheType id='%d' name='%s'>" % (self.id, self.name)
 
-class CacheContainer(DbBase):
+class CacheContainer(GeocacheDb):
     __tablename__ = 'cache_container'
     id   = Column(Integer, primary_key=True)
     name = Column(Text, unique=True)
@@ -104,7 +103,7 @@ class CacheContainer(DbBase):
     def __repr__(self):
         return "<CacheContainer id='%d' name='%s'>" % (self.id, self.name)
 
-class CacheCountry(DbBase):
+class CacheCountry(GeocacheDb):
     __tablename__ = 'cache_country'
     id   = Column(Integer, primary_key=True)
     name = Column(Text, unique=True)
@@ -112,7 +111,7 @@ class CacheCountry(DbBase):
     def __repr__(self):
         return "<CacheCountry id='%d' name='%s'>" % (self.id, self.name)
 
-class CacheState(DbBase):
+class CacheState(GeocacheDb):
     __tablename__ = 'cache_state'
     id   = Column(Integer, primary_key=True)
     name = Column(Text, unique=True)
@@ -121,12 +120,12 @@ class CacheState(DbBase):
         return "<CacheState id='%d' name='%s'>" % (self.id, self.name)
 
 
-association_table = Table('cache_to_attribute', DbBase.metadata,
+association_table = Table('cache_to_attribute', GeocacheDb.metadata,
     Column('cache_id', Integer, ForeignKey('cache.id')),
     Column('attribute_id', Integer, ForeignKey('attribute.id'))
 )
 
-class Attribute(DbBase):
+class Attribute(GeocacheDb):
     __tablename__ = 'attribute'
     id    = Column(Integer, primary_key=True)
     gc_id = Column(Integer)
@@ -139,7 +138,7 @@ class Attribute(DbBase):
                 "True" if self.inc else "False",
                 self.name)
 
-class Log(DbBase):
+class Log(GeocacheDb):
     __tablename__ = 'log'
     id           = Column(Integer, primary_key=True)
     cache_id     = Column(Integer, ForeignKey('cache.id'))
@@ -157,7 +156,7 @@ class Log(DbBase):
         return "<Log id='%d'>" % (self.id, )
 
 
-class LogType(DbBase):
+class LogType(GeocacheDb):
     __tablename__ = 'log_type'
     id       = Column(Integer, primary_key=True)
     name     = Column(Text, unique=True)

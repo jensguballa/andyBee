@@ -1,5 +1,6 @@
 from lxml import etree
-from app import db, models
+from app import geocache_db
+import geocache_model
 import re
 
 GPX_NS = "http://www.topografix.com/GPX/1/0"
@@ -19,7 +20,7 @@ def import_gpx(filename):
         for node in gpx:
             if node.tag == GPX+"wpt":
                 parse_wpt(node)
-        db.session.commit()
+        geocache_db.session.commit()
 
 def parse_wpt(node):
     wpt = models.Waypoint()
@@ -38,16 +39,16 @@ def parse_wpt(node):
         elif child.tag == GPX+"urlname":
             wpt.urlname = child.text
         elif child.tag == GPX+"sym":
-            wpt.sym = db.get_or_create(models.WaypointSym, name=child.text)
+            wpt.sym = ddbb.get_or_create(models.WaypointSym, name=child.text)
             pass
         elif child.tag == GPX+"type":
-            wpt.type = db.get_or_create(models.WaypointType, name=child.text)
+            wpt.type = geocache_db.get_or_create(models.WaypointType, name=child.text)
             pass
         elif child.tag == GPX+"cmt":
             wpt.cmt = child.text
         elif child.tag == GS+"cache":
             wpt.cache = parse_cache(child)
-    db.session.add(wpt)
+    geocache_db.session.add(wpt)
 
 def parse_cache(node):
     cache = models.Cache()
@@ -60,23 +61,23 @@ def parse_cache(node):
         elif child.tag == GS+"placed_by":
             cache.placed_by = child.text
         elif child.tag == GS+"owner":
-            cache.owner = db.get_or_create(models.Cacher, name=child.text)
+            cache.owner = geocache_db.get_or_create(models.Cacher, name=child.text)
             pass
         elif child.tag == GS+"type":
-            cache.type = db.get_or_create(models.CacheType, name=child.text)
+            cache.type = geocache_db.get_or_create(models.CacheType, name=child.text)
             pass
         elif child.tag == GS+"container":
-            cache.container = db.get_or_create(models.CacheContainer, name=child.text)
+            cache.container = geocache_db.get_or_create(models.CacheContainer, name=child.text)
             pass
         elif child.tag == GS+"difficulty":
             cache.difficulty = float(child.text)
         elif child.tag == GS+"terrain":
             cache.terrain = float(child.text)
         elif child.tag == GS+"country":
-            cache.country = db.get_or_create(models.CacheCountry, name=child.text)
+            cache.country = geocache_db.get_or_create(models.CacheCountry, name=child.text)
             pass
         elif child.tag == GS+"state":
-            cache.state = db.get_or_create(models.CacheState, name=child.text)
+            cache.state = geocache_db.get_or_create(models.CacheState, name=child.text)
             pass
         elif child.tag == GS+"short_description":
             cache.short_desc = child.text
@@ -99,7 +100,7 @@ def parse_cache(node):
 
 
 def parse_attribute(node):
-    return db.get_or_create(models.Attribute, 
+    return geocache_db.get_or_create(models.Attribute, 
             gc_id=int(node.get("id")),
             inc=(node.get("inc") == "1"),
             name=node.text)
@@ -111,10 +112,10 @@ def parse_log(node):
         if log_node.tag == GS+"date":
             log.date = log_node.text
         elif log_node.tag == GS+"type":
-            log.type = db.get_or_create(models.LogType, name=log_node.text)
+            log.type = geocache_db.get_or_create(models.LogType, name=log_node.text)
             pass
         elif log_node.tag == GS+"finder":
-            log.finder = db.get_or_create(models.Cacher, name=log_node.text)
+            log.finder = geocache_db.get_or_create(models.Cacher, name=log_node.text)
             pass
         elif log_node.tag == GS+"text":
             log.text = log_node.text

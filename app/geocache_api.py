@@ -1,14 +1,13 @@
 import os.path, json
 import werkzeug
-# from flask import jsonify
 from flask_restful import Resource, reqparse, request
-from app import app, api, db
+from app import app, api, geocache_db
 from marshmallow import Schema, fields
-from app.models import Cache
 from sqlalchemy import func
-from app.gpx import import_gpx
+from gpx import import_gpx
+from geocache_model import Cache
 
-class DbList(Schema):
+class DbListSchema(Schema):
     dbs = fields.List(fields.String())
 
 
@@ -16,7 +15,7 @@ class DbListApi(Resource):
 
     def get(self):
         list = next(os.walk(app.config['SQLALCHEMY_DATABASE_DIR']))[2]
-        data, errors = DbList().dump({'dbs': sorted(list)})
+        data, errors = DbListSchema().dump({'dbs': sorted(list)})
         if errors:
             errors['msg'] = 'Internal error, could not create list of databases.'
             return errors, 422
@@ -32,17 +31,17 @@ class DbListApi(Resource):
         file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
         if os.path.isfile(file_path):
             return {'msg': 'Database is already existing.'}, 422 # unprocessable entity
-        db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
-        db.create_all()
+        geocache_db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+        geocache_db.create_all()
         return {}
 
 api.add_resource(DbListApi, '/andyBee/api/v1.0/db')
 
-class Attribute(Schema):
+class AttributeSchema(Schema):
     name    = fields.String()
     inc     = fields.Boolean()
 
-class Log(Schema):
+class LogSchema(Schema):
     date    = fields.String()
     type    = fields.Function(lambda log: log.type.name)
     finder  = fields.Function(lambda log: log.finder.name)
@@ -51,7 +50,7 @@ class Log(Schema):
     lat     = fields.Float()
     lon     = fields.Float()
     
-class Waypoint(Schema):
+class WaypointSchema(Schema):
     lat     = fields.Float()
     lon     = fields.Float()
     time    = fields.String()
@@ -63,7 +62,7 @@ class Waypoint(Schema):
     type    = fields.String()
     cmt     = fields.String()
 
-class GeocacheBasic(Schema):
+class GeocacheBasicSchema(Schema):
     id         = fields.Integer()
     available  = fields.Boolean()
     archived   = fields.Boolean()
@@ -81,18 +80,18 @@ class GeocacheBasic(Schema):
     lon        = fields.Function(lambda cache: cache.waypoint.lon)
 
 
-class GeocacheFull(GeocacheBasic):
-    attributes = fields.List(fields.Nested(Attribute))
+class GeocacheFullSchema(GeocacheBasicSchema):
+    attributes = fields.List(fields.Nested(AttributeSchema))
     short_desc = fields.String()
     short_html = fields.String()
     long_desc  = fields.String()
     long_html  = fields.String()
     encoded_hints = fields.String()
-    logs       = fields.List(fields.Nested(Log))
-    waypoints  = fields.List(fields.Nested(Waypoint))
+    logs       = fields.List(fields.Nested(LogSchema))
+    waypoints  = fields.List(fields.Nested(WaypointSchema))
 
-class GeocacheList(Schema):
-    geocaches  = fields.List(fields.Nested(GeocacheBasic))
+class GeocacheListSchema(Schema):
+    geocaches  = fields.List(fields.Nested(GeocacheBasicSchema))
     db_name    = fields.String()
     nbr_caches = fields.Integer()
 
@@ -105,11 +104,11 @@ class GeocacheListApi(Resource):
         file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
         if not os.path.isfile(file_path):
             return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
-        db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
-        data, errors = GeocacheList().dump({
-            'geocaches': db.session.query(Cache),
+        geocache_db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+        data, errors = GeocacheListSchema().dump({
+            'geocaches': geocache_db.session.query(Cache),
             'db_name': db_name,
-            'nbr_caches': db.session.query(func.count(Cache.id)).scalar()
+            'nbr_caches': geocache_db.session.query(func.count(Cache.id)).scalar()
             })
         if errors:
             errors['msg'] = 'Internal error, could not dump list of geocaches.'
@@ -118,8 +117,8 @@ class GeocacheListApi(Resource):
 
 api.add_resource(GeocacheListApi, '/andyBee/api/v1.0/db/<string:db_name>/geocaches')
 
-class GeocacheSingle(Schema):
-    geocache   = fields.Nested(GeocacheFull)
+class GeocacheSingleSchema(Schema):
+    geocache   = fields.Nested(GeocacheFullSchema)
 
 class GeocacheApi(Resource):
     def get(self, db_name, id):
@@ -128,9 +127,9 @@ class GeocacheApi(Resource):
         file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
         if not os.path.isfile(file_path):
             return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
-        db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
-        data, errors = GeocacheSingle().dump({
-            'geocache': db.session.query(Cache).get(id)
+        geocache_db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+        data, errors = GeocacheSingleSchema().dump({
+            'geocache': geocache_db.session.query(Cache).get(id)
             })
         if errors:
             errors['msg'] = 'Internal error, could not dump geocache data.'
@@ -147,7 +146,7 @@ class GpxImportApi(Resource):
         file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
         if not os.path.isfile(file_path):
             return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
-        db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+        geocache_db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
         parse = reqparse.RequestParser()
         parse.add_argument('gpx_file', type=werkzeug.datastructures.FileStorage, location='files')
         args = parse.parse_args()
