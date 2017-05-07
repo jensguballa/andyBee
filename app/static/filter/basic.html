@@ -13,12 +13,12 @@
                     <label> Difficulty</label>
                 </div>
                 <div class="form-group form-inline col-xs-9">
-                    <select class="form-control" ng-model="basic.diff_op" ng-disabled="!basic.diff_active" ng-change="basic.on_changed_0()" convert-to-number>
-                        <option value="0">Geater than or equal to ("&gt;=")</option>
-                        <option value="1">Equal to ("=")</option>
-                        <option value="2">Less than or equal to ("&lt;=")</option>
+                    <select class="form-control" ng-model="basic.diff_op" ng-disabled="!basic.diff_active" ng-change="basic.on_changed_0()">
+                        <option value="ge">Geater than or equal to ("&gt;=")</option>
+                        <option value="eq">Equal to ("=")</option>
+                        <option value="le">Less than or equal to ("&lt;=")</option>
                     </select>
-                    <select class="form-control" ng-model="basic.diff_val" ng-disabled="!basic.diff_active" ng-change="basic.on_changed_0()" convert-to-number>
+                    <select class="form-control" ng-model="basic.diff_val" ng-disabled="!basic.diff_active" ng-change="basic.on_changed_0()">
                         <option>1</option>
                         <option>1.5</option>
                         <option>2</option>
@@ -37,12 +37,12 @@
                     <label> Terrain</label>
                 </div>
                 <div class="form-group form-inline col-xs-9">
-                    <select class="form-control" ng-model="basic.terr_op" ng-disabled="!basic.terr_active" ng-change="basic.on_changed_0()" convert-to-number>
-                        <option value="0">Geater than or equal to ("&gt;=")</option>
-                        <option value="1">Equal to ("=")</option>
-                        <option value="2">Less than or equal to ("&lt;=")</option>
+                    <select class="form-control" ng-model="basic.terr_op" ng-disabled="!basic.terr_active" ng-change="basic.on_changed_0()">
+                        <option value="ge">Geater than or equal to ("&gt;=")</option>
+                        <option value="eq">Equal to ("=")</option>
+                        <option value="le">Less than or equal to ("&lt;=")</option>
                     </select>
-                    <select class="form-control" ng-model="basic.terr_val" ng-disabled="!basic.terr_active" ng-change="basic.on_changed_0()" convert-to-number>
+                    <select class="form-control" ng-model="basic.terr_val" ng-disabled="!basic.terr_active" ng-change="basic.on_changed_0()">
                         <option>1</option>
                         <option>1.5</option>
                         <option>2</option>

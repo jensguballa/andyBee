@@ -18,14 +18,35 @@
             FAILURE_PREFERENCES_FROM_SERVER:   'Cannot retrieve preferences from the server.',         
             FAILURE_PREFERENCES_UPDATE:        'Cannot update the preferences on the server.',         
             FAILURE_PREFERENCES_USED_DB:       'Cannot update the last used database on the server.',  
-
+           
             // related to the list of geocaches
             FAILURE_GEOCACHE_LIST_FROM_SERVER: 'Cannot retrieve the list of geocaches from the server.',
-
+           
             // related to a single geocache
             FAILURE_GEOCACHE_FROM_SERVER:      'Cannot retrieve the details for the selected geocache from the server.',
+        }) 
+        .constant('TYPE_TRANSLATION', [
+            {prop: 'tradi',     text: 'Traditional Cache'},                      
+            {prop: 'letter',    text: 'Letterbox Hybrid'},                       
+            {prop: 'event',     text: 'Event Cache'},              
+            {prop: 'multi',     text: 'Multi-cache'},              
+            {prop: 'wherigo',   text: 'Wherigo Cache'},            
+            {prop: 'mega',      text: 'Mega-Event Cache'},         
+            {prop: 'unknown',   text: 'Unknown Cache'},            
+            {prop: 'earth',     text: 'Earthcache'},               
+            {prop: 'cito',      text: 'Cache In Trash Out Event'}, 
+            {prop: 'virtual',   text: 'Virtual Cache'},            
+            {prop: 'adventure', text: 'GPS Adventures Exhibit'},   
+            {prop: 'webcam',    text: 'Webcam cache'},             
+            {prop: 'ape',       text: 'Project APE Cache'},        
+            {prop: 'less',      text: 'Locationless Cache'},       
+        ]) 
+        .constant('TYPE_TO_PROP',{
+            // will be filled on startup based on TYPE_TRANSLATION
+        }) 
+        .constant('TYPE_TO_STRING', {
+            // will be filled on startup based on TYPE_TRANSLATION
         });
-})();
-
-
-
+                         
+})();           
+                         

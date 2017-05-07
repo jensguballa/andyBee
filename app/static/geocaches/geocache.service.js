@@ -16,6 +16,7 @@
             // stuff related to the list of DBs
             db_name: '',
             resolve_db_name: resolve_db_name,
+            on_filter_changed: on_filter_changed,
 
             // stuff related to geocaches within a db
 
@@ -28,6 +29,11 @@
 
         function resolve_db_name () {
             return serv.db_name;
+        }
+
+        function on_filter_changed() {
+            serv.geocache_list = FilterService.apply_basic_filter(geocache_list_unfiltered);
+            $rootScope.$broadcast('geocaches_updated');
         }
 
         function read_list (db_name, success_cb, error_cb) {            

@@ -4,7 +4,16 @@
         .config(function($logProvider) {
             $logProvider.debugEnabled(false);
         })
+        .run(init_geocache_type)
         .run(open_startup_db);
+
+        init_geocache_type.$inject = ['TYPE_TRANSLATION', 'TYPE_TO_PROP', 'TYPE_TO_STRING'];
+        function init_geocache_type (TYPE_TRANSLATION, TYPE_TO_PROP, TYPE_TO_STRING) {
+            for (var i = 0, len = TYPE_TRANSLATION.length; i < len; i++) {
+                TYPE_TO_PROP[TYPE_TRANSLATION[i].text] = TYPE_TRANSLATION[i].prop;
+                TYPE_TO_STRING[TYPE_TRANSLATION[i].prop] = TYPE_TRANSLATION[i].text;
+            }
+        }
 
         open_startup_db.$inject = ['PreferenceService', 'GeocacheService', 'DbService', 'LoggingService', 'ERROR']
         function open_startup_db (PreferenceService, GeocacheService, DbService, LoggingService, ERROR) {
