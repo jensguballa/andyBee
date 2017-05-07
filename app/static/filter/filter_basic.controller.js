@@ -59,10 +59,10 @@
             filter_atoms = [];
             atom = {}
             if (is_diff_applicable()) {
-                filter_atoms.push({name: "difficulty", op: vm.diff_op, val: vm.diff_val});
+                filter_atoms.push({name: "difficulty", op: vm.diff_op, value: vm.diff_val});
             }
             if (is_terr_applicable()) {
-                filter_atoms.push({name: "terrain", op: vm.terr_op, val: vm.terr_val});
+                filter_atoms.push({name: "terrain", op: vm.terr_op, value: vm.terr_val});
             }
             if (vm.type_active) {
                 var vals = [];
@@ -72,7 +72,7 @@
                     }
                 }
                 if (vals.length) {
-                    filter_atoms.push({name: "type", op: "set", val: vals.join(',')});
+                    filter_atoms.push({name: "type", op: "set", value: vals.join(',')});
                 }
             }
             $uibModalInstance.close(filter_atoms);
@@ -104,18 +104,18 @@
         function map_diff_to_vm (filter_atom) {
             vm.diff_active = true;
             vm.diff_op = filter_atom.op;
-            vm.diff_val = filter_atom.val;
+            vm.diff_val = filter_atom.value;
         }
 
         function map_terr_to_vm (filter_atom) {
             vm.terr_active = true;
             vm.terr_op = filter_atom.op;
-            vm.terr_val = filter_atom.val;
+            vm.terr_val = filter_atom.value;
         }
 
         function map_type_to_vm (filter_atom) {
             vm.type_active = true;
-            var types = filter_atom.val.split(',');
+            var types = filter_atom.value.split(',');
             for (var i = 0, len = types.length; i < len; i++) {
                 vm.type[TYPE_TO_PROP[types[i]]] = true;
             }

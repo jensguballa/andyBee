@@ -5,7 +5,7 @@ from app.db import Db
 from app import api, app
 from flask_restful import abort, Resource
 from marshmallow import Schema, fields
-from config_model import ConfigDb, Preferences, Filter
+from config_model import ConfigDb, Preferences, Filter, FilterAtom
 
 from flask import request, jsonify
 
@@ -60,7 +60,7 @@ class FilterAtomSchema(Schema):
     value = fields.String()
 
 class FilterSchema(Schema):
-    id = fields.Integer(required=True)
+    id = fields.Integer()
     sequence = fields.Integer(required=True)
     name = fields.String(required=True)
     filter_atom = fields.List(fields.Nested(FilterAtomSchema))
@@ -71,13 +71,30 @@ class FilterCompleteSchema(Schema):
 class FilterApi(Resource):
 
     def get(self, id):
-        print("DB01:")
-        list = config_db.session.query(Filter).get(id)
+        list = config_db.session.query(Filter).all()
         if list is None:
             list = []
         ret = FilterCompleteSchema().dump({'filter': list})
-        print(ret)
         return ret
+
+    def post(self, id):
+        obj, status_code = json_to_object(FilterSchema())
+        if status_code != 200:
+            return obj, status_code
+        new_filter = Filter()
+        new_filter.name = obj['name']
+        new_filter.sequence = obj['sequence']
+        new_filter.filter_atom = []
+        for filter_atom in obj['filter_atom']:
+            atom = FilterAtom()
+            atom.name = filter_atom['name']
+            atom.op = filter_atom['op']
+            atom.value = filter_atom['value']
+            new_filter.filter_atom.append(atom)
+
+        config_db.session.add(new_filter)
+        config_db.session.commit()
+        return {'id': new_filter.id}
 
 api.add_resource(FilterApi, '/andyBee/api/v1.0/config/<int:id>/filter')
 

@@ -1,0 +1,32 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="manage.dismiss()" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3 class="modal-title" id="modal-title">Manage Filters</h3>
+</div>
+<div class="modal-body">
+
+    <table class="table table-condensed table-bordered table-striped" ng-if="manage.serv.nbr_filters">
+        <tr>
+            <th>Name</th>
+            <th></th>
+        </tr>
+        <tr ng-repeat="row in manage.serv.filter_list">
+            <td ng-if="true">{{row.name}}</td>
+            <td ng-if="true">
+                <button class="btn btn-primary" type="button" ng-click="manage.edit()">Edit</button>
+                <button class="btn btn-primary" type="button" ng-click="manage.delete()">Delete</button>
+            </td>
+        </tr>
+    </table>
+    <div>
+        <label>Create new Filter</label>
+        <div class="form-group form-inline">
+            <input type="text" class="form-control" ng-model="manage.filter_name" placeholder="Name of the Filter">
+            <button class="btn btn-primary" type="button" ng-click="manage.create()">Create</button>
+        </div>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="manage.dismiss()">Close</button>
+</div>
+

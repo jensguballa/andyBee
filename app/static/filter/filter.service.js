@@ -7,13 +7,22 @@
     function FilterService ($resource, LoggingService) {
         var conditions = [];
 
-        var rest = $resource('/andyBee/api/v1.0/config/:id/filter', null, {update: {method: 'PUT'}});
+        var rest = $resource('/andyBee/api/v1.0/config/:id/filter', null, {
+            update: {method: 'PUT'},
+            create: {method: 'POST'}
+        });
         var serv = {
             read_list: read_list,
             apply_basic_filter: apply_basic_filter,
+            create_filter: create_filter,
 
             filter: [],
-            resolve_filter: resolve_filter
+            resolve_filter: resolve_filter,
+            filter_applied: false,
+
+            filter_list: [],
+            nbr_filters: 0
+                
 
         };
 
@@ -42,6 +51,8 @@
             rest.get({id: 1}, on_get_response, on_error);
 
             function on_get_response (result) {
+                serv.filter_list = result.filter;
+                serv.nbr_filters = serv.filter_list.length;
                 if (on_success) {
                     on_success();
                 }
@@ -56,6 +67,26 @@
             }
         }
 
+        function create_filter (filter_name) {
+            rest.create({id: 1}, {
+                name: filter_name,
+                sequence: serv.nbr_filters + 1,
+                filter_atom: serv.filter
+            }, on_create_response, on_create_error);
+
+            function on_create_response (result) {
+                filter_list.push({
+                    name: filter_name,
+                    id: result.id,
+                    sequence: serv.nbr_filters + 1,
+                    filter_atom: angular.copy(serv.filter)
+                });
+                serv.nbr_filters++;
+            }
+
+            function on_create_error (result) {
+            }
+        }
 
         function apply_basic_filter (geocache_list) {
             var conditions = generate_conditions(serv.filter);
@@ -112,11 +143,11 @@
                 });
                 return undefined;
             }
-            return {property: filter_atom.name, func: op_func, value: parseFloat(filter_atom.val)};
+            return {property: filter_atom.name, func: op_func, value: parseFloat(filter_atom.value)};
         }
 
         function type_to_condition (filter_atom) {
-            var types = filter_atom.val.split(',');
+            var types = filter_atom.value.split(',');
             var hash = {};
             for (var i = 0, len = types.length; i < len; i++) {
                 hash[types[i]] = true;

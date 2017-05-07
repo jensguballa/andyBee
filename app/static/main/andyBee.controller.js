@@ -20,6 +20,7 @@ angular
         vm.import_gpx_dialog = import_gpx_dialog;
         vm.pref_dialog = pref_dialog;
         vm.basic_filter_dialog = basic_filter_dialog;
+        vm.manage_filter_dialog = manage_filter_dialog;
 
         ////////////////
 
@@ -109,7 +110,23 @@ angular
             function on_dialog_ok (filter_atoms) {
                 FilterService.filter = filter_atoms;
                 GeocacheService.on_filter_changed();
-//                var list = FilterService.apply_basic_filter(GeocacheService.geocache_list);
+            }
+
+        }
+
+        function manage_filter_dialog () {
+            FilterService.read_list(on_read_response);
+
+            function on_read_response(resp) {
+                $uibModal.open({
+                    animation: false,
+                    controller: 'ManageFilterCtrl',
+                    controllerAs: "manage",
+                    templateUrl: '/static/filter/manage.html',
+                }).result.then(on_dialog_ok, function(){});
+            }
+
+            function on_dialog_ok () {
             }
 
         }
