@@ -7,8 +7,9 @@
     function FilterService ($resource, LoggingService) {
         var conditions = [];
 
-        var rest = $resource('/andyBee/api/v1.0/config/:id', null, {update: {method: 'PUT'}});
+        var rest = $resource('/andyBee/api/v1.0/config/:id/filter', null, {update: {method: 'PUT'}});
         var serv = {
+            read_list: read_list,
             apply_basic_filter: apply_basic_filter,
 
             filter: [],
@@ -35,6 +36,26 @@
         function resolve_filter () {
             return serv.filter;
         }
+
+        function read_list(on_success, on_error) {
+            on_error = on_error || on_get_error;
+            rest.get({id: 1}, on_get_response, on_error);
+
+            function on_get_response (result) {
+                if (on_success) {
+                    on_success();
+                }
+            }
+
+            function on_get_error (result) {
+                LoggingService.log({
+                    msg: ERROR.FAILURE_FILTER_FROM_SERVER, 
+                    http_response: result,
+                    modal: true
+                });
+            }
+        }
+
 
         function apply_basic_filter (geocache_list) {
             var conditions = generate_conditions(serv.filter);

@@ -92,16 +92,19 @@ angular
         }
 
         function basic_filter_dialog () {
+            FilterService.read_list(on_read_response);
 
-            $uibModal.open({
-                animation: false,
-                controller: 'BasicFilterCtrl',
-                controllerAs: "basic",
-                templateUrl: '/static/filter/basic.html',
-                resolve: {
-                    filter_atoms: FilterService.resolve_filter
-                }
-            }).result.then(on_dialog_ok, function(){});
+            function on_read_response(resp) {
+                $uibModal.open({
+                    animation: false,
+                    controller: 'BasicFilterCtrl',
+                    controllerAs: "basic",
+                    templateUrl: '/static/filter/basic.html',
+                    resolve: {
+                        filter_atoms: FilterService.resolve_filter
+                    }
+                }).result.then(on_dialog_ok, function(){});
+            }
 
             function on_dialog_ok (filter_atoms) {
                 FilterService.filter = filter_atoms;
