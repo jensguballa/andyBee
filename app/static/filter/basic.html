@@ -4,7 +4,21 @@
 </div>
 <div class="modal-body">
 
-    <uib-accordion is-disabled>
+    <div class="container-fluid">
+        <div class="form-group pull-left" ng-if="basic.show_name" >
+            <label>Filter Name</label>
+            <input type="text" class="form-control" ng-model="basic.name" placeholder="Name of the Filter">
+        </div>
+        <div class="form-group pull-right">
+            <label>Use settings from</label>
+            <select class="form-control" ng-model="basic.select" ng-change="basic.load_filter(basic.select)">
+                <option ng-repeat="file in basic.filter_list" value="{{file.id}}">{{file.name}}</option>
+            </select>
+        </div>
+    </div>
+    
+
+    <uib-accordion>
         <div uib-accordion-group class="panel-default">
             <uib-accordion-heading><span ng-class="{'bold': basic.changed_0}">Difficulty, Terrain, Type</span></uib-accordion-heading>
             <div class="row">

@@ -16,11 +16,15 @@ angular
                 }, 300);
             });
         }
+
+        vm.filter = FilterService;
+
         vm.open_db_dialog = open_db_dialog;
         vm.import_gpx_dialog = import_gpx_dialog;
         vm.pref_dialog = pref_dialog;
         vm.basic_filter_dialog = basic_filter_dialog;
         vm.manage_filter_dialog = manage_filter_dialog;
+        vm.apply_filter = apply_filter;
 
         ////////////////
 
@@ -102,13 +106,13 @@ angular
                     controllerAs: "basic",
                     templateUrl: '/static/filter/basic.html',
                     resolve: {
-                        filter_atoms: FilterService.resolve_filter
+                        filter: FilterService.resolve_filter
                     }
                 }).result.then(on_dialog_ok, function(){});
             }
 
-            function on_dialog_ok (filter_atoms) {
-                FilterService.filter = filter_atoms;
+            function on_dialog_ok (filter) {
+                FilterService.filter = filter;
                 GeocacheService.on_filter_changed();
             }
 
@@ -129,6 +133,11 @@ angular
             function on_dialog_ok () {
             }
 
+        }
+
+        function apply_filter (idx) {
+            FilterService.filter = FilterService.filter_list[idx];
+            GeocacheService.on_filter_changed();
         }
         ////////////////
 

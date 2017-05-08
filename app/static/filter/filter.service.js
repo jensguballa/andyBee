@@ -16,9 +16,15 @@
             apply_basic_filter: apply_basic_filter,
             create_filter: create_filter,
 
-            filter: [],
+            filter: {
+                name: "",
+                id:-1,
+                sequence: -1,
+                filter_atom: []
+            },
             resolve_filter: resolve_filter,
             filter_applied: false,
+            filter_name: "",
 
             filter_list: [],
             nbr_filters: 0
@@ -89,7 +95,7 @@
         }
 
         function apply_basic_filter (geocache_list) {
-            var conditions = generate_conditions(serv.filter);
+            var conditions = generate_conditions(serv.filter.filter_atom);
             if (conditions.length == 0) {
                 // nothing to filter
                 return geocache_list;
@@ -108,8 +114,8 @@
                     filtered_list.push(geocache);
                 }
             }
+            serv.filter_applied = true;
             return filtered_list;
-
         }
 
 

@@ -5,7 +5,8 @@
             $logProvider.debugEnabled(false);
         })
         .run(init_geocache_type)
-        .run(open_startup_db);
+        .run(open_startup_db)
+        .run(get_filter_list);
 
         init_geocache_type.$inject = ['TYPE_TRANSLATION', 'TYPE_TO_PROP', 'TYPE_TO_STRING'];
         function init_geocache_type (TYPE_TRANSLATION, TYPE_TO_PROP, TYPE_TO_STRING) {
@@ -55,6 +56,11 @@
                     type: 'warning'
                 });
             }
+        }
+
+        get_filter_list.$inject = ['FilterService']
+        function get_filter_list(FilterService) {
+            FilterService.read_list();
         }
 
 })();

@@ -74,7 +74,8 @@
 </div>
 
 <div id="statusbar" class="statusbar pull-left text-muted container">
-    DB: {{ app.geocache.db_name|angular }}, Geocaches: {{ app.geocache.nbr_caches|angular }}
+    DB: {{ app.geocache.db_name|angular }}, Geocaches: <span class="badge">{{ app.geocache.nbr_caches|angular }}</span>
+    <span class="bg-danger" ng-if="app.filter.filter_applied">Applied Filter: {{app.filter.filter.name|angular}} Number of selected Geocaches: <span class="badge">{{app.geocache.geocache_list.length|angular}}</span></span>
 </div>
 {% endblock %}
 

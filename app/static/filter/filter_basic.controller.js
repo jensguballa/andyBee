@@ -3,35 +3,19 @@
         .module('andyBeeApp')
         .controller('BasicFilterCtrl', BasicFilterCtrl);
 
-    BasicFilterCtrl.$inject = ['$uibModalInstance', 'filter_atoms', 'TYPE_TRANSLATION', 'TYPE_TO_PROP'];
-    function BasicFilterCtrl($uibModalInstance, filter_atoms, TYPE_TRANSLATION, TYPE_TO_PROP) {
+    BasicFilterCtrl.$inject = ['$uibModalInstance', 'FilterService', 'filter', 'TYPE_TRANSLATION', 'TYPE_TO_PROP'];
+    function BasicFilterCtrl($uibModalInstance, FilterService, filter, TYPE_TRANSLATION, TYPE_TO_PROP) {
         var vm = this;
 
         // modal controls
         vm.dismiss = dismiss_modal;
         vm.close = close_modal;
+        vm.load_filter = load_filter;
 
-        // difficulty
-        vm.diff_active = false;
-        vm.diff_op = "ge";
-        vm.diff_val = "1";
-
-        // terrain
-        vm.terr_active = false;
-        vm.terr_op = "ge";
-        vm.terr_val = "1";
-
-        // geocache tyoe
-        vm.type_active = false;
-        vm.type = {};
-        for (var i = 0, len = TYPE_TRANSLATION.length; i < len; i++) {
-            vm.type[TYPE_TRANSLATION[i].prop] = false;
-        }
-
-        // accordion[0] changed? (diff, terr, type)
-        vm.changed_0 = false;
         vm.on_changed_0 = on_changed_0
 
+        vm.filter_list = [];
+        vm.select = -1;
 
         var atom_to_vm_map = {
             difficulty: map_diff_to_vm,
@@ -39,16 +23,17 @@
             type: map_type_to_vm,
         }
 
-        // map the filter to the vm
-        for (var i = 0, len = filter_atoms.length; i < len; i++) {
-            var filter_atom = filter_atoms[i];
-            var func = atom_to_vm_map[filter_atom.name];
-            if (func) {
-                func(filter_atom);
-            }
-            on_changed_0();
-        }
+        filter_to_vm(filter);
+        vm.name = filter.name;
+        vm.show_name = (vm.name != "");
 
+        for (var i = 0, len = FilterService.filter_list.length; i < len; i++) {
+            var filt = FilterService.filter_list[i];
+            if (filt.name != filter.name) {
+                vm.filter_list.push({id: i, name: filt.name});
+            }
+        }
+        
         /////////// functions
 
         function dismiss_modal () {
@@ -56,13 +41,16 @@
         };
 
         function close_modal () {
-            filter_atoms = [];
-            atom = {}
+            var ret_filter = {
+                name: vm.name,
+                id: vm.id,
+                filter_atom: []
+            };
             if (is_diff_applicable()) {
-                filter_atoms.push({name: "difficulty", op: vm.diff_op, value: vm.diff_val});
+                ret_filter.filter_atom.push({name: "difficulty", op: vm.diff_op, value: vm.diff_val});
             }
             if (is_terr_applicable()) {
-                filter_atoms.push({name: "terrain", op: vm.terr_op, value: vm.terr_val});
+                ret_filter.filter_atom.push({name: "terrain", op: vm.terr_op, value: vm.terr_val});
             }
             if (vm.type_active) {
                 var vals = [];
@@ -72,11 +60,56 @@
                     }
                 }
                 if (vals.length) {
-                    filter_atoms.push({name: "type", op: "set", value: vals.join(',')});
+                    ret_filter.filter_atom.push({name: "type", op: "set", value: vals.join(',')});
                 }
             }
-            $uibModalInstance.close(filter_atoms);
+            $uibModalInstance.close(ret_filter);
         };
+
+        function load_filter (id) {
+            filter_to_vm(FilterService.filter_list[id]);
+        }
+
+        function init_vm () {
+            vm.name = "";
+            vm.show_name = false;
+            vm.id = -1;
+
+            // difficulty
+            vm.diff_active = false;
+            vm.diff_op = "ge";
+            vm.diff_val = "1";
+
+            // terrain
+            vm.terr_active = false;
+            vm.terr_op = "ge";
+            vm.terr_val = "1";
+
+            // geocache tyoe
+            vm.type_active = false;
+            vm.type = {};
+            for (var i = 0, len = TYPE_TRANSLATION.length; i < len; i++) {
+                vm.type[TYPE_TRANSLATION[i].prop] = false;
+            }
+
+            // accordion[0] changed? (diff, terr, type)
+            vm.changed_0 = false;
+        }
+
+        // map the filter to the vm
+        function filter_to_vm (filter) {
+            init_vm();
+            vm.id = filter.id;
+
+            for (var i = 0, len = filter.filter_atom.length; i < len; i++) {
+                var filter_atom = filter.filter_atom[i];
+                var func = atom_to_vm_map[filter_atom.name];
+                if (func) {
+                    func(filter_atom);
+                }
+            }
+            on_changed_0();
+        }
 
         function is_terr_applicable () {
             return vm.terr_active && ((vm.terr_op != "ge") || (vm.terr_val != "1"))
