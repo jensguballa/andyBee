@@ -43,7 +43,8 @@
         function close_modal () {
             var ret_filter = {
                 name: vm.name,
-                id: vm.id,
+                id: filter.id,
+                sequence: filter.sequence,
                 filter_atom: []
             };
             if (is_diff_applicable()) {
@@ -71,9 +72,6 @@
         }
 
         function init_vm () {
-            vm.name = "";
-            vm.show_name = false;
-            vm.id = -1;
 
             // difficulty
             vm.diff_active = false;

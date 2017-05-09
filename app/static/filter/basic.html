@@ -9,7 +9,7 @@
             <label>Filter Name</label>
             <input type="text" class="form-control" ng-model="basic.name" placeholder="Name of the Filter">
         </div>
-        <div class="form-group pull-right">
+        <div class="form-group pull-right" ng-if="basic.filter_list.length">
             <label>Use settings from</label>
             <select class="form-control" ng-model="basic.select" ng-change="basic.load_filter(basic.select)">
                 <option ng-repeat="file in basic.filter_list" value="{{file.id}}">{{file.name}}</option>

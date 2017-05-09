@@ -65,8 +65,11 @@ class FilterSchema(Schema):
     name = fields.String(required=True)
     filter_atom = fields.List(fields.Nested(FilterAtomSchema))
 
-class FilterCompleteSchema(Schema):
+class FilterListSchema(Schema):
     filter = fields.List(fields.Nested(FilterSchema), required=True)
+
+class FilterSingleSchema(Schema):
+    filter = fields.Nested(FilterSchema, required=True)
 
 class FilterListApi(Resource):
 
@@ -74,7 +77,7 @@ class FilterListApi(Resource):
         list = config_db.session.query(Filter).all()
         if list is None:
             list = []
-        ret = FilterCompleteSchema().dump({'filter': list})
+        ret = FilterListSchema().dump({'filter': list})
         return ret
 
     def post(self, id):
@@ -102,8 +105,28 @@ class FilterApi(Resource):
 
     def delete(self, id, filter_id):
         config_db.session.query(Filter).filter(Filter.id == filter_id).delete()
+        config_db.session.query(FilterAtom).filter(FilterAtom.filter_id == filter_id).delete()
         config_db.session.commit()
         return {}
+
+    def put(self, id, filter_id):
+        obj, status_code = json_to_object(FilterSingleSchema())
+        if status_code != 200:
+            return obj, status_code
+        req = obj['filter']
+        filt = config_db.session.query(Filter).get(filter_id)
+        filt.name = req['name']
+        config_db.session.query(FilterAtom).filter(FilterAtom.filter_id == filter_id).delete()
+        filt.filter_atom = []
+        for atom in obj['filter']['filter_atom']:
+            filt_atom = FilterAtom()
+            filt_atom.name = atom['name']
+            filt_atom.op = atom['op']
+            filt_atom.value = atom['value']
+            filt.filter_atom.append(filt_atom)
+        config_db.session.commit()
+        return {}
+
 
 api.add_resource(FilterApi, '/andyBee/api/v1.0/config/<int:id>/filter/<int:filter_id>')
 

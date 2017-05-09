@@ -3,8 +3,8 @@
         .module('andyBeeApp')
         .factory('FilterService', FilterService);
 
-    FilterService.$inject = ['$resource', 'LoggingService', 'ERROR'];
-    function FilterService ($resource, LoggingService, ERROR) {
+    FilterService.$inject = ['$resource', '$uibModal', 'LoggingService', 'ERROR'];
+    function FilterService ($resource, $uibModal, LoggingService, ERROR) {
         var conditions = [];
 
         var rest = $resource('/andyBee/api/v1.0/config/:id/filter/:filter_id', null, {
@@ -16,6 +16,7 @@
             apply_basic_filter: apply_basic_filter,
             create_filter: create_filter,
             delete_filter: delete_filter,
+            edit_filter: edit_filter,
 
             filter: {
                 name: "",
@@ -74,24 +75,33 @@
             }
         }
 
-        function create_filter (filter_name) {
+        function create_filter (filter_name, on_success, on_error) {
+            on_error = on_error || on_create_error;
             rest.create({id: 1}, {
                 name: filter_name,
                 sequence: serv.nbr_filters + 1,
-                filter_atom: serv.filter
+                filter_atom: serv.filter.filter_atom
             }, on_create_response, on_create_error);
 
             function on_create_response (result) {
-                filter_list.push({
+                serv.filter_list.push({
                     name: filter_name,
                     id: result.id,
                     sequence: serv.nbr_filters + 1,
                     filter_atom: angular.copy(serv.filter)
                 });
                 serv.nbr_filters++;
+                if (on_success) {
+                    on_success();
+                }
             }
 
             function on_create_error (result) {
+                LoggingService.log({
+                    msg: ERROR.FAILURE_CREATE_FILTER_ON_SERVER, 
+                    http_response: result,
+                    modal: true
+                });
             }
         }
 
@@ -112,6 +122,38 @@
                     http_response: result,
                     modal: true
                 });
+            }
+        }
+
+        function edit_filter (idx) {
+            $uibModal.open({
+                animation: false,
+                controller: 'BasicFilterCtrl',
+                controllerAs: "basic",
+                templateUrl: '/static/filter/basic.html',
+                resolve: {
+                    filter: resolve_filter_idx
+                }
+            }).result.then(on_dialog_ok, function(){});
+
+            function resolve_filter_idx () {
+                return serv.filter_list[idx];
+            }
+
+            function on_dialog_ok (filter) {
+                rest.update({id:1, filter_id: filter.id}, {filter: filter}, on_update_result, on_update_error);
+
+                function on_update_result (result) {
+                    serv.filter_list[idx] = filter;
+                }
+
+                function on_update_error (result) {
+                    LoggingService.log({
+                        msg: ERROR.FAILURE_UPDATE_FILTER_ON_SERVER, 
+                        http_response: result,
+                        modal: true
+                    });
+                }
             }
         }
 
