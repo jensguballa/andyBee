@@ -68,7 +68,7 @@ class FilterSchema(Schema):
 class FilterCompleteSchema(Schema):
     filter = fields.List(fields.Nested(FilterSchema), required=True)
 
-class FilterApi(Resource):
+class FilterListApi(Resource):
 
     def get(self, id):
         list = config_db.session.query(Filter).all()
@@ -96,8 +96,16 @@ class FilterApi(Resource):
         config_db.session.commit()
         return {'id': new_filter.id}
 
-api.add_resource(FilterApi, '/andyBee/api/v1.0/config/<int:id>/filter')
+api.add_resource(FilterListApi, '/andyBee/api/v1.0/config/<int:id>/filter')
 
+class FilterApi(Resource):
+
+    def delete(self, id, filter_id):
+        config_db.session.query(Filter).filter(Filter.id == filter_id).delete()
+        config_db.session.commit()
+        return {}
+
+api.add_resource(FilterApi, '/andyBee/api/v1.0/config/<int:id>/filter/<int:filter_id>')
 
 
 def init():

@@ -12,8 +12,8 @@
         <tr ng-repeat="row in manage.serv.filter_list">
             <td ng-if="true">{{row.name}}</td>
             <td ng-if="true">
-                <button class="btn btn-primary" type="button" ng-click="manage.edit()">Edit</button>
-                <button class="btn btn-primary" type="button" ng-click="manage.delete()">Delete</button>
+                <button class="btn btn-primary" type="button" ng-click="manage.edit_filter($index)">Edit</button>
+                <button class="btn btn-primary" type="button" ng-click="manage.delete_filter($index)">Delete</button>
             </td>
         </tr>
     </table>

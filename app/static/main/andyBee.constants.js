@@ -24,6 +24,10 @@
            
             // related to a single geocache
             FAILURE_GEOCACHE_FROM_SERVER:      'Cannot retrieve the details for the selected geocache from the server.',
+
+            // related to filter
+            FAILURE_FILTER_FROM_SERVER:        'Cannot retrieve the list of filter from the server.',
+            FAILURE_DELETE_FILTER_FROM_SERVER: 'Cannot delete the filter on the server.',
         }) 
         .constant('TYPE_TRANSLATION', [
             {prop: 'tradi',     text: 'Traditional Cache'},                      

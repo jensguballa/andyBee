@@ -23,9 +23,9 @@
             type: map_type_to_vm,
         }
 
-        filter_to_vm(filter);
         vm.name = filter.name;
         vm.show_name = (vm.name != "");
+        filter_to_vm(filter.filter_atom);
 
         for (var i = 0, len = FilterService.filter_list.length; i < len; i++) {
             var filt = FilterService.filter_list[i];
@@ -67,7 +67,7 @@
         };
 
         function load_filter (id) {
-            filter_to_vm(FilterService.filter_list[id]);
+            filter_to_vm(FilterService.filter_list[id].filter_atom);
         }
 
         function init_vm () {
@@ -97,15 +97,14 @@
         }
 
         // map the filter to the vm
-        function filter_to_vm (filter) {
+        function filter_to_vm (filter_atom) {
             init_vm();
-            vm.id = filter.id;
 
-            for (var i = 0, len = filter.filter_atom.length; i < len; i++) {
-                var filter_atom = filter.filter_atom[i];
-                var func = atom_to_vm_map[filter_atom.name];
+            for (var i = 0, len = filter_atom.length; i < len; i++) {
+                var atom = filter_atom[i];
+                var func = atom_to_vm_map[atom.name];
                 if (func) {
-                    func(filter_atom);
+                    func(atom);
                 }
             }
             on_changed_0();

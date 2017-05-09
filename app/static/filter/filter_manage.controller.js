@@ -8,7 +8,8 @@
         var vm = this;
         vm.serv = FilterService;
         vm.dismiss = dismiss_modal;
-        vm.create = create_filter;
+        vm.create_filter = create_filter;
+        vm.delete_filter = delete_filter;
 
         vm.filter_name = "";
 
@@ -21,6 +22,10 @@
 
         function create_filter() {
             FilterService.create_filter(vm.filter_name);
+        }
+
+        function delete_filter(idx) {
+            FilterService.delete_filter(idx);
         }
 
     }

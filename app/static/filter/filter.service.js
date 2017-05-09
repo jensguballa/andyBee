@@ -3,11 +3,11 @@
         .module('andyBeeApp')
         .factory('FilterService', FilterService);
 
-    FilterService.$inject = ['$resource', 'LoggingService'];
-    function FilterService ($resource, LoggingService) {
+    FilterService.$inject = ['$resource', 'LoggingService', 'ERROR'];
+    function FilterService ($resource, LoggingService, ERROR) {
         var conditions = [];
 
-        var rest = $resource('/andyBee/api/v1.0/config/:id/filter', null, {
+        var rest = $resource('/andyBee/api/v1.0/config/:id/filter/:filter_id', null, {
             update: {method: 'PUT'},
             create: {method: 'POST'}
         });
@@ -15,6 +15,7 @@
             read_list: read_list,
             apply_basic_filter: apply_basic_filter,
             create_filter: create_filter,
+            delete_filter: delete_filter,
 
             filter: {
                 name: "",
@@ -93,6 +94,27 @@
             function on_create_error (result) {
             }
         }
+
+        function delete_filter(idx, on_success, on_error) {
+            on_error = on_error || on_delete_error;
+            rest.delete({id: 1, filter_id: serv.filter_list[idx].id}, on_delete_response, on_error);
+
+            function on_delete_response (result) {
+                serv.filter_list.splice(idx,1);
+                if (on_success) {
+                    on_success();
+                }
+            }
+
+            function on_delete_error (result) {
+                LoggingService.log({
+                    msg: ERROR.FAILURE_DELETE_FILTER_FROM_SERVER, 
+                    http_response: result,
+                    modal: true
+                });
+            }
+        }
+
 
         function apply_basic_filter (geocache_list) {
             var conditions = generate_conditions(serv.filter.filter_atom);
