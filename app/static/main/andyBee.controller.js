@@ -1,7 +1,9 @@
 (function () {
-angular
-    .module('andyBeeApp')
-    .controller('andyBeeCtrl', andyBeeCtrl);
+    'use strict';
+
+    angular
+        .module('andyBeeApp')
+        .controller('andyBeeCtrl', andyBeeCtrl);
             
     andyBeeCtrl.$inject = ['$uibModal', '$timeout', 'ERROR', 'GeocacheService', 'GpxService', 'PreferenceService', 'DbService', 'LoggingService', 'FilterService', 'leafletData'];
     function andyBeeCtrl ($uibModal, $timeout, ERROR, GeocacheService, GpxService, PreferenceService, DbService, LoggingService, FilterService, leafletData) {

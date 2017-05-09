@@ -1,8 +1,10 @@
 (function () {
-angular
-    .module('andyBeeApp')
-    .directive('convertToNumber', convertToNumber)
-    .directive('fileModel', fileModel);
+    'use strict';
+
+    angular
+        .module('andyBeeApp')
+        .directive('convertToNumber', convertToNumber)
+        .directive('fileModel', fileModel);
             
     function convertToNumber () {
         return {

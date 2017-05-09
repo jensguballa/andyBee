@@ -1,4 +1,6 @@
 (function () {
+    'use strict';
+
 angular
     .module('andyBeeApp')
 //    .filter('to_trusted', to_trusted); 
