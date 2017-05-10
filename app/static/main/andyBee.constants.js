@@ -15,6 +15,7 @@
 
             // related to GPX import
             FAILURE_GPX_IMPORT:                'Failure occured when trying to import a GPX file.',    
+            FAILURE_GPX_EXPORT:                'Failure occured when trying to export to a GPX file.', 
                                                                                                        
             // related to preferences                                                                  
             FAILURE_PREFERENCES_FROM_SERVER:   'Cannot retrieve preferences from the server.',         

@@ -5,22 +5,73 @@
         .module('andyBeeApp')
         .factory('GpxService', GpxService);
 
-    GpxService.$inject = ['$resource', 'GeocacheService', 'LoggingService'];
-    function GpxService ($resource, GeocacheService, LoggingService) {
-        var rest = $resource('/andyBee/api/v1.0/db/:db_name/gpx_import', null, {
+    GpxService.$inject = ['$resource', '$filter', 'GeocacheService', 'LoggingService'];
+    function GpxService ($resource, $filter, GeocacheService, LoggingService) {
+        var rest_import = $resource('/andyBee/api/v1.0/db/:db_name/gpx_import', null, {
             import_gpx: {
                 method: 'POST',
                 transformRequest: formDataObject,
                 headers: {'Content-Type': undefined}
             }
         });
+        var rest_export = $resource('/andyBee/api/v1.0/db/:db_name/gpx_export', null, {
+            export_gpx: {
+                method: 'POST'
+            }
+        });
+
         var serv = {
-            import_gpx: import_gpx
+            import_gpx: import_gpx,
+            export_gpx: export_gpx
         };
         return serv;
 
-        function import_gpx (data) {
-            rest.import_gpx({db_name: GeocacheService.db_name}, data, function(){}, LoggingService.log_RESTful_error);
+        function import_gpx (data, on_success, on_error) {
+            on_error = on_error || on_import_error;
+            rest_import.import_gpx({db_name: GeocacheService.db_name}, data, 
+                    on_import_result, on_error);
+
+            function on_import_result(result) {
+                if (on_success) {
+                    on_success();
+                }
+            }
+
+            function on_import_error(result) {
+                LoggingService.log({
+                    msg: ERROR.FAILURE_GPX_IMPORT, 
+                    http_response: result,
+                    modal: true,
+                });
+            }
+        }
+
+        function export_gpx(data, on_success, on_error) {
+            on_error = on_error || on_export_error;
+            // let's start with no more than 1000 geocaches
+            // sort order: always by distance
+            var sorted = $filter('orderBy')(GeocacheService.geocache_list, "distance");
+            var export_list = [];
+            for (var i = 0, len = Math.min(GeocacheService.geocache_list.length, 1000); i < len; i++) {
+                export_list.push(GeocacheService.geocache_list[i].id);
+            }
+            rest_export.export_gpx({db_name: GeocacheService.db_name}, {list: export_list},
+                    on_export_result, on_error);
+
+            function on_export_result(result) {
+                if (on_success) {
+                    on_success();
+                }
+            }
+
+            function on_export_error(result) {
+                LoggingService.log({
+                    msg: ERROR.FAILURE_GPX_EXPORT, 
+                    http_response: result,
+                    modal: true,
+                });
+            }
+
         }
     }
 
