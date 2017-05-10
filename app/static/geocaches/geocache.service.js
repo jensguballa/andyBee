@@ -54,6 +54,12 @@
                 PreferenceService.update_used_db(db_name);
                 serv.nbr_caches = result.nbr_caches;
                 geocache_list_unfiltered = result.geocaches;
+                var reference_point = L.latLng(49.0, 9.0);
+                for (var i = 0, len = geocache_list_unfiltered.length; i < len; i++) {
+                    var geocache = geocache_list_unfiltered[i];
+                    geocache.point = L.latLng(geocache.lat, geocache.lon);
+                    geocache.distance = geocache.point.distanceTo(reference_point);
+                }
                 serv.geocache_list = FilterService.apply_basic_filter(result.geocaches);
                 $rootScope.$broadcast('geocaches_updated');
                 if (success_cb) {

@@ -8,6 +8,7 @@
                     <button type="button" class="btn btn-default" ng-click="geolist.show_details(row.id)" title="Show geocache on map"><span class="glyphicon glyphicon glyphicon-map-marker" aria-hidden="true"></span></button>
                 </div>
             </td>
+            <td ng-if="true">{{"{{row.distance|km}}"}}</td>
             <td ng-if="true">{{row.difficulty|angular}}</td>
             <td ng-if="true">{{row.terrain|angular}}</td>
             <td ng-if="true">{{row.title|angular}}</td>

@@ -27,6 +27,7 @@
         ];
         vm.cols = [
             {field: "gc_id",      title: "Cache",     sortable: "gc_id"     , filter: {gc_id: "text"}},
+            {field: "distance",   title: "Distance (km)",  sortable: "distance"  },
             {field: "difficulty", title: "D",         sortable: "difficulty", filter: {difficulty: "select"}, filterData: rating},
             {field: "terrain",    title: "T",         sortable: "terrain"   , filter: {terrain: "select"},    filterData: rating},
             {field: "title",      title: "Title",     sortable: "title"     , filter: {title: "text"}},

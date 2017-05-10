@@ -2,11 +2,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 class Db():
-    def __init__(self, base, uri=None):
+    def __init__(self, base, uri=None, app=None):
         self.session = None
         self.base = base
         self._uri = uri
         self.engine = None
+        self.echo = False
+        if app:
+            self.echo = app.config['SQLALCHEMY_ECHO']
 
         if uri is not None:
             self.set_uri(uri)
@@ -16,7 +19,7 @@ class Db():
         if self.session:
             self.session.commit()
         self._uri = uri
-        self.engine = create_engine(uri, echo=True)
+        self.engine = create_engine(uri, echo=self.echo)
         self.session = scoped_session(sessionmaker(autocommit=False,
             autoflush=False,
             bind=self.engine))

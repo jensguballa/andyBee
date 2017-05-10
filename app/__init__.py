@@ -11,7 +11,7 @@ api = Api(app)
 
 from app.geocache_model import GeocacheDb 
 from app.db import Db
-geocache_db = Db(GeocacheDb)
+geocache_db = Db(GeocacheDb, app=app)
 
 
 from flask_bootstrap import Bootstrap
