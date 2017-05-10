@@ -189,7 +189,7 @@
             var conditions = [];
             for (var i = 0, len = filter_atoms.length; i < len; i++) {
                 var filter_atom = filter_atoms[i];
-                func = atom_to_condition_map[filter_atoms[i].name];
+                var func = atom_to_condition_map[filter_atoms[i].name];
                 if (func) {
                     var condition = func(filter_atom);
                     if (condition) {

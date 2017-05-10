@@ -23,6 +23,7 @@
 
         vm.open_db_dialog = open_db_dialog;
         vm.import_gpx_dialog = import_gpx_dialog;
+        vm.export_gpx_dialog = export_gpx_dialog;
         vm.pref_dialog = pref_dialog;
         vm.basic_filter_dialog = basic_filter_dialog;
         vm.manage_filter_dialog = manage_filter_dialog;
@@ -97,6 +98,31 @@
                 });
             }
         }
+
+        function export_gpx_dialog () {
+            if (!vm.geocache.db_name) {
+                return;
+            }
+            $uibModal.open({
+                animation: false,
+                controller: 'GpxExportCtrl',
+                controllerAs: "export",
+                templateUrl: '/static/gpx/export.html',
+            }).result.then(on_export_gpx_ok, on_gpx_export_error);
+
+            function on_export_gpx_ok (data) {
+                GpxService.export_gpx(data);
+            }
+
+            function on_gpx_export_error (result) {
+                LoggingService.log({
+                    msg: ERROR.FAILURE_GPX_EXPORT, 
+                    http_response: result,
+                    modal: true,
+                });
+            }
+        }
+
 
         function basic_filter_dialog () {
             FilterService.read_list(on_read_response);
