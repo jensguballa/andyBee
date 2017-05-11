@@ -6,7 +6,15 @@
 <div class="modal-body">
     <div class="form-group">
         <label>File Name</label>
-        <input type="text" class="form-control" ng-model="export.file_name" placeholder="Name of the Filter">
+        <input type="text" class="form-control" ng-model="export.data.file_name" placeholder="Name of the Filter">
+    </div>    
+    <div class="form-group">
+        <label>Maximum Number of Logs per Geocache</label>
+        <input type="text" class="form-control" ng-model="export.data.max_logs" placeholder="Number" convert-to-number>
+    </div>    
+    <div class="form-group">
+        <label>Include Waypoints into GPX-File</label>
+        <div><input type="checkbox" ng-model="export.data.waypoints"></div>
     </div>    
 </div>
 <div class="modal-footer">

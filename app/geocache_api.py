@@ -1,4 +1,4 @@
-import os.path, json
+import os.path, json, io
 import werkzeug
 from flask_restful import Resource, reqparse, request
 from app import app, api, geocache_db
@@ -7,6 +7,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import joinedload, noload, subqueryload
 from gpx import import_gpx
 from geocache_model import Cache
+from flask import send_from_directory, send_file, Response, make_response
 
 class DbListSchema(Schema):
     dbs = fields.List(fields.String())
@@ -166,4 +167,14 @@ class GpxImportApi(Resource):
 
 api.add_resource(GpxImportApi, '/andyBee/api/v1.0/db/<string:db_name>/gpx_import')
 
+class GpxExportApi(Resource):
+
+    def post(self, db_name):
+        response = make_response("Hallo Jens")
+        response.headers['Content-Type'] = 'image/jpeg'
+        response.headers['Content-Disposition'] = 'attachment; filename=img.jpg'
+        return response 
+
+
+api.add_resource(GpxExportApi, '/andyBee/api/v1.0/db/<string:db_name>/gpx_export')
 

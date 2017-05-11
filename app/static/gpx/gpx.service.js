@@ -16,7 +16,12 @@
         });
         var rest_export = $resource('/andyBee/api/v1.0/db/:db_name/gpx_export', null, {
             export_gpx: {
-                method: 'POST'
+                method: 'POST',
+                responseType: 'arraybuffer',
+                transformResponse: function(data, headersGetter) {
+                    // Stores the ArrayBuffer object in a property called "data"
+                    return { data : data };
+                }
             }
         });
 
@@ -55,10 +60,13 @@
             for (var i = 0, len = Math.min(GeocacheService.geocache_list.length, 1000); i < len; i++) {
                 export_list.push(GeocacheService.geocache_list[i].id);
             }
-            rest_export.export_gpx({db_name: GeocacheService.db_name}, {list: export_list},
+            data.list = export_list;
+            rest_export.export_gpx({db_name: GeocacheService.db_name}, data,
                     on_export_result, on_error);
 
             function on_export_result(result) {
+                var blob = new Blob([result.data], {type: "image/jpeg"});
+                saveAs(blob, data.file_name);
                 if (on_success) {
                     on_success();
                 }
