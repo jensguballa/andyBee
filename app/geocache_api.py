@@ -5,9 +5,10 @@ from app import app, api, geocache_db
 from marshmallow import Schema, fields
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload, noload, subqueryload
-from gpx import import_gpx
+from gpx import import_gpx, export_gpx
 from geocache_model import Cache
 from flask import send_from_directory, send_file, Response, make_response
+from app.api import json_to_object
 
 class DbListSchema(Schema):
     dbs = fields.List(fields.String())
@@ -97,6 +98,12 @@ class GeocacheListSchema(Schema):
     db_name    = fields.String()
     nbr_caches = fields.Integer()
 
+class GeocacheExportSchema(Schema):
+    file_name   = fields.String()
+    max_logs    = fields.Integer()
+    waypoints   = fields.Boolean()
+    list        = fields.List(fields.Integer())
+
 
 class GeocacheListApi(Resource):
 
@@ -170,9 +177,20 @@ api.add_resource(GpxImportApi, '/andyBee/api/v1.0/db/<string:db_name>/gpx_import
 class GpxExportApi(Resource):
 
     def post(self, db_name):
-        response = make_response("Hallo Jens")
-        response.headers['Content-Type'] = 'image/jpeg'
-        response.headers['Content-Disposition'] = 'attachment; filename=img.jpg'
+        if db_name is None:
+            return {'msg': 'Database name missing.'}, 400 # bad request
+        file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
+        if not os.path.isfile(file_path):
+            return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
+        geocache_db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+
+        obj, status_code = json_to_object(GeocacheExportSchema())
+        if status_code != 200:
+            return obj, status_code
+        print("DB01: ", obj)
+        response = make_response(export_gpx(obj))
+        response.headers['Content-Type'] = 'application/gpx'
+        response.headers['Content-Disposition'] = ('attachment; filename=' + obj['file_name'])
         return response 
 
 

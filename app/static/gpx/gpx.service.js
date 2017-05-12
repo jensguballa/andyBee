@@ -5,8 +5,8 @@
         .module('andyBeeApp')
         .factory('GpxService', GpxService);
 
-    GpxService.$inject = ['$resource', '$filter', 'GeocacheService', 'LoggingService'];
-    function GpxService ($resource, $filter, GeocacheService, LoggingService) {
+    GpxService.$inject = ['$resource', '$filter', 'GeocacheService', 'LoggingService', 'ERROR'];
+    function GpxService ($resource, $filter, GeocacheService, LoggingService, ERROR) {
         var rest_import = $resource('/andyBee/api/v1.0/db/:db_name/gpx_import', null, {
             import_gpx: {
                 method: 'POST',
@@ -65,7 +65,7 @@
                     on_export_result, on_error);
 
             function on_export_result(result) {
-                var blob = new Blob([result.data], {type: "image/jpeg"});
+                var blob = new Blob([result.data], {type: "application/gpx"});
                 saveAs(blob, data.file_name);
                 if (on_success) {
                     on_success();
