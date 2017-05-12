@@ -115,13 +115,7 @@ class GeocacheListApi(Resource):
             return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
         geocache_db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
         data, errors = GeocacheListSchema().dump({
-            'geocaches': geocache_db.session.query(Cache).options(
-                subqueryload(Cache.waypoint), 
-                subqueryload(Cache.owner),
-                subqueryload(Cache.state),
-                joinedload(Cache.country),
-                joinedload(Cache.type),
-                joinedload(Cache.container)),
+            'geocaches': geocache_db.session.query(Cache).all(),
             'db_name': db_name,
             'nbr_caches': geocache_db.session.query(func.count(Cache.id)).scalar()
             })
