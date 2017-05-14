@@ -28,6 +28,7 @@
         vm.basic_filter_dialog = basic_filter_dialog;
         vm.manage_filter_dialog = manage_filter_dialog;
         vm.apply_filter = apply_filter;
+        vm.reset_filter = reset_filter;
 
         ////////////////
 
@@ -167,6 +168,14 @@
             FilterService.filter = FilterService.filter_list[idx];
             GeocacheService.on_filter_changed();
         }
+
+        function reset_filter() {
+            if (FilterService.filter_applied) {
+                FilterService.reset_filter();
+                GeocacheService.on_filter_reset();
+            }
+        }
+
         ////////////////
 
     }

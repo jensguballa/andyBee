@@ -22,7 +22,7 @@
               <a uib-dropdown-toggle href="#">Filter <span class="caret"></span></a>
               <ul class="dropdown-menu" uib-dropdown-menu role="menu">
                 <li ng-class="{'disabled': !app.geocache.db_name}" role="menuitem"><a href="#" ng-click="app.basic_filter_dialog()" title="Create a basic filter">Define Filter ...</a></li>
-                <li ng-class="{'disabled': true}" role="menuitem"><a href="#" title="Clear the current filter">Clear Filter</a></li>
+                <li ng-class="{'disabled': !app.filter.filter_applied}" role="menuitem"><a href="#" ng-click="app.reset_filter()" title="Clear the current filter">Clear Filter</a></li>
                 <li role="menuitem"><a href="#" title="Save and delete filters" ng-click="app.manage_filter_dialog()">Manage Filters ...</a></li>
                 <li class="divider"></li>
                 <p class="navbar-text">Apply Filter:</p>

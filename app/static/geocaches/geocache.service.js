@@ -19,6 +19,7 @@
             db_name: '',
             resolve_db_name: resolve_db_name,
             on_filter_changed: on_filter_changed,
+            on_filter_reset: on_filter_reset,
 
             // stuff related to geocaches within a db
 
@@ -35,6 +36,11 @@
 
         function on_filter_changed() {
             serv.geocache_list = FilterService.apply_basic_filter(geocache_list_unfiltered);
+            $rootScope.$broadcast('geocaches_updated');
+        }
+
+        function on_filter_reset() {
+            serv.geocache_list = geocache_list_unfiltered;
             $rootScope.$broadcast('geocaches_updated');
         }
 

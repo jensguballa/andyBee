@@ -19,6 +19,7 @@
             create_filter: create_filter,
             delete_filter: delete_filter,
             edit_filter: edit_filter,
+            reset_filter: reset_filter,
 
             filter: {
                 name: "",
@@ -159,6 +160,11 @@
             }
         }
 
+        function reset_filter() {
+            serv.filter_applied = false;
+            serv.filter_name = "";
+
+        }
 
         function apply_basic_filter (geocache_list) {
             var conditions = generate_conditions(serv.filter.filter_atom);
