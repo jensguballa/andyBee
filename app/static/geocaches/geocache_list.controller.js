@@ -6,11 +6,13 @@
         .controller('GeocacheListCtrl', GeocacheListCtrl);
 
 
-    GeocacheListCtrl.$inject = ['$scope', 'GeocacheService', 'NgTableParams'];
-    function GeocacheListCtrl($scope, GeocacheService, NgTableParams) {
+    GeocacheListCtrl.$inject = ['$scope', '$filter', 'GeocacheService', 'NgTableParams'];
+    function GeocacheListCtrl($scope, $filter, GeocacheService, NgTableParams) {
         var vm = this;
         vm.cols = [];
-        vm.tableParams = new NgTableParams();
+        vm.tableParams = new NgTableParams({}, {
+            filterOptions: {filterFn: geocache_filter}
+        });
         vm.show_details = show_details;
         vm.show_map = show_map;
 
@@ -38,12 +40,28 @@
             vm.tableParams.settings({dataset: GeocacheService.geocache_list});
         });
 
-        function show_details (id) {
+        function show_details(id) {
             GeocacheService.read(id); // cache detail tab
         }
 
-        function show_map (id) {
+        function show_map(id) {
             GeocacheService.selected_tab = 1; // cache detail tab
+        }
+
+        function geocache_filter(data, filter_values) {
+            var exact_filter = {};
+            if (filter_values.difficulty) {
+                exact_filter.difficulty = filter_values.difficulty;
+                delete filter_values.difficulty;
+            }
+            if (filter_values.terrain) {
+                exact_filter.terrain = filter_values.terrain;
+                delete filter_values.terrain;
+            }
+            if (exact_filter != undefined) {
+                data = $filter('filter')(data, exact_filter, true);
+            }
+            return $filter('filter')(data, filter_values);
         }
     }
 
