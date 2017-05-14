@@ -20,6 +20,7 @@
             resolve_db_name: resolve_db_name,
             on_filter_changed: on_filter_changed,
             on_filter_reset: on_filter_reset,
+            on_reference_changed: on_reference_changed,
 
             // stuff related to geocaches within a db
 
@@ -44,6 +45,20 @@
             $rootScope.$broadcast('geocaches_updated');
         }
 
+        function change_reference(lat, lon) {
+            var reference_point = L.latLng(lat, lon);
+            for (var i = 0, len = geocache_list_unfiltered.length; i < len; i++) {
+                var geocache = geocache_list_unfiltered[i];
+                geocache.point = L.latLng(geocache.lat, geocache.lon);
+                geocache.distance = geocache.point.distanceTo(reference_point);
+            }
+        }
+
+        function on_reference_changed(lat, lon) {
+            change_reference(lat, lon);
+            $rootScope.$broadcast('center_updated');
+        }
+
         function read_list (db_name, success_cb, error_cb) {            
             if (DbService.is_in_dblist(db_name)) {
                 error_cb = error_cb || on_get_error;
@@ -60,12 +75,13 @@
                 PreferenceService.update_used_db(db_name);
                 serv.nbr_caches = result.nbr_caches;
                 geocache_list_unfiltered = result.geocaches;
-                var reference_point = L.latLng(49.0, 9.0);
-                for (var i = 0, len = geocache_list_unfiltered.length; i < len; i++) {
-                    var geocache = geocache_list_unfiltered[i];
-                    geocache.point = L.latLng(geocache.lat, geocache.lon);
-                    geocache.distance = geocache.point.distanceTo(reference_point);
-                }
+                change_reference(49.0, 9.0);
+                //var reference_point = L.latLng(49.0, 9.0);
+                //for (var i = 0, len = geocache_list_unfiltered.length; i < len; i++) {
+                //    var geocache = geocache_list_unfiltered[i];
+                //    geocache.point = L.latLng(geocache.lat, geocache.lon);
+                //    geocache.distance = geocache.point.distanceTo(reference_point);
+                //}
                 serv.geocache_list = FilterService.apply_basic_filter(result.geocaches);
                 $rootScope.$broadcast('geocaches_updated');
                 if (success_cb) {

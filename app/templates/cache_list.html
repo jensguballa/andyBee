@@ -1,5 +1,12 @@
-<div ng-controller="GeocacheListCtrl as geolist">
+<div ng-controller="GeocacheListCtrl as geolist" class="container-fluid">
     <table ng-table-dynamic="geolist.tableParams with geolist.cols" class="table table-condensed table-bordered table-striped">
+
+        <button class="btn btn-primary btn-sm pull-right"
+                ng-disabled="!(geolist.tableParams.orderBy().length || geolist.tableParams.hasFilter())"
+                ng-click="geolist.reset_filter()">
+            Reset Table Filter <span class="glyphicon glyphicon-filter"></span>
+        </button>
+
         <tr ng-repeat="row in $data">
             <!--td ng-repeat="col in $columns">{{"{{row[col.field]}}"}}</td-->
             <td ng-if="true"><!-- img src="static/images/OCMLogoSmall.svg" height="20px"/--> 
@@ -8,6 +15,18 @@
                 <div class="btn-group pull-right" role="group" aria-label="...">
                     <button type="button" class="btn btn-default" ng-click="geolist.show_details(row.id)" title="Show more geocache details"><span class="glyphicon glyphicon glyphicon-list-alt" aria-hidden="true"></span></button>
                     <button type="button" class="btn btn-default" ng-click="geolist.show_details(row.id)" title="Show geocache on map"><span class="glyphicon glyphicon glyphicon-map-marker" aria-hidden="true"></span></button>
+                    <div class="btn-group" uib-dropdown>
+                        <button type="button" class="btn btn-default" title="Show Dropdown Menu" uib-dropdown-toggle>
+                            <span class="glyphicon glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+                        </button>
+                        <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                            <li role="menuitem"><a href="#" ng-click="geolist.set_center(row.lat, row.lon)">Set as Map Center</a></li>
+                            <li role="menuitem" class="disabled"><a href="#">Delete Geocache ...</a></li>
+                            <li role="menuitem" class="disabled"><a href="#">Update Coordinates ...</a></li>
+                            <li class="divider"></li>
+                            <li role="menuitem" class="disabled"><a href="#">Separated link</a></li>
+                        </ul>
+                    </div>
                 </div>
             </td>
             <td ng-if="true">{{"{{row.distance|km}}"}}</td>

@@ -13,10 +13,11 @@
         $scope.$on('geocaches_updated', function (event, args) {
             vm.markers = [];
             for (var i = 0, len = GeocacheService.geocache_list.length; i < len; i++) {
+                var geocache = GeocacheService.geocache_list[i];
                 vm.markers.push({
-                    lat: GeocacheService.geocache_list[i].lat,
-                    lng: GeocacheService.geocache_list[i].lon,
-                    message: GeocacheService.geocache_list[i].title
+                    lat: geocache.lat,
+                    lng: geocache.lon,
+                    message: geocache.title
                 });
             }
         });

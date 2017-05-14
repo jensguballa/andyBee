@@ -24,8 +24,8 @@ html {
 }
 
 .tab-content {
-    padding: 2px;
-    background: #f6f5e2;
+    /* padding: 2px;
+    background: #f6f5e2; */
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
