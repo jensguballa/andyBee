@@ -40,6 +40,15 @@ table.ng-table > thead {
     padding: 8px;
 }
 
+.detail-type {
+    margin-top: 15px;
+    height: 60px;
+}
+
+.list-type {
+    height: 20px;
+}
+
 .statusbar {
     width: 100%;
     height: 30px;

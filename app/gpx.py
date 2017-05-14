@@ -20,7 +20,7 @@ def wpt_to_xml(parent, waypoint, data):
     data['latmin'] = min(data['latmin'], waypoint.lat)
     data['latmax'] = max(data['latmax'], waypoint.lat)
     data['lonmin'] = min(data['lonmin'], waypoint.lon)
-    data['lonmax'] = min(data['lonmax'], waypoint.lon)
+    data['lonmax'] = max(data['lonmax'], waypoint.lon)
     w_wpt = subnode(parent, GPX+"wpt", attrib={'lat': str(waypoint.lat), 'lon': str(waypoint.lon)})
     subnode(w_wpt, GPX+"time", text=waypoint.time)
     subnode(w_wpt, GPX+"name", text=waypoint.name)

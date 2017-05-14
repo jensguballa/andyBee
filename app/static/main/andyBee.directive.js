@@ -49,7 +49,7 @@
         'Cache In Trash Out Event': 'static/images/cito.svg',                  
         'Virtual Cache':            'static/images/virtual.svg',                  
         'GPS Adventures Exhibit':   'static/images/other.svg',                  
-        'Webcam cache':             'static/images/webcam.svg',                  
+        'Webcam Cache':             'static/images/webcam.svg',                  
         'Project APE Cache':        'static/images/other.svg',                  
         'Locationless Cache':       'static/images/other.svg',                  
     };
@@ -62,9 +62,12 @@
         };
 
         function link(scope, elem, attr) {
-            scope.src = img_trans[attr.type];
             scope.class = attr.class;
             scope.height = attr.height || "20px";
+
+            attr.$observe('type', function () {
+                scope.src = img_trans[attr.type];
+            });
         }
     }
 
