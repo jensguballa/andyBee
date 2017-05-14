@@ -4,7 +4,7 @@
             <!--td ng-repeat="col in $columns">{{"{{row[col.field]}}"}}</td-->
             <td ng-if="true"><!-- img src="static/images/OCMLogoSmall.svg" height="20px"/--> 
                 <geocache-icon type="{{row.type|angular}}" height="20px"></geocache-icon>
-                {{row.gc_id|angular}}
+                <span ng-class="{strike: row.archived, 'bg-danger': !row.available}">{{row.gc_id|angular}}</span>
                 <div class="btn-group pull-right" role="group" aria-label="...">
                     <button type="button" class="btn btn-default" ng-click="geolist.show_details(row.id)" title="Show more geocache details"><span class="glyphicon glyphicon glyphicon-list-alt" aria-hidden="true"></span></button>
                     <button type="button" class="btn btn-default" ng-click="geolist.show_details(row.id)" title="Show geocache on map"><span class="glyphicon glyphicon glyphicon-map-marker" aria-hidden="true"></span></button>
