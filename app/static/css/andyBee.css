@@ -15,6 +15,10 @@ html {
     padding-bottom: 40px;
 }
 
+.navbar {
+    border-radius: 0;
+}
+
 .nav-tabs > li.active > a,
 .nav-tabs > li.active > a:hover,
 .nav-tabs > li.active > a:focus
@@ -40,13 +44,30 @@ table.ng-table > thead {
     padding: 8px;
 }
 
+.no-indent {
+    padding-left: 0;
+}
+
 .detail-type {
     margin-top: 15px;
     height: 60px;
 }
 
+.left-space {
+    margin-left: 30px;
+}
+
 .list-type {
     height: 20px;
+}
+
+.rating_detail {
+    height: 14px;
+    vertical-align: inherit;
+}
+
+.size_detail {
+    height: 12px;
 }
 
 .statusbar {

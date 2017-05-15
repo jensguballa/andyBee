@@ -14,8 +14,8 @@
    height="559.57147"
    id="svg2861"
    version="1.1"
-   inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="star_empty.svg"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="halfstar.svg"
    sodipodi:version="0.32"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <defs
@@ -36,10 +36,10 @@
        sodipodi:type="inkscape:persp3d" />
     <linearGradient
        gradientUnits="userSpaceOnUse"
-       y2="273.89783"
-       x2="192.59964"
-       y1="554.72021"
-       x1="-109.15551"
+       y2="122.23799"
+       x2="490.43719"
+       y1="675.03699"
+       x1="-107.07999"
        id="linearGradient5725"
        xlink:href="#linearGradient5719"
        inkscape:collect="always" />
@@ -49,11 +49,11 @@
       <stop
          id="stop5721"
          offset="0"
-         style="stop-color:#ffff00;stop-opacity:1" />
+         style="stop-color:#c80000;stop-opacity:1" />
       <stop
          id="stop5723"
          offset="1"
-         style="stop-color:#fffdd5;stop-opacity:1" />
+         style="stop-color:#ff9d9d;stop-opacity:1" />
     </linearGradient>
   </defs>
   <sodipodi:namedview
@@ -64,15 +64,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.98994949"
-     inkscape:cx="-34.006641"
+     inkscape:cx="292.2387"
      inkscape:cy="231.00814"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer1-8"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1122"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-width="1632"
+     inkscape:window-height="998"
+     inkscape:window-x="48"
+     inkscape:window-y="30"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata2866">
@@ -82,7 +82,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -97,7 +97,7 @@
        inkscape:label="Layer 1">
       <path
          transform="translate(148.57143,122.85714)"
-         d="M 477.14287,326.64788 302.86221,460.87362 368.15902,670.93699 186.64708,546.66427 7.0427646,673.67838 69.142873,462.64788 -107.15551,331.08355 l 219.89192,-6.1513 70.64592,-208.32535 73.80057,207.22879 219.95997,2.81219 z"
+         d="M 477.14287,326.64788 302.86221,460.87362 368.15902,670.93699 186.64708,546.66427 7.0427646,673.67838 69.142873,462.64788 -107.15551,331.08355 112.73641,324.93225 183.38233,116.6069 257.1829,323.83569 Z"
          inkscape:randomized="0"
          inkscape:rounded="0"
          inkscape:flatsided="false"

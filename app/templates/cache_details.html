@@ -8,17 +8,35 @@
                 <div class="pull-left">
                     <div class="container-fluid">
                         <h4 class="bold">{{geocache.serv.detail.gc_id|angular}}: {{geocache.serv.detail.title|angular}}</h4>
-                        <div>{{geocache.serv.detail.type|angular}}</div>
-                        <div>
+                        <p>{{geocache.serv.detail.type|angular}}</p>
+                        <p>
                             <a href="{{geocache.serv.detail.url|angular}}" target="_blank" class="btn btn-info btn-sm" role="button">Open Listing on geocaching.com</a>
-                        </div>
+                        </p>
                     </div>
                 </div>
             </div>
-            <div>Location: {{geocache.serv.detail.state|angular}}, {{geocache.serv.detail.country|angular}}</div>
-            <div>A cache by: {{geocache.serv.detail.placed_by|angular}}, Owner: {{geocache.serv.detail.owner|angular}}</div>
-            <div>Cache Size: {{geocache.serv.detail.controller|angular}} Difficulty: {{geocache.serv.detail.difficulty|angular}} Terrain: {{geocache.serv.detail.terrain|angular}}</div>
-            <div>Attributes:
+            <p></p>
+            <div class="container-fluid no-indent">
+                <div class="pull-left">
+                    <div><strong>Difficulty: </strong></div>
+                    <p><strong>Terrain: </strong></p>
+                </div>
+                <div class="pull-left">
+                    <div>&nbsp;<geocache-rating value="{{geocache.serv.detail.difficulty|angular}}" class="rating_detail"></geocache-rating> ({{geocache.serv.detail.difficulty|angular}})</div>
+                    <p>&nbsp;<geocache-rating value="{{geocache.serv.detail.terrain|angular}}" class="rating_detail"></geocache-rating> ({{geocache.serv.detail.terrain|angular}})</p>
+                </div>
+                <div class="pull-left left-space">
+                    <div><strong>Cache Size: </strong></div>
+                </div>
+                <div class="pull-left">
+                    <div>&nbsp;<geocache-size size="{{geocache.serv.detail.container|angular}}" class="size_detail"></geocache-size> ({{geocache.serv.detail.container|angular}})</div>
+                </div>
+            </div>
+
+            <p><strong>A cache by:</strong> {{geocache.serv.detail.placed_by|angular}}, <strong>Owner:</strong> {{geocache.serv.detail.owner|angular}}</p>
+            <p><strong>Location:</strong> {{geocache.serv.detail.state|angular}}, {{geocache.serv.detail.country|angular}}</p>
+            <div>
+                <p><strong>Attributes: </strong></p>
                 <div ng-repeat="att in geocache.serv.detail.attributes">{{att.name|angular}}, {{att.inc|angular}}</div>
             </div>
         </uib-tab>
