@@ -44,12 +44,30 @@ table.ng-table > thead {
     padding: 8px;
 }
 
+.paragraph {
+    margin: 0 0 10px 0;
+}
+
+dl.table-row {
+    display: table-row;
+}
+
+dl.table-row > dt,
+dl.table-row > dd {
+    display: table-cell;
+}
+
+dl.table-row > dd {
+    padding-left: 10px;
+    padding-right: 30px;
+}
+
 .no-indent {
     padding-left: 0;
 }
 
 .detail-type {
-    margin-top: 15px;
+    margin-top: 0px;
     height: 60px;
 }
 
@@ -69,6 +87,14 @@ table.ng-table > thead {
 .size_detail {
     height: 12px;
 }
+
+.attr_detail {
+    height: 30px;
+    display: inline-block;
+    margin-right: 2px;
+    margin-bottom: 4px;
+}
+
 
 .statusbar {
     width: 100%;

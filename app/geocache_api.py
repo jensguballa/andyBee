@@ -86,6 +86,7 @@ class GeocacheBasicSchema(Schema):
 class GeocacheFullSchema(GeocacheBasicSchema):
     attributes = fields.List(fields.Nested(AttributeSchema))
     url        = fields.Function(lambda cache: cache.waypoint.url)
+    hidden     = fields.Function(lambda cache: cache.waypoint.time)
     short_desc = fields.String()
     short_html = fields.String()
     long_desc  = fields.String()

@@ -125,6 +125,8 @@
             rest.get({db: serv.db_name, geocache_id: id}, get_response, error_cb);
 
             function get_response (result) {
+                var hidden = new Date(result.geocache.hidden);
+                result.geocache.hidden_date = hidden.toLocaleDateString();
                 serv.detail = result.geocache;
                 $rootScope.$broadcast('geocache_details_updated');
                 if (success_cb) {
