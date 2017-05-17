@@ -9,7 +9,8 @@
         .directive('geocacheRating', geocacheRating)
         .directive('geocacheSize', geocacheSize)
         .directive('geocacheAttr', geocacheAttr)
-        .directive('geocacheCoord', geocacheCoord);
+        .directive('geocacheCoord', geocacheCoord)
+        .directive('geocacheDescr', geocacheDescr);
             
     function convertToNumber() {
         return {
@@ -239,6 +240,45 @@
                 var degrees = parseInt(coord);
                 return str + ' ' + degrees + ' ' + ((coord - degrees) * 60).toFixed(3);
             }
+        }
+    }
+
+    geocacheDescr.$inject = ['$sce'];
+    function geocacheDescr($sce) {
+        return {
+            restrict: 'E',
+            template: '<div ng-bind-html="text"></div>',
+            link: link,
+            scope: {}
+        };
+
+        function link(scope, elem, attr) {
+            var text;
+            var html;
+
+            attr.$observe('text', function () {
+                text = attr.text;
+                update();
+            });
+
+            attr.$observe('html', function () {
+                html = attr.html;
+                update();
+            });
+
+            function update() {
+                var txt;
+                if (html == 'true') {
+                    // enforce that links are opened in another tab/window
+                    txt = text.replace(/\<a\s/g, '<a target="_blank" ');
+                }
+                else {
+                    // replace plain text line breaks by <br />
+                    txt = text.replace(/\n/g, '<br />');
+                }
+                scope.text = $sce.trustAsHtml(txt);
+            }
+
         }
     }
 

@@ -127,6 +127,11 @@
             function get_response (result) {
                 var hidden = new Date(result.geocache.hidden);
                 result.geocache.hidden_date = hidden.toLocaleDateString();
+                // check if at least one non-blank character is present
+                if (result.geocache.encoded_hints.search(/\S/) == -1) {
+                    result.geocache.encoded_hints = '';
+                }
+                result.geocache.show_hint = false;
                 serv.detail = result.geocache;
                 $rootScope.$broadcast('geocache_details_updated');
                 if (success_cb) {

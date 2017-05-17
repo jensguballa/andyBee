@@ -49,9 +49,17 @@
             </div>
         </uib-tab>
         <uib-tab index="1" heading="Description">
-            <div>{{geocache.serv.detail.short_desc|angular}}</div>
-            <div>{{geocache.serv.detail.long_desc|angular}}</div>
-            <div>Hint: {{geocache.serv.detail.encoded_hints|angular}}</div>
+            <geocache-descr text="{{geocache.serv.detail.short_desc|angular}}" html="{{geocache.serv.detail.short_html|angular}}"></geocache-descr>
+            <br />
+            <geocache-descr text="{{geocache.serv.detail.long_desc|angular}}" html="{{geocache.serv.detail.long_html|angular}}"></geocache-descr>
+            <p></p>
+            <div ng-if="geocache.serv.detail.encoded_hints == ''">
+                <strong>No hint available</strong>
+            </div>
+            <div ng-if="geocache.serv.detail.encoded_hints != ''">
+                <button class="btn btn-primary btn-sm paragraph" style="width:90px;" ng-click="geocache.serv.detail.show_hint = !geocache.serv.detail.show_hint">{{"{{geocache.serv.detail.show_hint ? 'Hide' : 'Show'}}"}} Hint <span class="glyphicon glyphicon-eye-open"></span></button>
+                <div ng-if="geocache.serv.detail.show_hint">{{geocache.serv.detail.encoded_hints|angular}}</div>
+            </div>
         </uib-tab>
         <uib-tab index="2" heading="Logs">
             <div ng-repeat="log in geocache.serv.detail.logs">

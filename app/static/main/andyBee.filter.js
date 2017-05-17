@@ -23,12 +23,5 @@
         };
     };
 
-//    to_trusted.$inject = ['$sce'];
-//    function to_trusted ($sce){
-//        return function(text) {
-//            return $sce.trustAsHtml(text);
-//        };
-//    }
-
 })();
 
