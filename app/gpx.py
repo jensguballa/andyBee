@@ -169,23 +169,18 @@ def parse_cache(node):
             cache.placed_by = child.text
         elif child.tag == GS+"owner":
             cache.owner = geocache_db.get_or_create(Cacher, name=child.text)
-            pass
         elif child.tag == GS+"type":
             cache.type = geocache_db.get_or_create(CacheType, name=child.text)
-            pass
         elif child.tag == GS+"container":
             cache.container = geocache_db.get_or_create(CacheContainer, name=child.text)
-            pass
         elif child.tag == GS+"difficulty":
             cache.difficulty = float(child.text)
         elif child.tag == GS+"terrain":
             cache.terrain = float(child.text)
         elif child.tag == GS+"country":
             cache.country = geocache_db.get_or_create(CacheCountry, name=child.text)
-            pass
         elif child.tag == GS+"state":
             cache.state = geocache_db.get_or_create(CacheState, name=child.text)
-            pass
         elif child.tag == GS+"short_description":
             cache.short_desc = child.text
             cache.short_html = (child.get("html") == "True")
@@ -198,11 +193,17 @@ def parse_cache(node):
             for node_attr in child:
                 if node_attr.tag == GS+"attribute":
                     cache.attributes.append(parse_attribute(node_attr))
-                    pass
         elif child.tag == GS+"logs":
             for node_log in child:
                 if node_log.tag == GS+"log":
                     cache.logs.append(parse_log(node_log))
+            # Now save the log types of the 5 latest logs
+            sorted_logs = sorted(cache.logs, key=lambda x: x.date, reverse=True)
+            latest_logs = []
+            for log in sorted_logs[:5]:
+                latest_logs.append(log.type.name)
+            cache.last_logs = ";".join(latest_logs)
+
     return cache
 
 
@@ -214,16 +215,14 @@ def parse_attribute(node):
 
 def parse_log(node):
     log = Log()
-    log.id = node.get("id")
+    log.id = int(node.get("id"))
     for log_node in node:
         if log_node.tag == GS+"date":
             log.date = log_node.text
         elif log_node.tag == GS+"type":
             log.type = geocache_db.get_or_create(LogType, name=log_node.text)
-            pass
         elif log_node.tag == GS+"finder":
             log.finder = geocache_db.get_or_create(Cacher, name=log_node.text)
-            pass
         elif log_node.tag == GS+"text":
             log.text = log_node.text
             log.text_encoded = (log_node.get("encoded") == "True")

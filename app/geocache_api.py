@@ -81,6 +81,7 @@ class GeocacheBasicSchema(Schema):
     gc_id      = fields.Function(lambda cache: cache.waypoint.name)
     lat        = fields.Function(lambda cache: cache.waypoint.lat)
     lon        = fields.Function(lambda cache: cache.waypoint.lon)
+    last_logs  = fields.String()
 
 
 class GeocacheFullSchema(GeocacheBasicSchema):

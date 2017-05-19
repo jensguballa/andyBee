@@ -71,6 +71,7 @@ class Cache(GeocacheDb):
     long_html     = Column(Boolean)                                    
     encoded_hints = Column(Text)                                       
     logs          = relationship('Log', lazy='joined')
+    last_logs     = Column(Text)
     waypoint      = relationship('Waypoint', back_populates='cache', uselist=False, lazy='joined')
 
     def __repr__(self):

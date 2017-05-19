@@ -90,6 +90,10 @@ geocache-log.log_type > img {
     margin-right: 10px;
 }
 
+geocache-log.last_log > img {
+    height: 15px;
+}
+
 hr.dark {
     border-top: 1px solid #aaa;
 }

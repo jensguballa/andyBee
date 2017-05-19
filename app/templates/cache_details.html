@@ -27,6 +27,9 @@
                 <dl class="table-row paragraph">
                     <dt>Terrain: </dt>
                     <dd><geocache-rating value="{{geocache.serv.detail.terrain|angular}}" class="rating_detail"></geocache-rating> ({{geocache.serv.detail.terrain|angular}})</dd>
+                    <dt>Last Logs: </dt>
+                    <!--dd><geocache-log type="{{log.type|angular}}" class="log_type"></geocache-log></dd-->
+                    <dd><geocache-log ng-repeat="log in geocache.serv.detail.last_logs.split(';') track by $index" type="{{log|angular}}" class="last_log"></geocache-log></dd>
                 </dl>
             </div>
             <div class="table">

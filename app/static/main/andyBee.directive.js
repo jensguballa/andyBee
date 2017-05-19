@@ -11,7 +11,8 @@
         .directive('geocacheAttr', geocacheAttr)
         .directive('geocacheCoord', geocacheCoord)
         .directive('geocacheDescr', geocacheDescr)
-        .directive('geocacheLog', geocacheLog);
+        .directive('geocacheLog', geocacheLog)
+        .directive('geocacheLastLogs', geocacheLastLogs);
             
     function convertToNumber() {
         return {
@@ -201,7 +202,7 @@
     function geocacheAttr() {
         return {
             restrict: 'E',
-            template: '<img ng-src="{{src}}" class="{{class}}" title="{{title}}"/>',
+            template: '<img ng-src="{{src}}" class="{{class}}" title="{{title}}" />',
             link: link,
             scope: {}
         }
@@ -306,26 +307,49 @@
         "Not Supported":               'static/images/not_supported.svg'
     };
 
+    function translate_log_type(type) {
+        var ret = log_trans[type];
+        if (!ret) {
+            ret = log_trans["Not Supported"];
+        }
+        return ret;
+    }
+
     function geocacheLog() {
         return {
             restrict: 'E',
-            template: '<img ng-src="{{src}}" title="{{title}}"/>',
+            template: '<img ng-src="{{src}}" title="{{title}}" />',
             link: link,
             scope: {}
-        }
+        };
 
         function link(scope, elem, attr) {
-//            scope.class = attr.class;
             scope.title = attr.attr;
 
             attr.$observe('type', function () {
-                if (log_trans[attr.type]) {
-                    scope.src = log_trans[attr.type];
-                }
-                else {
-                    scope.src = log_trans["Not Supported"];
+                scope.src = translate_log_type(attr.type);
+            });
+        }
+    }
+
+    function geocacheLastLogs() {
+        return {
+            restrict: 'E',
+            template: '<img ng-repeat="log in last_logs" ng-src="{{log.src}}" title="{{log.title}}" />',
+            link: link,
+            scope: {}
+        };
+
+        function link(scope, elem, attr) {
+            attr.$observe('lastLogs', function () {
+                scope.log = [];
+                var logs = attr.lastLogs.split(";");
+                for (var i = 0, len = logs.length; i < len; i++) {
+                    scope.log[i].title = logs[i];
+                    scope.log[i].src = translate_log_type(logs[i]);
                 }
             });
         }
     }
+
 })();
