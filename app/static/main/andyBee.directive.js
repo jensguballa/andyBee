@@ -289,16 +289,16 @@
         "Write note":                  'static/images/write_note.svg',
         "Needs Maintenance":           'static/images/needs_maintenance.svg',
         "Temporarily Disable Listing": 'static/images/disable_listing.svg',
+        "Owner Maintenance":           'static/images/owner_maintenance.svg',
+        "Enable Listing":              'static/images/enable_listing.svg',
+        "Needs Archived":              'static/images/needs_archived.svg',
         "Will Attend":                 'static/images/not_supported.svg',
         "Attended":                    'static/images/not_supported.svg',
         "Webcam Photo Taken":          'static/images/not_supported.svg',
-        "Enable Listing":              'static/images/not_supported.svg',
         "Post Reviewer Note":          'static/images/not_supported.svg',
         "Submit for Review":           'static/images/not_supported.svg',
         "Publish Listing":             'static/images/not_supported.svg',
         "Archive":                     'static/images/not_supported.svg',
-        "Needs Archived":              'static/images/not_supported.svg',
-        "Owner Maintenance":           'static/images/not_supported.svg',
         "Announcement":                'static/images/not_supported.svg',
         "Update Coordinates":          'static/images/not_supported.svg',
         "Retract":                     'static/images/not_supported.svg',
@@ -323,7 +323,7 @@
         };
 
         function link(scope, elem, attr) {
-            scope.title = attr.attr;
+            scope.title = attr.title;
 
             attr.$observe('type', function () {
                 scope.src = translate_log_type(attr.type);
