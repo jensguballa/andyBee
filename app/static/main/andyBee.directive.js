@@ -11,8 +11,7 @@
         .directive('geocacheAttr', geocacheAttr)
         .directive('geocacheCoord', geocacheCoord)
         .directive('geocacheDescr', geocacheDescr)
-        .directive('geocacheLog', geocacheLog)
-        .directive('geocacheLastLogs', geocacheLastLogs);
+        .directive('geocacheLog', geocacheLog);
             
     function convertToNumber() {
         return {
@@ -328,26 +327,6 @@
 
             attr.$observe('type', function () {
                 scope.src = translate_log_type(attr.type);
-            });
-        }
-    }
-
-    function geocacheLastLogs() {
-        return {
-            restrict: 'E',
-            template: '<img ng-repeat="log in last_logs" ng-src="{{log.src}}" title="{{log.title}}" />',
-            link: link,
-            scope: {}
-        };
-
-        function link(scope, elem, attr) {
-            attr.$observe('lastLogs', function () {
-                scope.log = [];
-                var logs = attr.lastLogs.split(";");
-                for (var i = 0, len = logs.length; i < len; i++) {
-                    scope.log[i].title = logs[i];
-                    scope.log[i].src = translate_log_type(logs[i]);
-                }
             });
         }
     }
