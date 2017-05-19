@@ -32,10 +32,11 @@
         vm.cols = [
             {field: "gc_id",      title: "Cache",     sortable: "gc_id"     , filter: {gc_id: "text"}},
             {field: "distance",   title: "Distance (km)",  sortable: "distance"  },
+            {field: "last_logs",  title: "Last Logs"},
             {field: "difficulty", title: "D",         sortable: "difficulty", filter: {difficulty: "select"}, filterData: rating},
             {field: "terrain",    title: "T",         sortable: "terrain"   , filter: {terrain: "select"},    filterData: rating},
             {field: "title",      title: "Title",     sortable: "title"     , filter: {title: "text"}},
-            {field: "placed_by",  title: "Placed by", sortable: "placed_by" , filter: {placed_by: "text"}}
+            {field: "owner",      title: "Owner",     sortable: "owner"     , filter: {owner: "text"}}
         ];
 
         $scope.$on('geocaches_updated', function (event, args) {

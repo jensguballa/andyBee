@@ -28,10 +28,11 @@
                 </div>
             </td>
             <td ng-if="true">{{"{{row.distance|km}}"}}</td>
+            <td ng-if="true"><geocache-log ng-repeat="log in row.last_logs.split(';') track by $index" type="{{log|angular}}" class="last_log"></geocache-log></td>
             <td ng-if="true">{{row.difficulty|angular}}</td>
             <td ng-if="true">{{row.terrain|angular}}</td>
             <td ng-if="true">{{row.title|angular}}</td>
-            <td ng-if="true">{{row.placed_by|angular}}</td>
+            <td ng-if="true">{{row.owner|angular}}</td>
         </tr>
     </table>
 </div>

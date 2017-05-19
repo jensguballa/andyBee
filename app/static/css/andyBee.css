@@ -91,7 +91,8 @@ geocache-log.log_type > img {
 }
 
 geocache-log.last_log > img {
-    height: 15px;
+    height: 16px;
+    padding: 1px;
 }
 
 hr.dark {
