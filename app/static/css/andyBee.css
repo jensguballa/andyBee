@@ -79,6 +79,21 @@ dl.table-row > dd {
     height: 20px;
 }
 
+
+.log-column {
+    display: table-cell;
+}
+
+geocache-log.log_type > img {
+    height: 20px;
+    margin-top: 5px;
+    margin-right: 10px;
+}
+
+hr.dark {
+    border-top: 1px solid #aaa;
+}
+
 .rating_detail {
     height: 14px;
     vertical-align: inherit;

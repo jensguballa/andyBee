@@ -25,7 +25,9 @@ Most important item comes first. Hm, not really.
       - switch to detailed view, i.e. display only one cache and
         its waypoints
     o Console (configurable, delete all entries, ...)
+    o Icons missing, e.g. for log types and some seldom attributes
     o Use https for map tiles
+    o Support markup for logs (e.g. [8D], **bold text**, etc.)
     o Add more info logs, e.g. when reading a DB, exporting, etc
     o Catch exceptions in case DB-access fails
     o Optimization, e.g. cache DB-tables for owner, attributes, etc

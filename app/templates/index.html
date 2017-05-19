@@ -67,7 +67,7 @@
     <uib-tab index="1" heading="Map" ng-click="app.refreshMap()">
         {% include "map.html" %}
     </uib-tab>
-    <uib-tab index="2" heading="Cache Details">
+    <uib-tab index="2" heading="Cache Details" disable="!app.geocache.detail.id">
         {% include "cache_details.html" %}
     </uib-tab>
     <uib-tab index="3" heading="Console">

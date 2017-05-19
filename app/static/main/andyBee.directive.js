@@ -10,7 +10,8 @@
         .directive('geocacheSize', geocacheSize)
         .directive('geocacheAttr', geocacheAttr)
         .directive('geocacheCoord', geocacheCoord)
-        .directive('geocacheDescr', geocacheDescr);
+        .directive('geocacheDescr', geocacheDescr)
+        .directive('geocacheLog', geocacheLog);
             
     function convertToNumber() {
         return {
@@ -282,4 +283,49 @@
         }
     }
 
+    var log_trans = {
+        "Found it":                    'static/images/found.svg',
+        "Didn't find it":              'static/images/dnf.svg',
+        "Write note":                  'static/images/write_note.svg',
+        "Needs Maintenance":           'static/images/needs_maintenance.svg',
+        "Will Attend":                 'static/images/not_supported.svg',
+        "Attended":                    'static/images/not_supported.svg',
+        "Webcam Photo Taken":          'static/images/not_supported.svg',
+        "Temporarily Disable Listing": 'static/images/not_supported.svg',
+        "Enable Listing":              'static/images/not_supported.svg',
+        "Post Reviewer Note":          'static/images/not_supported.svg',
+        "Submit for Review":           'static/images/not_supported.svg',
+        "Publish Listing":             'static/images/not_supported.svg',
+        "Archive":                     'static/images/not_supported.svg',
+        "Needs Archived":              'static/images/not_supported.svg',
+        "Owner Maintenance":           'static/images/not_supported.svg',
+        "Announcement":                'static/images/not_supported.svg',
+        "Update Coordinates":          'static/images/not_supported.svg',
+        "Retract":                     'static/images/not_supported.svg',
+        "Unarchive":                   'static/images/not_supported.svg',
+        "Not Supported":               'static/images/not_supported.svg'
+    };
+
+    function geocacheLog() {
+        return {
+            restrict: 'E',
+            template: '<img ng-src="{{src}}" title="{{title}}"/>',
+            link: link,
+            scope: {}
+        }
+
+        function link(scope, elem, attr) {
+//            scope.class = attr.class;
+            scope.title = attr.attr;
+
+            attr.$observe('type', function () {
+                if (log_trans[attr.type]) {
+                    scope.src = log_trans[attr.type];
+                }
+                else {
+                    scope.src = log_trans["Not Supported"];
+                }
+            });
+        }
+    }
 })();

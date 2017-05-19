@@ -32,7 +32,7 @@
             <div class="table">
                 <dl class="table-row">
                     <dt>Hidden: </dt>
-                    <dd>{{geocache.serv.detail.hidden_date|angular}} by {{geocache.serv.detail.placed_by|angular}}</dd>
+                    <dd>{{"{{geocache.serv.detail.hidden|date:'dd.MM.yyyy'}}"}} by {{geocache.serv.detail.placed_by|angular}}</dd>
                 </dl>
                 <dl class="table-row">
                     <dt>Owner: </dt>
@@ -62,13 +62,19 @@
             </div>
         </uib-tab>
         <uib-tab index="2" heading="Logs">
-            <div ng-repeat="log in geocache.serv.detail.logs">
-                <hr>
-                <div>Date: {{log.date|angular}}</div>
-                <div>{{log.type|angular}}</div>
-                <div>Logged by: {{log.finder|angular}}</div>
-                <hr>
-                <div>{{log.text|angular}}</div>
+            <div ng-repeat="log in geocache.serv.detail.logs | orderBy: '-date'">
+                <div>
+                    <div class="log-column"><geocache-log type="{{log.type|angular}}" class="log_type"></geocache-log></div>
+                    <div class="log-column">
+                        <div><strong>Date:</strong> {{"{{log.date|date:'dd.MM.yyyy'}}"}}</div>
+                        <div><strong>{{log.type|angular}}</strong></div>
+                        <div><strong>Logged by:</strong> {{log.finder|angular}}</div>
+                        <hr>
+                        <!--div>{{log.text|angular}}</div-->
+                        <geocache-descr text="{{log.text|angular}}" html="false"></geocache-descr>
+                    </div>
+                </div>
+                <hr class="dark" ng-if="!$last">
             </div>
         </uib-tab>
         <uib-tab index="3" heading="Waypoints">

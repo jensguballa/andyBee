@@ -75,6 +75,7 @@
                 PreferenceService.update_used_db(db_name);
                 serv.nbr_caches = result.nbr_caches;
                 geocache_list_unfiltered = result.geocaches;
+                serv.detail = {};
                 change_reference(49.0, 9.0);
                 //var reference_point = L.latLng(49.0, 9.0);
                 //for (var i = 0, len = geocache_list_unfiltered.length; i < len; i++) {
@@ -125,8 +126,6 @@
             rest.get({db: serv.db_name, geocache_id: id}, get_response, error_cb);
 
             function get_response (result) {
-                var hidden = new Date(result.geocache.hidden);
-                result.geocache.hidden_date = hidden.toLocaleDateString();
                 // check if at least one non-blank character is present
                 if (result.geocache.encoded_hints.search(/\S/) == -1) {
                     result.geocache.encoded_hints = '';
