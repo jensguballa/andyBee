@@ -291,7 +291,7 @@
         "Temporarily Disable Listing": 'static/images/disable_listing.svg',
         "Owner Maintenance":           'static/images/owner_maintenance.svg',
         "Enable Listing":              'static/images/enable_listing.svg',
-        "Needs Archived":              'static/images/needs_archived.svg',
+        "Needs Archived":              'static/images/needs_archived2.svg',
         "Will Attend":                 'static/images/not_supported.svg',
         "Attended":                    'static/images/not_supported.svg',
         "Webcam Photo Taken":          'static/images/not_supported.svg',
