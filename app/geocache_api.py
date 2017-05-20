@@ -3,10 +3,10 @@ import werkzeug
 from flask_restful import Resource, reqparse, request
 from app import app, api, geocache_db
 from marshmallow import Schema, fields
-from sqlalchemy import func
+from sqlalchemy import func, text
 from sqlalchemy.orm import joinedload, noload, subqueryload
 from gpx import import_gpx, export_gpx
-from geocache_model import Cache
+from geocache_model import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState
 from flask import send_from_directory, send_file, Response, make_response
 from app.api import json_to_object
 
@@ -71,13 +71,18 @@ class GeocacheBasicSchema(Schema):
     archived   = fields.Boolean()
     title      = fields.String(attribute="name") 
     placed_by  = fields.String()
-    owner      = fields.Function(lambda cache: cache.owner.name)
-    type       = fields.Function(lambda cache: cache.type.name)
-    container  = fields.Function(lambda cache: cache.container.name)
+#    owner      = fields.Function(lambda cache: cache.owner.name)
+#    type       = fields.Function(lambda cache: cache.type.name)
+#    container  = fields.Function(lambda cache: cache.container.name)
+    owner      = fields.String()
+    type       = fields.String()
+    container  = fields.String()
     difficulty = fields.Float()
     terrain    = fields.Float()
-    country    = fields.Function(lambda cache: cache.country.name)
-    state      = fields.Function(lambda cache: cache.state.name)
+#    country    = fields.Function(lambda cache: cache.country.name)
+#    state      = fields.Function(lambda cache: cache.state.name)
+    country    = fields.String()
+    state      = fields.String()
     gc_id      = fields.Function(lambda cache: cache.waypoint.name)
     lat        = fields.Function(lambda cache: cache.waypoint.lat)
     lon        = fields.Function(lambda cache: cache.waypoint.lon)
@@ -107,6 +112,68 @@ class GeocacheExportSchema(Schema):
     waypoints   = fields.Boolean()
     list        = fields.List(fields.Integer())
 
+class GeocacheListApi2(Resource):
+
+    def get(self, db_name):
+        if db_name is None:
+            return {'msg': 'Database name missing.'}, 400 # bad request
+        file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
+        if not os.path.isfile(file_path):
+            return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
+        geocache_db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+
+        owners = {}
+        for row in geocache_db.session.query(Cacher).all():
+            owners[str(row.id)] = row.name
+        
+        types = {}
+        for row in geocache_db.session.query(CacheType).all():
+            types[str(row.id)] = row.name
+
+        containers = {}
+        for row in geocache_db.session.query(CacheContainer).all():
+            containers[str(row.id)] = row.name
+
+        countries = {}
+        for row in geocache_db.session.query(CacheCountry).all():
+            countries[str(row.id)] = row.name
+
+        states = {}
+        for row in geocache_db.session.query(CacheState).all():
+            states[str(row.id)] = row.name
+
+        stmt = text('SELECT id, available, archived, name, '
+                'placed_by, owner_id, type_id, container_id, terrain, difficulty, '
+                'country_id, state_id, last_logs, '
+                'short_desc, short_html, long_desc, long_html, encoded_hints '
+                'FROM cache')
+#        stmt = stmt.columns(Cache.id, Cache.available, Cache.archived, Cache.name,
+#                Cache.placed_by, Cache.owner_id , Cache.type_id, Cache.terrain, Cache.difficulty,
+#                Cache.country_id, Cache.state_id,
+#                Cache.last_logs)
+        #rows = geocache_db.session.query(Cache).from_statement(stmt).all()
+        rows = geocache_db.session.execute(stmt).fetchall()
+        geocaches = [dict(row) for row in rows]
+
+        for row in geocaches:
+#            row['title'] = row['name']
+            row['owner'] = owners[str(row['owner_id'])]
+            row['type'] = types[str(row['type_id'])]
+            row['container'] = containers[str(row['container_id'])]
+            row['country'] = countries[str(row['country_id'])]
+            row['state'] = states[str(row['state_id'])]
+
+        data, errors = GeocacheListSchema().dump({
+            'geocaches': geocaches,
+            'db_name': db_name,
+            #'nbr_caches': geocache_db.session.query(func.count(Cache.id)).scalar()
+            'nbr_caches': len(geocaches)
+            })
+        if errors:
+            errors['msg'] = 'Internal error, could not dump list of geocaches.'
+            return errors, 422
+        return data
+
 
 class GeocacheListApi(Resource):
 
@@ -127,7 +194,7 @@ class GeocacheListApi(Resource):
             return errors, 422
         return data
 
-api.add_resource(GeocacheListApi, '/andyBee/api/v1.0/db/<string:db_name>/geocaches')
+api.add_resource(GeocacheListApi2, '/andyBee/api/v1.0/db/<string:db_name>/geocaches')
 
 class GeocacheSingleSchema(Schema):
     geocache   = fields.Nested(GeocacheFullSchema)

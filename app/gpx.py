@@ -168,7 +168,7 @@ def parse_cache(node):
         elif child.tag == GS+"placed_by":
             cache.placed_by = child.text
         elif child.tag == GS+"owner":
-            cache.owner = geocache_db.get_or_create(Cacher, name=child.text)
+            cache.owner = geocache_db.get_or_create(Cacher, id=child.get("id") , name=child.text)
         elif child.tag == GS+"type":
             cache.type = geocache_db.get_or_create(CacheType, name=child.text)
         elif child.tag == GS+"container":
@@ -222,7 +222,7 @@ def parse_log(node):
         elif log_node.tag == GS+"type":
             log.type = geocache_db.get_or_create(LogType, name=log_node.text)
         elif log_node.tag == GS+"finder":
-            log.finder = geocache_db.get_or_create(Cacher, name=log_node.text)
+            log.finder = geocache_db.get_or_create(Cacher, id=log_node.get("id"), name=log_node.text)
         elif log_node.tag == GS+"text":
             log.text = log_node.text
             log.text_encoded = (log_node.get("encoded") == "True")
