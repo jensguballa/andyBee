@@ -8,6 +8,7 @@ class Db():
         self._uri = uri
         self.engine = None
         self.echo = False
+        self._cache = {}
         if app:
             self.echo = app.config['SQLALCHEMY_ECHO']
 
@@ -19,6 +20,7 @@ class Db():
         if self.session:
             self.session.commit()
         self._uri = uri
+        self._cache = {}
         self.engine = create_engine(uri, echo=self.echo)
         self.session = scoped_session(sessionmaker(autocommit=False,
             autoflush=False,
@@ -40,5 +42,17 @@ class Db():
             self.session.commit()
             return instance
 
-
+    def get_or_create_new(self, cls, lookup, **kwargs):
+        table = cls.__name__
+        if table not in self._cache:
+            self._cache[table] = {}
+            for instance in self.session.query(cls).all():
+                self._cache[table][getattr(instance, lookup)] = instance
+        val = kwargs[lookup]
+        if val in self._cache[table]:
+            return self._cache[table][val]
+        instance = cls(**kwargs)
+        self._cache[table][val] = instance
+        self.session.add(instance)
+        return instance
 

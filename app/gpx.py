@@ -148,9 +148,9 @@ def parse_wpt(node):
         elif child.tag == GPX+"urlname":
             wpt.urlname = child.text
         elif child.tag == GPX+"sym":
-            wpt.sym = geocache_db.get_or_create(WaypointSym, name=child.text)
+            wpt.sym = geocache_db.get_or_create_new(WaypointSym, 'name', name=child.text)
         elif child.tag == GPX+"type":
-            wpt.type = geocache_db.get_or_create(WaypointType, name=child.text)
+            wpt.type = geocache_db.get_or_create_new(WaypointType, 'name', name=child.text)
         elif child.tag == GPX+"cmt":
             wpt.cmt = child.text
         elif child.tag == GS+"cache":
@@ -168,19 +168,19 @@ def parse_cache(node):
         elif child.tag == GS+"placed_by":
             cache.placed_by = child.text
         elif child.tag == GS+"owner":
-            cache.owner = geocache_db.get_or_create(Cacher, id=child.get("id") , name=child.text)
+            cache.owner = geocache_db.get_or_create_new(Cacher, 'name', id=child.get("id") , name=child.text)
         elif child.tag == GS+"type":
-            cache.type = geocache_db.get_or_create(CacheType, name=child.text)
+            cache.type = geocache_db.get_or_create_new(CacheType, 'name', name=child.text)
         elif child.tag == GS+"container":
-            cache.container = geocache_db.get_or_create(CacheContainer, name=child.text)
+            cache.container = geocache_db.get_or_create_new(CacheContainer, 'name', name=child.text)
         elif child.tag == GS+"difficulty":
             cache.difficulty = float(child.text)
         elif child.tag == GS+"terrain":
             cache.terrain = float(child.text)
         elif child.tag == GS+"country":
-            cache.country = geocache_db.get_or_create(CacheCountry, name=child.text)
+            cache.country = geocache_db.get_or_create_new(CacheCountry, 'name', name=child.text)
         elif child.tag == GS+"state":
-            cache.state = geocache_db.get_or_create(CacheState, name=child.text)
+            cache.state = geocache_db.get_or_create_new(CacheState, 'name', name=child.text)
         elif child.tag == GS+"short_description":
             cache.short_desc = child.text
             cache.short_html = (child.get("html") == "True")
@@ -220,9 +220,9 @@ def parse_log(node):
         if log_node.tag == GS+"date":
             log.date = log_node.text
         elif log_node.tag == GS+"type":
-            log.type = geocache_db.get_or_create(LogType, name=log_node.text)
+            log.type = geocache_db.get_or_create_new(LogType, 'name', name=log_node.text)
         elif log_node.tag == GS+"finder":
-            log.finder = geocache_db.get_or_create(Cacher, id=log_node.get("id"), name=log_node.text)
+            log.finder = geocache_db.get_or_create_new(Cacher, 'name', id=log_node.get("id"), name=log_node.text)
         elif log_node.tag == GS+"text":
             log.text = log_node.text
             log.text_encoded = (log_node.get("encoded") == "True")
