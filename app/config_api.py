@@ -1,11 +1,12 @@
 import os.path
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Table, Column, Integer, String, Float, Text, Boolean, ForeignKey
+#from sqlalchemy.ext.declarative import declarative_base
+#from sqlalchemy import Table, Column, Integer, String, Float, Text, Boolean, ForeignKey
 from app.db import Db
+from app.config_model import config_tables
 from app import api, app
 from flask_restful import abort, Resource
 from marshmallow import Schema, fields
-from config_model import ConfigDb, Preferences, Filter, FilterAtom
+from config_model import Preferences, Filter, FilterAtom
 
 from flask import request, jsonify
 
@@ -41,14 +42,16 @@ class PrefCompleteSchema(Schema):
 class PrefApi(Resource):
 
     def get(self, id):
-        return PrefCompleteSchema().dump({'preference': config_db.session.query(Preferences).get(id)})
+        config_db.init()
+        return PrefCompleteSchema().dump({'preference': config_db.get_by_id(Preferences, id)})
 
     def put(self, id):
+        config_db.init()
         obj, status_code = json_to_object(PrefCompleteSchema())
         if status_code != 200:
             return obj, status_code
-        config_db.session.query(Preferences).filter_by(id=id).update(obj['preference'])
-        config_db.session.commit()
+        config_db.update(Preferences, obj['preference'], id)
+        config_db.commit()
         return {}
 
 api.add_resource(PrefApi, '/andyBee/api/v1.0/config/<int:id>/preference')
@@ -59,11 +62,13 @@ class FilterAtomSchema(Schema):
     op = fields.String()
     value = fields.String()
 
+
 class FilterSchema(Schema):
     id = fields.Integer()
     sequence = fields.Integer(required=True)
     name = fields.String(required=True)
     filter_atom = fields.List(fields.Nested(FilterAtomSchema))
+
 
 class FilterListSchema(Schema):
     filter = fields.List(fields.Nested(FilterSchema), required=True)
@@ -74,71 +79,69 @@ class FilterSingleSchema(Schema):
 class FilterListApi(Resource):
 
     def get(self, id):
-        list = config_db.session.query(Filter).all()
-        if list is None:
-            list = []
-        ret = FilterListSchema().dump({'filter': list})
-        return ret
+        config_db.init()
+        filters = [dict(row) for row in config_db.execute('SELECT * from filter')]
+        for filt in filters:
+            filt['filter_atom'] = [dict(atom) for atom in config_db.execute('SELECT * from filter_atom WHERE filter_id=?', (filt['id'],))]
+        return FilterListSchema().dump({'filter': filters})
+
+
 
     def post(self, id):
+        config_db.init()
         obj, status_code = json_to_object(FilterSchema())
         if status_code != 200:
             return obj, status_code
-        new_filter = Filter()
-        new_filter.name = obj['name']
-        new_filter.sequence = obj['sequence']
-        new_filter.filter_atom = []
-        for filter_atom in obj['filter_atom']:
-            atom = FilterAtom()
-            atom.name = filter_atom['name']
-            atom.op = filter_atom['op']
-            atom.value = filter_atom['value']
-            new_filter.filter_atom.append(atom)
 
-        config_db.session.add(new_filter)
-        config_db.session.commit()
-        return {'id': new_filter.id}
+        config_db.execute('INSERT INTO filter (sequence, name) VALUES (?,?)', 
+                (obj['sequence'], obj['name']))
+        new_filter_id = config_db.cursor.lastrowid
+        for filter_atom in obj['filter_atom']:
+            config_db.execute('INSERT INTO filter_atom (filter_id, name, op, value) VALUES (?,?,?,?)',
+                    (new_filter_id, filter_atom['name'], filter_atom['op'], filter_atom['value']))
+        config_db.commit()
+        return {'id': new_filter_id}
 
 api.add_resource(FilterListApi, '/andyBee/api/v1.0/config/<int:id>/filter')
 
 class FilterApi(Resource):
 
     def delete(self, id, filter_id):
+        config_db.init()
         config_db.session.query(Filter).filter(Filter.id == filter_id).delete()
         config_db.session.query(FilterAtom).filter(FilterAtom.filter_id == filter_id).delete()
         config_db.session.commit()
         return {}
 
     def put(self, id, filter_id):
+        config_db.init()
         obj, status_code = json_to_object(FilterSingleSchema())
         if status_code != 200:
             return obj, status_code
         req = obj['filter']
-        filt = config_db.session.query(Filter).get(filter_id)
-        filt.name = req['name']
-        config_db.session.query(FilterAtom).filter(FilterAtom.filter_id == filter_id).delete()
-        filt.filter_atom = []
-        for atom in obj['filter']['filter_atom']:
-            filt_atom = FilterAtom()
-            filt_atom.name = atom['name']
-            filt_atom.op = atom['op']
-            filt_atom.value = atom['value']
-            filt.filter_atom.append(filt_atom)
-        config_db.session.commit()
+        config_db.execute('UPDATE filter SET sequence = ?, name = ? WHERE (id = ?)',
+                (req['sequence'], req['name'], filter_id))
+        config_db.execute('DELETE FROM filter_atom WHERE filter_id = ?', (filter_id,))
+        for atom in req['filter_atom']:
+            config_db.execute('INSERT INTO filter_atom (filter_id, name, op, value) VALUES (?,?,?,?)',
+                    (filter_id, atom['name'], atom['op'], atom['value']))
+        config_db.connection.commit()
         return {}
-
 
 api.add_resource(FilterApi, '/andyBee/api/v1.0/config/<int:id>/filter/<int:filter_id>')
 
+    
+class ConfigDb(Db):
 
-def init():
-    uri = app.config['CONFIG_URI_PREFIX'] + app.config['CONFIG_DB']
-    db = Db(ConfigDb, uri)
-    db.create_all()
-    if db.session.query(Preferences).get(1) is None:
-        db.session.add(Prefernces(id=1))
-        db.session.commit()
-    return db
-
-config_db = init()
-
+    def init(self):
+        db = app.config['CONFIG_DB']
+        if not os.path.isfile(db):
+            self.set_db(db)
+            self.create_all()
+            config_db.execute("INSERT INTO preferences (id) VALUES (1)")
+            config_db.connection.commit()
+        else:
+            self.set_db(db)
+        
+config_db = ConfigDb(tables=config_tables, app=app, log=app.config['SQL_ECHO'])
+        

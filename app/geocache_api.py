@@ -6,7 +6,7 @@ from marshmallow import Schema, fields
 from sqlalchemy import func, text
 from sqlalchemy.orm import joinedload, noload, subqueryload
 from gpx import import_gpx, export_gpx
-from geocache_model import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState
+from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState
 from flask import send_from_directory, send_file, Response, make_response
 from app.api import json_to_object
 
@@ -34,8 +34,9 @@ class DbListApi(Resource):
         file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
         if os.path.isfile(file_path):
             return {'msg': 'Database is already existing.'}, 422 # unprocessable entity
-        geocache_db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+        geocache_db.set_db(file_path)
         geocache_db.create_all()
+        geocache_db.commit()
         return {}
 
 api.add_resource(DbListApi, '/andyBee/api/v1.0/db')
@@ -120,48 +121,42 @@ class GeocacheListApi2(Resource):
         file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
         if not os.path.isfile(file_path):
             return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
-        geocache_db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+        geocache_db.set_db(file_path)
 
         owners = {}
-        for row in geocache_db.session.query(Cacher).all():
-            owners[str(row.id)] = row.name
+        for row in geocache_db.execute('SELECT * from cacher'):
+            owners[row['id']] = row['name']
         
         types = {}
-        for row in geocache_db.session.query(CacheType).all():
-            types[str(row.id)] = row.name
+        for row in geocache_db.execute('SELECT * from cache_type'):
+            types[row['id']] = row['name']
 
         containers = {}
-        for row in geocache_db.session.query(CacheContainer).all():
-            containers[str(row.id)] = row.name
+        for row in geocache_db.execute('SELECT * from cache_container'):
+            containers[row['id']] = row['name']
 
         countries = {}
-        for row in geocache_db.session.query(CacheCountry).all():
-            countries[str(row.id)] = row.name
+        for row in geocache_db.execute('SELECT * from cache_country'):
+            countries[row['id']] = row['name']
 
         states = {}
-        for row in geocache_db.session.query(CacheState).all():
-            states[str(row.id)] = row.name
+        for row in geocache_db.execute('SELECT * from cache_state'):
+            states[row['id']] = row['name']
 
-        stmt = text('SELECT id, available, archived, name, '
-                'placed_by, owner_id, type_id, container_id, terrain, difficulty, '
-                'country_id, state_id, last_logs, '
-                'short_desc, short_html, long_desc, long_html, encoded_hints '
-                'FROM cache')
-#        stmt = stmt.columns(Cache.id, Cache.available, Cache.archived, Cache.name,
-#                Cache.placed_by, Cache.owner_id , Cache.type_id, Cache.terrain, Cache.difficulty,
-#                Cache.country_id, Cache.state_id,
-#                Cache.last_logs)
-        #rows = geocache_db.session.query(Cache).from_statement(stmt).all()
-        rows = geocache_db.session.execute(stmt).fetchall()
-        geocaches = [dict(row) for row in rows]
+        stmt = 'SELECT id, available, archived, name, ' \
+                'placed_by, owner_id, type_id, container_id, terrain, difficulty, ' \
+                'country_id, state_id, last_logs, ' \
+                'short_desc, short_html, long_desc, long_html, encoded_hints ' \
+                'FROM cache'
+        geocaches = [dict(row) for row in geocache_db.execute(stmt)]
 
         for row in geocaches:
 #            row['title'] = row['name']
-            row['owner'] = owners[str(row['owner_id'])]
-            row['type'] = types[str(row['type_id'])]
-            row['container'] = containers[str(row['container_id'])]
-            row['country'] = countries[str(row['country_id'])]
-            row['state'] = states[str(row['state_id'])]
+            row['owner'] = owners[row['owner_id']]
+            row['type'] = types[row['type_id']]
+            row['container'] = containers[row['container_id']]
+            row['country'] = countries[row['country_id']]
+            row['state'] = states[row['state_id']]
 
         data, errors = GeocacheListSchema().dump({
             'geocaches': geocaches,
@@ -225,7 +220,7 @@ class GpxImportApi(Resource):
         file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
         if not os.path.isfile(file_path):
             return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
-        geocache_db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+        geocache_db.set_db(file_path)
         parse = reqparse.RequestParser()
         parse.add_argument('gpx_file', type=werkzeug.datastructures.FileStorage, location='files')
         args = parse.parse_args()

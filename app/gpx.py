@@ -1,6 +1,6 @@
 from lxml import etree
 from app import geocache_db
-from geocache_model import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState, Waypoint, WaypointSym, WaypointType, Log, LogType, Attribute
+from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState, Waypoint, WaypointSym, WaypointType, Log, LogType, Attribute
 import re
 import datetime
 
@@ -129,7 +129,7 @@ def import_gpx(filename):
         for node in gpx:
             if node.tag == GPX+"wpt":
                 parse_wpt(node)
-        geocache_db.session.commit()
+        geocache_db.commit()
 
 def parse_wpt(node):
     wpt = Waypoint()
@@ -142,23 +142,27 @@ def parse_wpt(node):
             wpt.name = child.text
             wpt.gc_code = re.sub('^..', 'GC', wpt.name)
         elif child.tag == GPX+"desc":
-            wpt.desc = child.text
+            wpt.descr = child.text
         elif child.tag == GPX+"url":
             wpt.url = child.text
         elif child.tag == GPX+"urlname":
             wpt.urlname = child.text
         elif child.tag == GPX+"sym":
-            wpt.sym = geocache_db.get_or_create_new(WaypointSym, 'name', name=child.text)
+            wpt.sym_id = geocache_db.unique_factory(WaypointSym, name=child.text)
         elif child.tag == GPX+"type":
-            wpt.type = geocache_db.get_or_create_new(WaypointType, 'name', name=child.text)
+            wpt.type_id = geocache_db.unique_factory(WaypointType, name=child.text)
         elif child.tag == GPX+"cmt":
             wpt.cmt = child.text
         elif child.tag == GS+"cache":
-            wpt.cache = parse_cache(child)
-    geocache_db.session.add(wpt)
+            wpt.cache_id = parse_cache(child, wpt.lat, wpt.lon)
+    stmt, paras = wpt.insert()
+    geocache_db.execute(stmt, paras)
 
-def parse_cache(node):
+def parse_cache(node, lat, lon):
+    logs = []
     cache = Cache()
+    cache.lat = lat
+    cache.lon = lon
     cache.id = int(node.get("id"))
     cache.available = (node.get("available") == "True")
     cache.archived = (node.get("archived") == "True")
@@ -168,19 +172,19 @@ def parse_cache(node):
         elif child.tag == GS+"placed_by":
             cache.placed_by = child.text
         elif child.tag == GS+"owner":
-            cache.owner = geocache_db.get_or_create_new(Cacher, 'name', id=child.get("id") , name=child.text)
+            cache.owner_id = geocache_db.unique_factory(Cacher, id=child.get("id") , name=child.text)
         elif child.tag == GS+"type":
-            cache.type = geocache_db.get_or_create_new(CacheType, 'name', name=child.text)
+            cache.type_id = geocache_db.unique_factory(CacheType, name=child.text)
         elif child.tag == GS+"container":
-            cache.container = geocache_db.get_or_create_new(CacheContainer, 'name', name=child.text)
+            cache.container_id = geocache_db.unique_factory(CacheContainer, name=child.text)
         elif child.tag == GS+"difficulty":
             cache.difficulty = float(child.text)
         elif child.tag == GS+"terrain":
             cache.terrain = float(child.text)
         elif child.tag == GS+"country":
-            cache.country = geocache_db.get_or_create_new(CacheCountry, 'name', name=child.text)
+            cache.country_id = geocache_db.unique_factory(CacheCountry, name=child.text)
         elif child.tag == GS+"state":
-            cache.state = geocache_db.get_or_create_new(CacheState, 'name', name=child.text)
+            cache.state_id = geocache_db.unique_factory(CacheState, name=child.text)
         elif child.tag == GS+"short_description":
             cache.short_desc = child.text
             cache.short_html = (child.get("html") == "True")
@@ -192,43 +196,53 @@ def parse_cache(node):
         elif child.tag == GS+"attributes":
             for node_attr in child:
                 if node_attr.tag == GS+"attribute":
-                    cache.attributes.append(parse_attribute(node_attr))
+                    parse_attribute(node_attr, cache.id)
+#                    cache.attributes.append(parse_attribute(node_attr))
         elif child.tag == GS+"logs":
             for node_log in child:
                 if node_log.tag == GS+"log":
-                    cache.logs.append(parse_log(node_log))
-            # Now save the log types of the 5 latest logs
-            sorted_logs = sorted(cache.logs, key=lambda x: x.date, reverse=True)
-            latest_logs = []
-            for log in sorted_logs[:5]:
-                latest_logs.append(log.type.name)
-            cache.last_logs = ";".join(latest_logs)
+                    logs.append(parse_log(node_log, cache.id))
 
-    return cache
+    # Now return the log types of the 5 latest logs as a string
+    sorted_logs = sorted(logs, key=lambda x: x.date, reverse=True)
+    cache.last_logs = ";".join([l.type for l in sorted_logs[:5]])
+
+    stmt, paras = cache.insert()
+    geocache_db.execute(stmt, paras)
+
+    return cache.id
 
 
-def parse_attribute(node):
-    return geocache_db.get_or_create(Attribute, 
+def parse_attribute(node, cache_id):
+    id = geocache_db.unique_factory(Attribute,  
             gc_id=int(node.get("id")),
             inc=(node.get("inc") == "1"),
             name=node.text)
+    geocache_db.execute('INSERT INTO cache_to_attribute (cache_id, attribute_id) VALUES (?,?)', (cache_id, id))
 
-def parse_log(node):
+
+def parse_log(node, cache_id):
+    type_txt = None
     log = Log()
     log.id = int(node.get("id"))
+    log.cache_id = cache_id
     for log_node in node:
         if log_node.tag == GS+"date":
             log.date = log_node.text
         elif log_node.tag == GS+"type":
-            log.type = geocache_db.get_or_create_new(LogType, 'name', name=log_node.text)
+            log.type_id = geocache_db.unique_factory(LogType, name=log_node.text)
+            type_txt = log_node.text
         elif log_node.tag == GS+"finder":
-            log.finder = geocache_db.get_or_create_new(Cacher, 'name', id=log_node.get("id"), name=log_node.text)
+            log.finder_id = geocache_db.unique_factory(Cacher, id=log_node.get("id"), name=log_node.text)
         elif log_node.tag == GS+"text":
             log.text = log_node.text
             log.text_encoded = (log_node.get("encoded") == "True")
         elif log_node.tag == GS+"log_wpt":
             log.lat = float(log_node.get("lat"))
             log.lon = float(log_node.get("lon"))
-    return log
 
+    stmt, paras = log.insert()
+    geocache_db.execute(stmt, paras)
+    log.type = type_txt    
+    return log
 
