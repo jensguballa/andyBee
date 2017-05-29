@@ -47,12 +47,12 @@ class AttributeSchema(Schema):
 
 class LogSchema(Schema):
     date    = fields.String()
-    type    = fields.Function(lambda log: log.type.name)
-    finder  = fields.Function(lambda log: log.finder.name)
-    text    = fields.String()
-    text_encoded = fields.String()
+    finder  = fields.String()
     lat     = fields.Float()
     lon     = fields.Float()
+    text    = fields.String()
+    text_encoded = fields.String()
+    type    = fields.String()
     
 class WaypointSchema(Schema):
     lat     = fields.Float()
@@ -68,26 +68,21 @@ class WaypointSchema(Schema):
 
 class GeocacheBasicSchema(Schema):
     id         = fields.Integer()
-    available  = fields.Boolean()
     archived   = fields.Boolean()
-    title      = fields.String(attribute="name") 
-    placed_by  = fields.String()
-#    owner      = fields.Function(lambda cache: cache.owner.name)
-#    type       = fields.Function(lambda cache: cache.type.name)
-#    container  = fields.Function(lambda cache: cache.container.name)
-    owner      = fields.String()
-    type       = fields.String()
+    available  = fields.Boolean()
     container  = fields.String()
-    difficulty = fields.Float()
-    terrain    = fields.Float()
-#    country    = fields.Function(lambda cache: cache.country.name)
-#    state      = fields.Function(lambda cache: cache.state.name)
     country    = fields.String()
-    state      = fields.String()
-    gc_id      = fields.Function(lambda cache: cache.waypoint.name)
-    lat        = fields.Function(lambda cache: cache.waypoint.lat)
-    lon        = fields.Function(lambda cache: cache.waypoint.lon)
+    difficulty = fields.Float()
+    gc_id      = fields.String()
     last_logs  = fields.String()
+    lat        = fields.Float()
+    lon        = fields.Float()
+    owner      = fields.String()
+    placed_by  = fields.String()
+    state      = fields.String()
+    terrain    = fields.Float()
+    title      = fields.String(attribute="name") 
+    type       = fields.String()
 
 
 class GeocacheFullSchema(GeocacheBasicSchema):
@@ -113,7 +108,7 @@ class GeocacheExportSchema(Schema):
     waypoints   = fields.Boolean()
     list        = fields.List(fields.Integer())
 
-class GeocacheListApi2(Resource):
+class GeocacheListApi(Resource):
 
     def get(self, db_name):
         if db_name is None:
@@ -145,7 +140,7 @@ class GeocacheListApi2(Resource):
 
         stmt = 'SELECT id, available, archived, name, ' \
                 'placed_by, owner_id, type_id, container_id, terrain, difficulty, ' \
-                'country_id, state_id, last_logs, ' \
+                'country_id, state_id, last_logs, lat, lon, ' \
                 'short_desc, short_html, long_desc, long_html, encoded_hints ' \
                 'FROM cache'
         geocaches = [dict(row) for row in geocache_db.execute(stmt)]
@@ -170,26 +165,7 @@ class GeocacheListApi2(Resource):
         return data
 
 
-class GeocacheListApi(Resource):
-
-    def get(self, db_name):
-        if db_name is None:
-            return {'msg': 'Database name missing.'}, 400 # bad request
-        file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
-        if not os.path.isfile(file_path):
-            return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
-        geocache_db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
-        data, errors = GeocacheListSchema().dump({
-            'geocaches': geocache_db.session.query(Cache).all(),
-            'db_name': db_name,
-            'nbr_caches': geocache_db.session.query(func.count(Cache.id)).scalar()
-            })
-        if errors:
-            errors['msg'] = 'Internal error, could not dump list of geocaches.'
-            return errors, 422
-        return data
-
-api.add_resource(GeocacheListApi2, '/andyBee/api/v1.0/db/<string:db_name>/geocaches')
+api.add_resource(GeocacheListApi, '/andyBee/api/v1.0/db/<string:db_name>/geocaches')
 
 class GeocacheSingleSchema(Schema):
     geocache   = fields.Nested(GeocacheFullSchema)
@@ -201,10 +177,67 @@ class GeocacheApi(Resource):
         file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
         if not os.path.isfile(file_path):
             return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
-        geocache_db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+        geocache_db.set_db(file_path)
+
+        stmt = '''SELECT 
+                cache.id as id,
+                cache.archived as archived,
+                cache.available as available,
+                cache_container.name as container,
+                cache_country.name as country,
+                cache.difficulty as difficulty,
+                cache.encoded_hints as encoded_hints,
+                cache.gc_id as gc_id,
+                cache.last_logs as last_logs,
+                cache.lat as lat,
+                cache.lon as lon,
+                cache.long_desc as long_desc,
+                cache.long_html as long_html,
+                cache.name as name,
+                cacher.name as owner,
+                cache.placed_by as placed_by,
+                cache.short_desc as short_desc,
+                cache.short_html as short_html,
+                cache_state.name as state,
+                cache.terrain as terrain,
+                cache_type.name as type
+                FROM cache
+                INNER JOIN cache_container ON cache_container.id = cache.container_id
+                INNER JOIN cache_country ON cache_country.id = cache.country_id
+                INNER JOIN cacher ON cacher.id = cache.owner_id
+                INNER JOIN cache_state ON cache_state.id = cache.state_id
+                INNER JOIN cache_type ON cache_type.id = cache.type_id
+                WHERE cache.id = ?
+        '''
+        geocache = dict(geocache_db.execute(stmt,(id,)).fetchone())
+
+        stmt = '''SELECT
+                attribute.inc as inc,
+                attribute.name as name
+                FROM cache_to_attribute
+                INNER JOIN attribute ON attribute.id = cache_to_attribute.attribute_id
+                WHERE cache_to_attribute.cache_id = ?
+                '''
+        geocache['attributes'] = [dict(row) for row in geocache_db.execute(stmt, (id,))]
+
+        stmt = '''SELECT
+                log.date as date,
+                cacher.name as finder,
+                log.lat as lat,
+                log.lon as lon,
+                log.text as text,
+                log.text_encoded as text_encoded,
+                log_type.name as type
+                FROM log
+                INNER JOIN cacher ON cacher.id = log.finder_id
+                INNER JOIN log_type ON log_type.id = log.type_id
+                WHERE log.cache_id = ?
+                '''
+        geocache['logs'] = [dict(row) for row in geocache_db.execute(stmt, (id,))]
+
         data, errors = GeocacheSingleSchema().dump({
-            'geocache': geocache_db.session.query(Cache).get(id)
-            })
+            'geocache': geocache
+        })
         if errors:
             errors['msg'] = 'Internal error, could not dump geocache data.'
             return errors, 422

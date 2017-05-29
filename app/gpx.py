@@ -132,6 +132,7 @@ def import_gpx(filename):
         geocache_db.commit()
 
 def parse_wpt(node):
+    cache = None
     wpt = Waypoint()
     wpt.lat = float(node.get("lat"))
     wpt.lon = float(node.get("lon"))
@@ -154,15 +155,23 @@ def parse_wpt(node):
         elif child.tag == GPX+"cmt":
             wpt.cmt = child.text
         elif child.tag == GS+"cache":
-            wpt.cache_id = parse_cache(child, wpt.lat, wpt.lon)
+            cache = parse_cache(child)
+            wpt.cache_id = cache.id
+    if cache is not None:
+        # copy some values from the waypoint, so that join statements
+        # can be avoided
+        cache.lat = wpt.lat
+        cache.lon = wpt.lon
+        cache.gc_id = wpt.name
+        stmt, paras = cache.insert()
+        geocache_db.execute(stmt, paras)
+
     stmt, paras = wpt.insert()
     geocache_db.execute(stmt, paras)
 
-def parse_cache(node, lat, lon):
+def parse_cache(node):
     logs = []
     cache = Cache()
-    cache.lat = lat
-    cache.lon = lon
     cache.id = int(node.get("id"))
     cache.available = (node.get("available") == "True")
     cache.archived = (node.get("archived") == "True")
@@ -207,11 +216,7 @@ def parse_cache(node, lat, lon):
     sorted_logs = sorted(logs, key=lambda x: x.date, reverse=True)
     cache.last_logs = ";".join([l.type for l in sorted_logs[:5]])
 
-    stmt, paras = cache.insert()
-    geocache_db.execute(stmt, paras)
-
-    return cache.id
-
+    return cache
 
 def parse_attribute(node, cache_id):
     id = geocache_db.unique_factory(Attribute,  
