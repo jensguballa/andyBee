@@ -3,9 +3,9 @@ import werkzeug
 from flask_restful import Resource, reqparse, request
 from app import app, api, geocache_db
 from marshmallow import Schema, fields
-from sqlalchemy import func, text
-from sqlalchemy.orm import joinedload, noload, subqueryload
-from gpx import import_gpx, export_gpx, GpxImporter
+#from sqlalchemy import func, text
+#from sqlalchemy.orm import joinedload, noload, subqueryload
+from gpx import export_gpx, GpxImporter
 from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState
 from flask import send_from_directory, send_file, Response, make_response
 from app.api import json_to_object

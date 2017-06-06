@@ -102,7 +102,7 @@
                 serv.db_name = db_name;
                 PreferenceService.update_used_db(db_name);
                 serv.nbr_caches = 0;
-                geocache_list_unfiltered = result.geocaches;
+                geocache_list_unfiltered = [];
                 serv.geocache_list = [];
                 $rootScope.$broadcast('geocaches_updated');
                 if (success_cb) {

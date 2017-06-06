@@ -70,10 +70,33 @@
                 }).result.then(on_dialog_ok, function(){});
 
                 function on_dialog_ok (db_name) {
-                    GeocacheService.read_list(db_name);
+                    var busy_dialog = $uibModal.open({
+                        animation: false,
+                        controller: 'BusyCtrl',
+                        controllerAs: 'busy',
+                        templateUrl: '/static/main/busy.html',
+                        resolve: {
+                            data: busy_dialog_texts
+                        }
+                    });
+                    busy_dialog.result.then(function(){}, function(){});
+
+                    GeocacheService.read_list(db_name, busy_dialog.dismiss, on_read_error);
+
+                    function on_read_error(result) {
+                        busy_dialog.dismiss();
+                        LoggingService.log({
+                            msg: ERROR.FAILURE_GEOCACHE_FROM_SERVER, 
+                            http_response: result,
+                            modal: true
+                        });
+                    }
+
+                    function busy_dialog_texts() {
+                        return {headline: 'Please wait.', bar_text: 'Loading Geocaches...'};
+                    }
                 }
             }
-
         }
 
         function import_gpx_dialog () {
@@ -85,18 +108,38 @@
                 controller: 'GpxImportCtrl',
                 controllerAs: "import",
                 templateUrl: '/static/gpx/import.html',
-            }).result.then(on_import_gpx_ok, on_gpx_import_error);
+            }).result.then(on_dialog_ok, function(){});
 
-            function on_import_gpx_ok (data) {
-                GpxService.import_gpx(data);
-            }
-
-            function on_gpx_import_error (result) {
-                LoggingService.log({
-                    msg: ERROR.FAILURE_GPX_IMPORT, 
-                    http_response: result,
-                    modal: true,
+            function on_dialog_ok (data) {
+                var busy_dialog = $uibModal.open({
+                    animation: false,
+                    controller: 'BusyCtrl',
+                    controllerAs: 'busy',
+                    templateUrl: '/static/main/busy.html',
+                    resolve: {
+                        data: busy_dialog_texts
+                    }
                 });
+                busy_dialog.result.then(function(){}, function(){});
+
+                GpxService.import_gpx(data, read_list, on_gpx_import_error);
+
+                function read_list() {
+                    GeocacheService.read_list(vm.geocache.db_name, busy_dialog.dismiss, on_gpx_import_error);
+                }
+
+                function on_gpx_import_error (result) {
+                    busy_dialog.dismiss();
+                    LoggingService.log({
+                        msg: ERROR.FAILURE_GPX_IMPORT, 
+                        http_response: result,
+                        modal: true,
+                    });
+                }
+
+                function busy_dialog_texts() {
+                    return {headline: 'Please wait.', bar_text: 'Importing Geocaches...'};
+                }
             }
         }
 

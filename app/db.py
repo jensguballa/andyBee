@@ -1,5 +1,3 @@
-#from sqlalchemy import create_engine
-#from sqlalchemy.orm import scoped_session, sessionmaker
 import sqlite3
 import datetime
 from pprint import pprint
