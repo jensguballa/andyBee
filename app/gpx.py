@@ -1,8 +1,10 @@
 from lxml import etree
 from app import geocache_db
-from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState, Waypoint, WaypointSym, WaypointType, Log, LogType, Attribute
+from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState, CacheToAttribute, Waypoint, WaypointSym, WaypointType, Log, LogType, Attribute
+from db import DbInterface
 import re
 import datetime
+import time
 
 GPX_NS = "http://www.topografix.com/GPX/1/0"
 GPX = "{%s}" % GPX_NS
@@ -15,6 +17,60 @@ latmin = 0
 latmax = 0
 lonmin = 0
 lonmax = 0
+
+deleted_wpt = {}
+log_pool = {}
+cacher_pool = None
+
+max_logs = 5
+pref_owner = 'bauchansatz'
+pref_owner_id = 0
+
+class LogTypePool():
+
+    def __init__(self):
+        self._pool = {}
+        for row in geocache_db.execute('SELECT id, name FROM log_type'):
+            self._pool[row['id']] = row['name']
+
+    def get_name(self, id):
+        if id in self._pool:
+            return self._pool[id]
+        else:
+            return None
+
+    def create_singleton(self, id, name):
+        if id in self._pool:
+            if name != self._pool[id]:
+                geocache_db.execute('UPDATE log_type SET name = ? WHERE id = ?', (name, id))
+                self._pool[id] = name
+        else:
+            geocache_db.execute('INSERT INTO log_type (id, name) VALUES (?,?)', (id, name))
+            self._pool[id] = name
+
+class CacherPool():
+
+    def __init__(self, pref_owner):
+        self._pool = {}
+        self._pref_owner_id = None
+        for row in geocache_db.execute('SELECT id, name FROM cacher'):
+            self._pool[int(row['id'])] = row['name']
+            if row['name'] == pref_owner:
+                self._pref_owner_id = int(row['id'])
+
+    def get_pref_owner_id(self):
+        return self._pref_owner_id
+
+    def create_singleton(self, id, name):
+        if id in self._pool:
+            if name != self._pool[id]:
+                geocache_db.execute('UPDATE cacher SET name = ? WHERE id = ?', (name, id))
+                self._pool[id] = name
+        else:
+            geocache_db.execute('INSERT INTO cacher (id, name) VALUES (?,?)', (id, name))
+            self._pool[id] = name
+
+
 
 def wpt_to_xml(parent, waypoint, data):
     data['latmin'] = min(data['latmin'], waypoint.lat)
@@ -119,135 +175,601 @@ def export_gpx(data):
     et = etree.ElementTree(root)
     return etree.tostring(et, pretty_print=True, encoding="UTF-8", xml_declaration=True)
 
+
+def fill_log_pool():
+    pool = {}
+    rows = geocache_db.execute('''SELECT id, date, cache_id, finder_id, type_id FROM log''')
+    for row in rows:
+        if row['cache_id'] not in pool:
+            pool[row['cache_id']] = {}
+        pool[row['cache_id']][row['id']] = {'id': row['id'], 'date': row['date'], 'finder_id': row['finder_id'], 'type_id': row['type_id'], 'action': 'none'}
+    return pool
+
+def merge_attributes(attributes, cache_id, cache_exists):
+    if cache_exists:
+        geocache_db.execute('DELETE FROM cache_to_attribute WHERE cache_id = ?', (cache_id,))
+    for attr in attributes:
+        id = geocache_db.create_singleton_id(Attribute, attr.db) 
+        geocache_db.insert(CacheToAttribute, {'cache_id': cache_id, 'attribute_id': id})
+
+def merge_logs(logs, cache_id):
+    global log_pool
+    global cacher_pool
+    if cache_id in log_pool:
+        db_logs = log_pool[cache_id]
+    else:
+        db_logs = {}
+
+    merged_array = []
+    for log in logs:
+        if log.db['id'] in db_logs:
+            del db_logs[log.db['id']]
+            merged_array.append({'id': log.db['id'], 'date': log.db['date'], 'finder': log.finder, 'action': 'update', 'db': log.db})
+        else:
+            merged_array.append({'id': log.db['id'], 'date': log.db['date'], 'finder': log.finder, 'action': 'insert', 'db': log.db})
+
+    for log in db_logs.values():
+        merged_array.append(log)
+
+    sorted_logs = sorted(merged_array, key=lambda log: log['date'], reverse=True)
+
+    log_cntr = 1
+    for log in sorted_logs:
+        if (log_cntr <= max_logs) or (log['db']['finder_id'] == pref_owner_id):
+            if log['action'] == 'insert':
+                cacher_pool.create_singleton(log['db']['finder_id'], log['finder'])
+                #geocache_db.create_singleton_id(Cacher, {'id': log['db']['finder_id'], 'name': log['finder']})
+                geocache_db.insert(Log, log['db'])
+            elif log['action'] == 'update':
+                cacher_pool.create_singleton(log['db']['finder_id'], log['finder'])
+                #geocache_db.create_singleton_id(Cacher, {'id': log['db']['finder_id'], 'name': log['finder']})
+                geocache_db.update(Log, log['id'], log['db'])
+        else:
+            if log['action'] == 'none':
+                geocache_db.execute('DELETE FROM log WHERE id = ?', (log['id'],))
+        log_cntr = log_cntr + 1
+
+    #cache.last_logs = ";".join([l.type for l in sorted_logs[:5]])
+
+
+def merge_cache(cache, cache_exists):
+    if cache_exists:
+        geocache_db.update(Cache, cache.db['id'], cache.db)
+    else:
+        geocache_db.insert(Cache, cache.db)
+    merge_attributes(cache.attributes, cache.db['id'], cache_exists)
+    merge_logs(cache.logs, cache.db['id'])
+
+
+
+def merge_wpt(wpt):
+    gc_code = wpt.db['gc_code']
+    cache_exists = geocache_db.get_singleton_id(Cache, {'gc_code': gc_code}) != None
+    if cache_exists:
+        if gc_code not in deleted_wpt:
+            geocache_db.execute('DELETE FROM waypoint WHERE gc_code = ?', (gc_code,))
+            deleted_wpt[gc_code] = True
+    geocache_db.insert(Waypoint, wpt.db)
+    if wpt.cache is not None:
+        merge_cache(wpt.cache, cache_exists)
+
+
 def import_gpx(filename):
+    global log_pool
+    global cacher_pool
+    global pref_owner
+    cacher_pool = CacherPool(pref_owner)
     try:
         tree = etree.parse(filename)
     except:
         return
+    deleted_wpt = {}
+    log_pool = fill_log_pool()
+
+
+#    row = geocache_db.execute('SELECT id FROM cacher WHERE name = ?', (pref_owner,)).fetchone()
+#    if row is not None:
+#        pref_owner_id = row['id']
+#    else:
+#        pref_owner_id = None
+
+    pref_owner_id = cacher_pool.get_pref_owner_id()
+
+
     gpx = tree.getroot()
     if gpx.tag == GPX+"gpx":
         for node in gpx:
             if node.tag == GPX+"wpt":
-                parse_wpt(node)
-        geocache_db.commit()
+                wpt = parse_wpt(node)
+                merge_wpt(wpt)
+    log_pool = {}
+    cacher_pool = None
+
+    geocache_db.execute('''UPDATE waypoint 
+    SET cache_id = (SELECT cache.id FROM cache WHERE cache.gc_code = waypoint.gc_code) 
+    WHERE cache_id IS NULL''')
+
+    geocache_db.execute('DELETE FROM waypoint WHERE cache_id IS NULL') 
+    geocache_db.commit()
+
+    gpx = tree.getroot()
 
 def parse_wpt(node):
-    cache = None
     wpt = Waypoint()
-    wpt.lat = float(node.get("lat"))
-    wpt.lon = float(node.get("lon"))
+    wpt.cache = None
+    wpt.db['lat'] = float(node.get("lat"))
+    wpt.db['lon'] = float(node.get("lon"))
     for child in node:
         if child.tag == GPX+"time":
-            wpt.time = child.text
+            wpt.db['time'] = child.text
         elif child.tag == GPX+"name":
-            wpt.name = child.text
-            wpt.gc_code = re.sub('^..', 'GC', wpt.name)
+            wpt.db['name'] = child.text
+            wpt.db['gc_code'] = re.sub('^..', 'GC', child.text)
         elif child.tag == GPX+"desc":
-            wpt.descr = child.text
+            wpt.db['descr'] = child.text
         elif child.tag == GPX+"url":
-            wpt.url = child.text
+            wpt.db['url'] = child.text
         elif child.tag == GPX+"urlname":
-            wpt.urlname = child.text
+            wpt.db['urlname'] = child.text
         elif child.tag == GPX+"sym":
-            wpt.sym_id = geocache_db.unique_factory(WaypointSym, name=child.text)
+            wpt.db['sym_id'] = geocache_db.create_singleton_id(WaypointSym, {'name': child.text})
         elif child.tag == GPX+"type":
-            wpt.type_id = geocache_db.unique_factory(WaypointType, name=child.text)
+            wpt.db['type_id'] = geocache_db.create_singleton_id(WaypointType, {'name': child.text})
         elif child.tag == GPX+"cmt":
-            wpt.cmt = child.text
+            wpt.db['cmt'] = child.text
         elif child.tag == GS+"cache":
-            cache = parse_cache(child)
-            wpt.cache_id = cache.id
-    if cache is not None:
+            wpt.cache = parse_cache(child)
+            wpt.db['cache_id'] = wpt.cache.db['id']
+    if wpt.cache is not None:
         # copy some values from the waypoint, so that join statements
         # can be avoided
-        cache.lat = wpt.lat
-        cache.lon = wpt.lon
-        cache.gc_id = wpt.name
-        stmt, paras = cache.insert()
-        geocache_db.execute(stmt, paras)
-
-    stmt, paras = wpt.insert()
-    geocache_db.execute(stmt, paras)
+        wpt.cache.db['lat'] = wpt.db['lat']
+        wpt.cache.db['lon'] = wpt.db['lon']
+        wpt.cache.db['gc_code'] = wpt.db['name']
+    return wpt
 
 def parse_cache(node):
-    logs = []
+    global cacher_pool
     cache = Cache()
-    cache.id = int(node.get("id"))
-    cache.available = (node.get("available") == "True")
-    cache.archived = (node.get("archived") == "True")
+    cache.db['id'] = int(node.get("id"))
+    cache.db['available'] = (node.get("available") == "True")
+    cache.db['archived'] = (node.get("archived") == "True")
     for child in node:
         if child.tag == GS+"name":
-            cache.name = child.text
+            cache.db['name'] = child.text
         elif child.tag == GS+"placed_by":
-            cache.placed_by = child.text
+            cache.db['placed_by'] = child.text
         elif child.tag == GS+"owner":
-            cache.owner_id = geocache_db.unique_factory(Cacher, id=child.get("id") , name=child.text)
+            owner_id = int(child.get("id"))
+            cacher_pool.create_singleton(owner_id, child.text)
+            cache.db['owner_id'] =  owner_id 
+            # geocache_db.create_singleton_id(Cacher, {'id': child.get("id") , 'name': child.text})
         elif child.tag == GS+"type":
-            cache.type_id = geocache_db.unique_factory(CacheType, name=child.text)
+            cache.db['type_id'] = geocache_db.create_singleton_id(CacheType, {'name': child.text})
         elif child.tag == GS+"container":
-            cache.container_id = geocache_db.unique_factory(CacheContainer, name=child.text)
+            cache.db['container_id'] = geocache_db.create_singleton_id(CacheContainer, {'name': child.text})
         elif child.tag == GS+"difficulty":
-            cache.difficulty = float(child.text)
+            cache.db['difficulty'] = float(child.text)
         elif child.tag == GS+"terrain":
-            cache.terrain = float(child.text)
+            cache.db['terrain'] = float(child.text)
         elif child.tag == GS+"country":
-            cache.country_id = geocache_db.unique_factory(CacheCountry, name=child.text)
+            cache.db['country_id'] = geocache_db.create_singleton_id(CacheCountry, {'name': child.text})
         elif child.tag == GS+"state":
-            cache.state_id = geocache_db.unique_factory(CacheState, name=child.text)
+            cache.db['state_id'] = geocache_db.create_singleton_id(CacheState, {'name': child.text})
         elif child.tag == GS+"short_description":
-            cache.short_desc = child.text
-            cache.short_html = (child.get("html") == "True")
+            cache.db['short_desc'] = child.text
+            cache.db['short_html'] = (child.get("html") == "True")
         elif child.tag == GS+"long_description":
-            cache.long_desc = child.text
-            cache.long_html = (child.get("html") == "True")
+            cache.db['long_desc'] = child.text
+            cache.db['long_html'] = (child.get("html") == "True")
         elif child.tag == GS+"encoded_hints":
-            cache.encoded_hints = child.text
+            cache.db['encoded_hints'] = child.text
         elif child.tag == GS+"attributes":
+            cache.attributes = []
             for node_attr in child:
                 if node_attr.tag == GS+"attribute":
-                    parse_attribute(node_attr, cache.id)
-#                    cache.attributes.append(parse_attribute(node_attr))
+                    cache.attributes.append(parse_attribute(node_attr))
         elif child.tag == GS+"logs":
+            cache.logs = []
             for node_log in child:
                 if node_log.tag == GS+"log":
-                    logs.append(parse_log(node_log, cache.id))
+                    cache.logs.append(parse_log(node_log, cache.db['id']))
 
     # Now return the log types of the 5 latest logs as a string
-    sorted_logs = sorted(logs, key=lambda x: x.date, reverse=True)
-    cache.last_logs = ";".join([l.type for l in sorted_logs[:5]])
+    #sorted_logs = sorted(logs, key=lambda x: x.date, reverse=True)
+    #cache.last_logs = ";".join([l.type for l in sorted_logs[:5]])
 
     return cache
 
-def parse_attribute(node, cache_id):
-    id = geocache_db.unique_factory(Attribute,  
-            gc_id=int(node.get("id")),
-            inc=(node.get("inc") == "1"),
-            name=node.text)
-    geocache_db.execute('INSERT INTO cache_to_attribute (cache_id, attribute_id) VALUES (?,?)', (cache_id, id))
+
+
+#def parse_cache(node):
+#    logs = []
+#    cache = Cache()
+#    cache.id = int(node.get("id"))
+#    cache.available = (node.get("available") == "True")
+#    cache.archived = (node.get("archived") == "True")
+#    for child in node:
+#        if child.tag == GS+"name":
+#            cache.name = child.text
+#        elif child.tag == GS+"placed_by":
+#            cache.placed_by = child.text
+#        elif child.tag == GS+"owner":
+#            cache.owner_id = geocache_db.create_singleton_id(Cacher, id=child.get("id") , name=child.text)
+#        elif child.tag == GS+"type":
+#            cache.type_id = geocache_db.create_singleton_id(CacheType, name=child.text)
+#        elif child.tag == GS+"container":
+#            cache.container_id = geocache_db.create_singleton_id(CacheContainer, name=child.text)
+#        elif child.tag == GS+"difficulty":
+#            cache.difficulty = float(child.text)
+#        elif child.tag == GS+"terrain":
+#            cache.terrain = float(child.text)
+#        elif child.tag == GS+"country":
+#            cache.country_id = geocache_db.create_singleton_id(CacheCountry, name=child.text)
+#        elif child.tag == GS+"state":
+#            cache.state_id = geocache_db.create_singleton_id(CacheState, name=child.text)
+#        elif child.tag == GS+"short_description":
+#            cache.short_desc = child.text
+#            cache.short_html = (child.get("html") == "True")
+#        elif child.tag == GS+"long_description":
+#            cache.long_desc = child.text
+#            cache.long_html = (child.get("html") == "True")
+#        elif child.tag == GS+"encoded_hints":
+#            cache.encoded_hints = child.text
+#        elif child.tag == GS+"attributes":
+#            for node_attr in child:
+#                if node_attr.tag == GS+"attribute":
+#                    parse_attribute(node_attr, cache.id)
+##                    cache.attributes.append(parse_attribute(node_attr))
+#        elif child.tag == GS+"logs":
+#            for node_log in child:
+#                if node_log.tag == GS+"log":
+#                    logs.append(parse_log(node_log, cache.id))
+#
+#    # Now return the log types of the 5 latest logs as a string
+#    sorted_logs = sorted(logs, key=lambda x: x.date, reverse=True)
+#    cache.last_logs = ";".join([l.type for l in sorted_logs[:5]])
+#
+#    return cache
+
+def parse_attribute(node):
+    attr = Attribute()
+    attr.db['gc_id'] = int(node.get("id"))
+    attr.db['inc'] = (node.get("inc") == "1")
+    attr.db['name'] = node.text
+    return attr
+#    id = geocache_db.create_singleton_id(Attribute,  
+#            gc_id=int(node.get("id")),
+#            inc=(node.get("inc") == "1"),
+#            name=node.text)
+#    geocache_db.execute('INSERT INTO cache_to_attribute (cache_id, attribute_id) VALUES (?,?)', (cache_id, id))
 
 
 def parse_log(node, cache_id):
-    type_txt = None
     log = Log()
-    log.id = int(node.get("id"))
-    log.cache_id = cache_id
+    log.db['id'] = int(node.get("id"))
+    log.db['cache_id'] = cache_id
     for log_node in node:
         if log_node.tag == GS+"date":
-            log.date = log_node.text
+            log.db['date'] = log_node.text
         elif log_node.tag == GS+"type":
-            log.type_id = geocache_db.unique_factory(LogType, name=log_node.text)
-            type_txt = log_node.text
+            log.db['type_id'] = geocache_db.create_singleton_id(LogType, {'name': log_node.text})
         elif log_node.tag == GS+"finder":
-            log.finder_id = geocache_db.unique_factory(Cacher, id=log_node.get("id"), name=log_node.text)
+            log.db['finder_id'] = int(log_node.get("id"))
+            log.finder = log_node.text
         elif log_node.tag == GS+"text":
-            log.text = log_node.text
-            log.text_encoded = (log_node.get("encoded") == "True")
+            log.db['text'] = log_node.text
+            log.db['text_encoded'] = (log_node.get("encoded") == "True")
         elif log_node.tag == GS+"log_wpt":
-            log.lat = float(log_node.get("lat"))
-            log.lon = float(log_node.get("lon"))
+            log.db['lat'] = float(log_node.get("lat"))
+            log.db['lon'] = float(log_node.get("lon"))
 
-    stmt, paras = log.insert()
-    geocache_db.execute(stmt, paras)
-    log.type = type_txt    
+#    stmt, paras = log.insert()
+#    geocache_db.execute(stmt, paras)
+#    log.type = type_txt    
     return log
+
+
+
+class GpxImporter():
+
+    def __init__(self, geocache_db, max_logs, pref_owner):
+        self.waypoint_itf = DbInterface(geocache_db, Waypoint)
+        self.waypoint_sym_itf = DbInterface(geocache_db, WaypointSym)
+        self.waypoint_type_itf = DbInterface(geocache_db, WaypointType)
+        self.cache_itf = DbInterface(geocache_db, Cache)
+        self.cache_type_itf = DbInterface(geocache_db, CacheType)
+        self.cache_state_itf = DbInterface(geocache_db, CacheState)
+        self.cache_country_itf = DbInterface(geocache_db, CacheCountry)
+        self.cache_container_itf = DbInterface(geocache_db, CacheContainer)
+        self.cache_to_attribute_itf = DbInterface(geocache_db, CacheToAttribute)
+        self.cacher_itf = CacherInterface(geocache_db, Cacher)
+        self.log_type_itf = DbInterface(geocache_db, LogType)
+        self.log_itf = LogInterface(geocache_db, Log)
+        self.db = geocache_db
+        self.deleted_wpt = {}
+        self.max_logs = max_logs
+        self.pref_owner = pref_owner
+
+    def import_gpx(self, gpx_file):
+        print("DB001:")
+        try:
+            start = time.time()
+            tree = etree.parse(gpx_file)
+            end = time.time()
+            print("DB01: ", end - start)
+        except:
+            return
+        gpx = tree.getroot()
+
+        if gpx.tag == GPX+"gpx":
+            for node in gpx:
+                if node.tag == GPX+"wpt":
+                    wpt = self._parse_wpt(node)
+                    self._merge_wpt(wpt)
+        geocache_db.execute('''UPDATE waypoint 
+        SET cache_id = (SELECT cache.id FROM cache WHERE cache.gc_code = waypoint.gc_code) 
+        WHERE cache_id IS NULL''')
+        self.db.commit()
+
+    def _parse_wpt(self, node):
+        wpt = Waypoint()
+        wpt.cache = None
+        wpt.db['lat'] = float(node.get("lat"))
+        wpt.db['lon'] = float(node.get("lon"))
+        for child in node:
+            if child.tag == GPX+"time":
+                wpt.db['time'] = child.text
+            elif child.tag == GPX+"name":
+                wpt.db['name'] = child.text
+                wpt.db['gc_code'] = re.sub('^..', 'GC', child.text)
+            elif child.tag == GPX+"desc":
+                wpt.db['descr'] = child.text
+            elif child.tag == GPX+"url":
+                wpt.db['url'] = child.text
+            elif child.tag == GPX+"urlname":
+                wpt.db['urlname'] = child.text
+            elif child.tag == GPX+"sym":
+                #wpt.db['sym_id'] = geocache_db.create_singleton_id(WaypointSym, {'name': child.text})
+                wpt.db['sym_id'] = self.waypoint_sym_itf.create_singleton_value('name', child.text)
+            elif child.tag == GPX+"type":
+                #wpt.db['type_id'] = geocache_db.create_singleton_id(WaypointType, {'name': child.text})
+                wpt.db['type_id'] = self.waypoint_type_itf.create_singleton_value('name', child.text)
+            elif child.tag == GPX+"cmt":
+                wpt.db['cmt'] = child.text
+            elif child.tag == GS+"cache":
+                wpt.cache = self._parse_cache(child)
+                wpt.db['cache_id'] = wpt.cache.db['id']
+        if wpt.cache is not None:
+            # copy some values from the waypoint, so that join statements
+            # can be avoided
+            wpt.cache.db['hidden'] = wpt.db['time']
+            wpt.cache.db['lat'] = wpt.db['lat']
+            wpt.cache.db['lon'] = wpt.db['lon']
+            wpt.cache.db['gc_code'] = wpt.db['name']
+            wpt.cache.db['url'] = wpt.db['url']
+        return wpt
+
+
+    def _parse_cache(self, node):
+        cache = Cache()
+        cache.db['id'] = int(node.get("id"))
+        cache.db['available'] = (node.get("available") == "True")
+        cache.db['archived'] = (node.get("archived") == "True")
+        for child in node:
+            if child.tag == GS+"name":
+                cache.db['name'] = child.text
+            elif child.tag == GS+"placed_by":
+                cache.db['placed_by'] = child.text
+            elif child.tag == GS+"owner":
+                owner_id = int(child.get("id"))
+                self.cacher_itf.create_singleton(owner_id, child.text)
+                cache.db['owner_id'] =  owner_id 
+                # geocache_db.create_singleton_id(Cacher, {'id': child.get("id") , 'name': child.text})
+            elif child.tag == GS+"type":
+                #cache.db['type_id'] = geocache_db.create_singleton_id(CacheType, {'name': child.text})
+                cache.db['type_id'] = self.cache_type_itf.create_singleton_value('name', child.text)
+            elif child.tag == GS+"container":
+                #cache.db['container_id'] = geocache_db.create_singleton_id(CacheContainer, {'name': child.text})
+                cache.db['container_id'] = self.cache_container_itf.create_singleton_value('name', child.text)
+            elif child.tag == GS+"difficulty":
+                cache.db['difficulty'] = float(child.text)
+            elif child.tag == GS+"terrain":
+                cache.db['terrain'] = float(child.text)
+            elif child.tag == GS+"country":
+                #cache.db['country_id'] = geocache_db.create_singleton_id(CacheCountry, {'name': child.text})
+                cache.db['country_id'] = self.cache_country_itf.create_singleton_value('name', child.text)
+            elif child.tag == GS+"state":
+                #cache.db['state_id'] = geocache_db.create_singleton_id(CacheState, {'name': child.text})
+                cache.db['state_id'] = self.cache_state_itf.create_singleton_value('name', child.text)
+            elif child.tag == GS+"short_description":
+                cache.db['short_desc'] = child.text
+                cache.db['short_html'] = (child.get("html") == "True")
+            elif child.tag == GS+"long_description":
+                cache.db['long_desc'] = child.text
+                cache.db['long_html'] = (child.get("html") == "True")
+            elif child.tag == GS+"encoded_hints":
+                cache.db['encoded_hints'] = child.text
+            elif child.tag == GS+"attributes":
+                cache.attributes = []
+                for node_attr in child:
+                    if node_attr.tag == GS+"attribute":
+                        cache.attributes.append(self._parse_attribute(node_attr))
+            elif child.tag == GS+"logs":
+                cache.logs = []
+                for node_log in child:
+                    if node_log.tag == GS+"log":
+                        cache.logs.append(self._parse_log(node_log, cache.db['id']))
+        return cache
+
+    def _parse_attribute(self, node):
+        attr = Attribute()
+        attr.db['gc_id'] = int(node.get("id"))
+        attr.db['inc'] = (node.get("inc") == "1")
+        attr.db['name'] = node.text
+        return attr
+
+
+    def _parse_log(self, node, cache_id):
+        log = Log()
+        log.db['id'] = int(node.get("id"))
+        log.db['cache_id'] = cache_id
+        for log_node in node:
+            if log_node.tag == GS+"date":
+                log.db['date'] = log_node.text
+            elif log_node.tag == GS+"type":
+                #log.db['type_id'] = geocache_db.create_singleton_id(LogType, {'name': log_node.text})
+                log.db['type_id'] = self.log_type_itf.create_singleton_value('name', log_node.text)
+            elif log_node.tag == GS+"finder":
+                log.db['finder_id'] = int(log_node.get("id"))
+                log.finder = log_node.text
+            elif log_node.tag == GS+"text":
+                log.db['text'] = log_node.text
+                log.db['text_encoded'] = (log_node.get("encoded") == "True")
+            elif log_node.tag == GS+"log_wpt":
+                log.db['lat'] = float(log_node.get("lat"))
+                log.db['lon'] = float(log_node.get("lon"))
+        return log
+
+
+    def _merge_wpt(self, wpt):
+        gc_code = wpt.db['gc_code']
+        #cache_exists = geocache_db.get_singleton_id(Cache, {'gc_code': gc_code}) != None
+        cache_exists = self.cache_itf.get_id('gc_code', gc_code) != None
+        if cache_exists:
+            if gc_code not in self.deleted_wpt:
+                self.waypoint_itf.delete('gc_code', gc_code)
+                self.deleted_wpt[gc_code] = True
+        self.waypoint_itf.insert(wpt.db)
+        if wpt.cache is not None:
+            self._merge_cache(wpt.cache, cache_exists)
+
+    def _merge_cache(self, cache, cache_exists):
+        last_logs = self._merge_logs(cache.logs, cache.db['id'])
+        cache.db['last_logs'] = last_logs
+        if cache_exists:
+            self.cache_itf.update(cache.db['id'], cache.db)
+        else:
+            self.cache_itf.insert(cache.db)
+        self._merge_attributes(cache.attributes, cache.db['id'], cache_exists)
+
+
+    def _merge_logs(self, logs, cache_id):
+        #global cacher_pool
+
+        db_logs = self.log_itf.get_cache_logs(cache_id)
+        merged_array = []
+        for log in logs:
+            if log.db['id'] in db_logs:
+                del db_logs[log.db['id']]
+                merged_array.append({'id': log.db['id'], 'date': log.db['date'], 'finder': log.finder, 'type_id': log.db['type_id'], 'action': 'update', 'db': log.db})
+            else:
+                merged_array.append({'id': log.db['id'], 'date': log.db['date'], 'finder': log.finder, 'type_id': log.db['type_id'], 'action': 'insert', 'db': log.db})
+
+        for log in db_logs.values():
+            merged_array.append(log)
+
+        sorted_logs = sorted(merged_array, key=lambda log: log['date'], reverse=True)
+
+        log_cntr = 1
+        for log in sorted_logs:
+            if (log_cntr <= self.max_logs) or (log['db']['finder_id'] == pref_owner_id):
+                if log['action'] == 'insert':
+                    self.cacher_itf.create_singleton(log['db']['finder_id'], log['finder'])
+                    #cacher_pool.create_singleton(log['db']['finder_id'], log['finder'])
+                    #geocache_db.create_singleton_id(Cacher, {'id': log['db']['finder_id'], 'name': log['finder']})
+                    self.log_itf.insert(log['db'])
+                    #geocache_db.insert(Log, log['db'])
+                elif log['action'] == 'update':
+                    self.cacher_itf.create_singleton(log['db']['finder_id'], log['finder'])
+                    #cacher_pool.create_singleton(log['db']['finder_id'], log['finder'])
+                    #geocache_db.create_singleton_id(Cacher, {'id': log['db']['finder_id'], 'name': log['finder']})
+                    self.log_itf.update(log['id'], log['db'])
+            else:
+                if log['action'] == 'none':
+                    self.log_itf.delete('id', log['id'])
+            log_cntr = log_cntr + 1
+
+        #cache.last_logs = ";".join([l.type for l in sorted_logs[:5]])
+        last_logs = ';'.join([self.log_type_itf.get_value(log['type_id'], 'name')  for log in sorted_logs[:5]])
+        return last_logs
+
+
+
+    def _merge_attributes(self, attributes, cache_id, cache_exists):
+        if cache_exists:
+            self.cache_to_attribute_itf.delete('cache_id', cache_id)
+        for attr in attributes:
+            id = geocache_db.create_singleton_id(Attribute, attr.db) 
+            self.cache_to_attribute_itf.insert({'cache_id': cache_id, 'attribute_id': id})
+
+
+class AttributeInterface():
+
+    def __init__(self, db, cls):
+        DbInterface.__init__(self, db, cls)
+
+    def get_id(self, columns):
+        if self._reverse_lookup_table is None:
+            for row in self.execute('SELECT id, gc_id, inc, name FROM attribute'):
+                vals = '|'.join([row['gc_id'], row['inc'], row['name']])
+                self._reverse_lookup_table[vals] = id
+        vals = '|'.join([columns['gc_id'], columns['inc'], columns['name']])
+        if vals in self._reverse_lookup_table:
+            return self._reverse_lookup_table[vals]
+        else:
+            return None
+
+    def create_singleton(self, columns):
+        id = self.get_id(columns)
+        if id is not None:
+            return id
+        self.insert(columns)
+        id = self.db.cursor.lastrowid
+        vals = '|'.join([columns['gc_id'], columns['inc'], columns['name']])
+        self._reverse_lookup_table[vals] = id
+        if self._lookup_table is not None:
+            self._lookup_table[id] = value
+        return id
+        
+
+class CacherInterface(DbInterface):
+
+    def __init__(self, db, cls):
+        DbInterface.__init__(self, db, cls)
+
+    def create_singleton(self, id, name):
+        db_name = self.get_value(id, 'name')
+        if db_name is None:
+            self.insert({'id': id, 'name': name})
+            self._lookup_table[id] = name
+            if self._reverse_lookup_table is not None:
+                self._reverse_lookup_table[name] = id
+        else:
+            if name != db_name:
+                self.update(id, {'name': name})
+                self._lookup_table[id] = name
+                if self._reverse_lookup_table is not None:
+                    self._reverse_lookup_table[name] = id
+            
+
+
+
+class LogInterface(DbInterface):
+
+    def __init__(self, db, cls):
+        DbInterface.__init__(self, db, cls)
+        self._pool = {}
+        for row in self.execute('SELECT id, date, cache_id, finder_id, type_id FROM log'):
+            if row['cache_id'] not in self._pool:
+                self._pool[row['cache_id']] = {}
+            self._pool[row['cache_id']][row['id']] = {'id': row['id'], 'date': row['date'], 'finder_id': row['finder_id'], 'type_id': row['type_id'], 'action': 'none'}
+
+    def get_cache_logs(self, cache_id):
+        if cache_id in self._pool:
+            return self._pool[cache_id]
+        else:
+            return {}
+
+
 

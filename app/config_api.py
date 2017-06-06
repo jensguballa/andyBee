@@ -50,7 +50,7 @@ class PrefApi(Resource):
         obj, status_code = json_to_object(PrefCompleteSchema())
         if status_code != 200:
             return obj, status_code
-        config_db.update(Preferences, obj['preference'], id)
+        config_db.update(Preferences, id, obj['preference'])
         config_db.commit()
         return {}
 

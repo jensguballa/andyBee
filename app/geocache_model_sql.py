@@ -27,7 +27,8 @@ class Cache(SqlTable):
             country_id INTEGER, 
             difficulty FLOAT, 
             encoded_hints TEXT, 
-            gc_id TEXT,
+            gc_code TEXT,
+            hidden TEXT,
             last_logs TEXT, 
             lat FLOAT, 
             lon FLOAT, 
@@ -41,6 +42,7 @@ class Cache(SqlTable):
             state_id INTEGER, 
             terrain FLOAT, 
             type_id INTEGER, 
+            url TEXT,
             PRIMARY KEY (id), 
             CHECK (available IN (0, 1)), 
             CHECK (archived IN (0, 1)), 
@@ -92,6 +94,7 @@ class CacheState(SqlTable):
 
 class CacheToAttribute(SqlTable):
     _table_name = 'cache_to_attribute'
+    _key = ''
     _create_stmt = """
     CREATE TABLE IF NOT EXISTS cache_to_attribute (
             cache_id INTEGER, 
@@ -120,8 +123,7 @@ class Cacher(SqlTable):
     CREATE TABLE IF NOT EXISTS cacher (
             id INTEGER NOT NULL, 
             name TEXT, 
-            PRIMARY KEY (id), 
-            UNIQUE (name)
+            PRIMARY KEY (id) 
     )
     """
 
@@ -133,12 +135,12 @@ class Log(SqlTable):
             id INTEGER NOT NULL, 
             cache_id INTEGER, 
             date TEXT, 
-            type_id INTEGER, 
             finder_id INTEGER, 
-            text TEXT, 
-            text_encoded BOOLEAN, 
             lat FLOAT, 
             lon FLOAT, 
+            text TEXT, 
+            text_encoded BOOLEAN, 
+            type_id INTEGER, 
             PRIMARY KEY (id), 
             FOREIGN KEY(cache_id) REFERENCES cache (id), 
             FOREIGN KEY(type_id) REFERENCES log_type (id), 

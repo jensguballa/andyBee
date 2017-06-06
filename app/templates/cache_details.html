@@ -7,7 +7,7 @@
                 </div>
                 <div class="pull-left">
                     <div class="container-fluid">
-                        <h4><strong>{{geocache.serv.detail.gc_id|angular}}: {{geocache.serv.detail.title|angular}}</strong> <small>{{geocache.serv.detail.type|angular}}</small></h4>
+                        <h4><strong>{{geocache.serv.detail.gc_code|angular}}: {{geocache.serv.detail.title|angular}}</strong> <small>{{geocache.serv.detail.type|angular}}</small></h4>
                         <h4><strong><geocache-coord lat="{{geocache.serv.detail.lat|angular}}"></geocache-coord>
                                 <geocache-coord lon="{{geocache.serv.detail.lon|angular}}"></geocache-coord></strong>
                             <small>{{geocache.serv.detail.state|angular}}, {{geocache.serv.detail.country|angular}}</small>
@@ -59,7 +59,7 @@
                 <strong>No hint available</strong>
             </div>
             <div ng-if="geocache.serv.detail.encoded_hints != ''">
-                <button class="btn btn-primary btn-sm paragraph" style="width:90px;" ng-click="geocache.serv.detail.show_hint = !geocache.serv.detail.show_hint">{{"{{geocache.serv.detail.show_hint ? 'Hide' : 'Show'}}"}} Hint <span class="glyphicon glyphicon-eye-open"></span></button>
+                <button class="btn btn-primary btn-sm paragraph" style="width:90px; text-align:left;" ng-click="geocache.serv.detail.show_hint = !geocache.serv.detail.show_hint"><span class="glyphicon glyphicon-eye-open"></span> {{"{{geocache.serv.detail.show_hint ? 'Hide' : 'Show'}}"}} Hint</button>
                 <div ng-if="geocache.serv.detail.show_hint">{{geocache.serv.detail.encoded_hints|angular}}</div>
             </div>
         </uib-tab>

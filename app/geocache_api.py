@@ -5,7 +5,7 @@ from app import app, api, geocache_db
 from marshmallow import Schema, fields
 from sqlalchemy import func, text
 from sqlalchemy.orm import joinedload, noload, subqueryload
-from gpx import import_gpx, export_gpx
+from gpx import import_gpx, export_gpx, GpxImporter
 from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState
 from flask import send_from_directory, send_file, Response, make_response
 from app.api import json_to_object
@@ -59,7 +59,7 @@ class WaypointSchema(Schema):
     lon     = fields.Float()
     time    = fields.String()
     name    = fields.String()
-    desc    = fields.String()
+    descr   = fields.String()
     url     = fields.String()
     urlname = fields.String()
     sym     = fields.String()
@@ -73,7 +73,7 @@ class GeocacheBasicSchema(Schema):
     container  = fields.String()
     country    = fields.String()
     difficulty = fields.Float()
-    gc_id      = fields.String()
+    gc_code    = fields.String()
     last_logs  = fields.String()
     lat        = fields.Float()
     lon        = fields.Float()
@@ -82,13 +82,13 @@ class GeocacheBasicSchema(Schema):
     state      = fields.String()
     terrain    = fields.Float()
     title      = fields.String(attribute="name") 
+    url        = fields.String()
     type       = fields.String()
 
 
 class GeocacheFullSchema(GeocacheBasicSchema):
     attributes = fields.List(fields.Nested(AttributeSchema))
-    url        = fields.Function(lambda cache: cache.waypoint.url)
-    hidden     = fields.Function(lambda cache: cache.waypoint.time)
+    hidden     = fields.String()
     short_desc = fields.String()
     short_html = fields.Boolean()
     long_desc  = fields.String()
@@ -140,7 +140,7 @@ class GeocacheListApi(Resource):
 
         stmt = 'SELECT id, available, archived, name, ' \
                 'placed_by, owner_id, type_id, container_id, terrain, difficulty, ' \
-                'country_id, state_id, last_logs, lat, lon, ' \
+                'country_id, state_id, last_logs, lat, lon, gc_code, url, ' \
                 'short_desc, short_html, long_desc, long_html, encoded_hints ' \
                 'FROM cache'
         geocaches = [dict(row) for row in geocache_db.execute(stmt)]
@@ -180,27 +180,29 @@ class GeocacheApi(Resource):
         geocache_db.set_db(file_path)
 
         stmt = '''SELECT 
-                cache.id as id,
-                cache.archived as archived,
-                cache.available as available,
-                cache_container.name as container,
-                cache_country.name as country,
-                cache.difficulty as difficulty,
-                cache.encoded_hints as encoded_hints,
-                cache.gc_id as gc_id,
-                cache.last_logs as last_logs,
-                cache.lat as lat,
-                cache.lon as lon,
-                cache.long_desc as long_desc,
-                cache.long_html as long_html,
-                cache.name as name,
-                cacher.name as owner,
-                cache.placed_by as placed_by,
-                cache.short_desc as short_desc,
-                cache.short_html as short_html,
-                cache_state.name as state,
-                cache.terrain as terrain,
-                cache_type.name as type
+                cache.id AS id,
+                cache.archived AS archived,
+                cache.available AS available,
+                cache_container.name AS container,
+                cache_country.name AS country,
+                cache.difficulty AS difficulty,
+                cache.encoded_hints AS encoded_hints,
+                cache.gc_code AS gc_code,
+                cache.hidden AS hidden,
+                cache.last_logs AS last_logs,
+                cache.lat AS lat,
+                cache.lon AS lon,
+                cache.long_desc AS long_desc,
+                cache.long_html AS long_html,
+                cache.name AS name,
+                cacher.name AS owner,
+                cache.placed_by AS placed_by,
+                cache.short_desc AS short_desc,
+                cache.short_html AS short_html,
+                cache_state.name AS state,
+                cache.terrain AS terrain,
+                cache_type.name AS type,
+                cache.url AS url
                 FROM cache
                 INNER JOIN cache_container ON cache_container.id = cache.container_id
                 INNER JOIN cache_country ON cache_country.id = cache.country_id
@@ -212,8 +214,8 @@ class GeocacheApi(Resource):
         geocache = dict(geocache_db.execute(stmt,(id,)).fetchone())
 
         stmt = '''SELECT
-                attribute.inc as inc,
-                attribute.name as name
+                attribute.inc AS inc,
+                attribute.name AS name
                 FROM cache_to_attribute
                 INNER JOIN attribute ON attribute.id = cache_to_attribute.attribute_id
                 WHERE cache_to_attribute.cache_id = ?
@@ -221,19 +223,37 @@ class GeocacheApi(Resource):
         geocache['attributes'] = [dict(row) for row in geocache_db.execute(stmt, (id,))]
 
         stmt = '''SELECT
-                log.date as date,
-                cacher.name as finder,
-                log.lat as lat,
-                log.lon as lon,
-                log.text as text,
-                log.text_encoded as text_encoded,
-                log_type.name as type
+                log.date AS date,
+                cacher.name AS finder,
+                log.lat AS lat,
+                log.lon AS lon,
+                log.text AS text,
+                log.text_encoded AS text_encoded,
+                log_type.name AS type
                 FROM log
                 INNER JOIN cacher ON cacher.id = log.finder_id
                 INNER JOIN log_type ON log_type.id = log.type_id
                 WHERE log.cache_id = ?
                 '''
         geocache['logs'] = [dict(row) for row in geocache_db.execute(stmt, (id,))]
+
+        stmt = '''SELECT
+                waypoint.lat AS lat,
+                waypoint.lon AS lon, 
+                waypoint.time AS time, 
+                waypoint.name AS name, 
+                waypoint.descr AS descr, 
+                waypoint.url AS url, 
+                waypoint.urlname AS urlname,
+                waypoint_sym.name AS sym,
+                waypoint_type.name AS type,
+                waypoint.cmt AS cmt
+                FROM waypoint
+                INNER JOIN waypoint_sym ON waypoint_sym.id = waypoint.sym_id
+                INNER JOIN waypoint_type ON waypoint_type.id = waypoint.type_id
+                WHERE cache_id = ?
+                '''
+        geocache['waypoints'] = [dict(row) for row in geocache_db.execute(stmt, (id,))]
 
         data, errors = GeocacheSingleSchema().dump({
             'geocache': geocache
@@ -261,7 +281,9 @@ class GpxImportApi(Resource):
         gpx_file = args['gpx_file']
         if gpx_file is None:
             return {'msg': 'GPX file name missing.'}, 400 # bad request
-        import_gpx(gpx_file)
+        gpx_import = GpxImporter(geocache_db, 5, 'bauchansatz')
+        gpx_import.import_gpx(gpx_file)
+        #import_gpx(gpx_file)
         return {} 
 
 api.add_resource(GpxImportApi, '/andyBee/api/v1.0/db/<string:db_name>/gpx_import')

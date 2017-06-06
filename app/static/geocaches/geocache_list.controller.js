@@ -30,7 +30,7 @@
             {id: 5.0, title: '5'}
         ];
         vm.cols = [
-            {field: "gc_id",      title: "Cache",     sortable: "gc_id"     , filter: {gc_id: "text"}},
+            {field: "gc_code",    title: "Cache",     sortable: "gc_code"   , filter: {gc_code: "text"}},
             {field: "distance",   title: "Distance (km)",  sortable: "distance"  },
             {field: "last_logs",  title: "Last Logs"},
             {field: "difficulty", title: "D",         sortable: "difficulty", filter: {difficulty: "select"}, filterData: rating},
