@@ -2,7 +2,7 @@
     <button class="btn btn-primary btn-sm pull-right"
             ng-disabled="!(geolist.tableParams.orderBy().length || geolist.tableParams.hasFilter())"
             ng-click="geolist.reset_filter()">
-        Reset Table Filter <span class="glyphicon glyphicon-filter"></span>
+        <span class="glyphicon glyphicon-filter"></span> Reset Table Filter
     </button>
     <table ng-table-dynamic="geolist.tableParams with geolist.cols" class="table table-condensed table-bordered table-striped">
         <tr ng-repeat="row in $data">
@@ -26,6 +26,7 @@
                         </ul>
                     </div>
                 </div>
+                <geocache-log ng-if="row.found" type="Found it" title="Found by user" class="user_log pull-right"></geocache-log>
             </td>
             <td ng-if="true">{{"{{row.distance|km}}"}}</td>
             <td ng-if="true"><geocache-log ng-repeat="log in row.last_logs.split(';') track by $index" type="{{log|angular}}" title="{{log|angular}}" class="last_log"></geocache-log></td>

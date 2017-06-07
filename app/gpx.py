@@ -234,7 +234,7 @@ class GpxImporter():
             elif child.tag == GPX+"urlname":
                 wpt.db['urlname'] = child.text
             elif child.tag == GPX+"sym":
-                #wpt.db['sym_id'] = geocache_db.create_singleton_id(WaypointSym, {'name': child.text})
+                wpt.sym = child.text
                 wpt.db['sym_id'] = self.waypoint_sym_itf.create_singleton_value('name', child.text)
             elif child.tag == GPX+"type":
                 #wpt.db['type_id'] = geocache_db.create_singleton_id(WaypointType, {'name': child.text})
@@ -252,6 +252,7 @@ class GpxImporter():
             wpt.cache.db['lon'] = wpt.db['lon']
             wpt.cache.db['gc_code'] = wpt.db['name']
             wpt.cache.db['url'] = wpt.db['url']
+            wpt.cache.db['found'] = (wpt.sym == 'Geocache Found')
         return wpt
 
 

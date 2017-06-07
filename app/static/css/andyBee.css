@@ -19,12 +19,27 @@ html {
     border-radius: 0;
 }
 
+.nav-tabs > li > a {
+    background: #eaeaea;
+    color: #444;
+}
+
 .nav-tabs > li.active > a,
 .nav-tabs > li.active > a:hover,
 .nav-tabs > li.active > a:focus
 {
-    background: #f6f5e2;
     outline: 0;
+}
+
+.nav > li.disabled > a {
+    color: #aaa;
+}
+
+.nav > li.disabled > a:hover,
+.nav > li.disabled > a:focus {
+    background: #eaeaea;
+    color: #aaa;
+    border-color: #eaeaea;
 }
 
 .tab-content {
@@ -44,8 +59,22 @@ table.ng-table > thead {
     padding: 8px;
 }
 
+.nav > li > {
+    background-color: #eaeaea;
+}
+
+.nav > li > a:hover,
+.nav > li > a:focus {
+    background-color: #ddd;
+}
+
+
 .paragraph {
     margin: 0 0 10px 0;
+}
+
+.nowrap {
+    white-space: nowrap;
 }
 
 dl.table-row {
@@ -94,6 +123,13 @@ geocache-log.last_log > img {
     height: 16px;
     padding: 1px;
 }
+
+geocache-log.user_log > img {
+    height: 16px;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
 
 hr.dark {
     border-top: 1px solid #aaa;

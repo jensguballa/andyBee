@@ -73,6 +73,7 @@ class GeocacheBasicSchema(Schema):
     container  = fields.String()
     country    = fields.String()
     difficulty = fields.Float()
+    found      = fields.Boolean()
     gc_code    = fields.String()
     last_logs  = fields.String()
     lat        = fields.Float()
@@ -140,7 +141,7 @@ class GeocacheListApi(Resource):
 
         stmt = 'SELECT id, available, archived, name, ' \
                 'placed_by, owner_id, type_id, container_id, terrain, difficulty, ' \
-                'country_id, state_id, last_logs, lat, lon, gc_code, url, ' \
+                'country_id, state_id, last_logs, lat, lon, gc_code, url, found, ' \
                 'short_desc, short_html, long_desc, long_html, encoded_hints ' \
                 'FROM cache'
         geocaches = [dict(row) for row in geocache_db.execute(stmt)]
@@ -187,6 +188,7 @@ class GeocacheApi(Resource):
                 cache_country.name AS country,
                 cache.difficulty AS difficulty,
                 cache.encoded_hints AS encoded_hints,
+                cache.found AS found,
                 cache.gc_code AS gc_code,
                 cache.hidden AS hidden,
                 cache.last_logs AS last_logs,
@@ -251,7 +253,7 @@ class GeocacheApi(Resource):
                 FROM waypoint
                 INNER JOIN waypoint_sym ON waypoint_sym.id = waypoint.sym_id
                 INNER JOIN waypoint_type ON waypoint_type.id = waypoint.type_id
-                WHERE cache_id = ?
+                WHERE cache_id = ? AND waypoint.name != waypoint.gc_code
                 '''
         geocache['waypoints'] = [dict(row) for row in geocache_db.execute(stmt, (id,))]
 

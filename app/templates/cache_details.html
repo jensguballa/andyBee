@@ -80,6 +80,20 @@
             </div>
         </uib-tab>
         <uib-tab index="3" heading="Waypoints">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Sym</th><th>Name</th><th>Coordinates</th><th>Type</th><th>Title</th><th>Text</th>
+                </tr>
+                <tr ng-repeat="wpt in geocache.serv.detail.waypoints">
+                    <td>{{wpt.sym|angular}}</td>
+                    <td>{{wpt.name|angular}}</td>
+                    <td><geocache-coord lat="{{wpt.lat|angular}}" class="nowrap"></geocache-coord> <geocache-coord lon="{{wpt.lon|angular}}" class="nowrap"></geocache-coord></td>
+                    <td>{{wpt.sym|angular}}</td>
+                    <td>{{wpt.urlname|angular}}</td>
+                    <td>{{wpt.cmt|angular}}</td>
+                </tr>
+            </table>
+
         </uib-tab>
     </uib-tabset>    
 </div>

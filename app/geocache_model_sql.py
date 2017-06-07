@@ -27,6 +27,7 @@ class Cache(SqlTable):
             country_id INTEGER, 
             difficulty FLOAT, 
             encoded_hints TEXT, 
+            found BOOLEAN,
             gc_code TEXT,
             hidden TEXT,
             last_logs TEXT, 
