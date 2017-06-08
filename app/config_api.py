@@ -30,7 +30,7 @@ def json_to_object(schema, data_mandatory=True):
     return data, 200
 
 class PrefSchema(Schema):
-    id = fields.Integer(required=True)
+    id = fields.Integer()
     owner = fields.String()
     default_db = fields.String()
     auto_load = fields.Integer()
@@ -43,7 +43,7 @@ class PrefApi(Resource):
 
     def get(self, id):
         config_db.init()
-        return PrefCompleteSchema().dump({'preference': config_db.get_by_id(Preferences, id)})
+        return PrefCompleteSchema().dump({'preference': dict(config_db.get_by_id(Preferences, id))})
 
     def put(self, id):
         config_db.init()
@@ -108,9 +108,9 @@ class FilterApi(Resource):
 
     def delete(self, id, filter_id):
         config_db.init()
-        config_db.session.query(Filter).filter(Filter.id == filter_id).delete()
-        config_db.session.query(FilterAtom).filter(FilterAtom.filter_id == filter_id).delete()
-        config_db.session.commit()
+        config_db.execute('DELETE FROM filter WHERE id = ?', (filter_id,))
+        config_db.execute('DELETE FROM filter_atom WHERE filter_id = ?', (filter_id,))
+        config_db.commit()
         return {}
 
     def put(self, id, filter_id):
@@ -125,7 +125,7 @@ class FilterApi(Resource):
         for atom in req['filter_atom']:
             config_db.execute('INSERT INTO filter_atom (filter_id, name, op, value) VALUES (?,?,?,?)',
                     (filter_id, atom['name'], atom['op'], atom['value']))
-        config_db.connection.commit()
+        config_db.commit()
         return {}
 
 api.add_resource(FilterApi, '/andyBee/api/v1.0/config/<int:id>/filter/<int:filter_id>')
@@ -139,7 +139,7 @@ class ConfigDb(Db):
             self.set_db(db)
             self.create_all()
             config_db.execute("INSERT INTO preferences (id) VALUES (1)")
-            config_db.connection.commit()
+            config_db.commit()
         else:
             self.set_db(db)
         

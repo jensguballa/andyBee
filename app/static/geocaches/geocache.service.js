@@ -5,8 +5,9 @@
         .module('andyBeeApp')
         .factory('GeocacheService', GeocacheService);
 
-    GeocacheService.$inject = ['$rootScope', '$resource', 'PreferenceService', 'LoggingService', 'DbService', 'FilterService', 'ERROR'];
-    function GeocacheService ($rootScope, $resource, PreferenceService, LoggingService, DbService, FilterService, ERROR) {
+    GeocacheService.$inject = ['$rootScope', '$resource', 'PreferenceService', 'LoggingService', 'DbService', 'FilterService', 'BusyService', 'ERROR'];
+    function GeocacheService ($rootScope, $resource, PreferenceService, LoggingService, DbService, FilterService, BusyService, ERROR) {
+        var modal;
         var rest = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id');
         var geocache_list_unfiltered = [];
         var serv = {
@@ -59,9 +60,10 @@
             $rootScope.$broadcast('center_updated');
         }
 
+
         function read_list (db_name, success_cb, error_cb) {            
             if (DbService.is_in_dblist(db_name)) {
-                error_cb = error_cb || on_get_error;
+                BusyService.open_busy_modal('Please Wait.', 'Loading Geocaches from DB ' + db_name + '...');
                 rest.get({db: db_name}, get_response, error_cb);
             }
             else {
@@ -84,6 +86,7 @@
                 //    geocache.distance = geocache.point.distanceTo(reference_point);
                 //}
                 serv.geocache_list = FilterService.apply_basic_filter(result.geocaches);
+                BusyService.close_busy_modal();
                 $rootScope.$broadcast('geocaches_updated');
                 if (success_cb) {
                     success_cb();
@@ -91,11 +94,17 @@
             }
 
             function on_get_error (result) {
-                LoggingService.log({
-                    msg: ERROR.FAILURE_GEOCACHE_LIST_FROM_SERVER, 
-                    http_response: result,
-                    modal: true
-                });
+                BusyService.close_busy_modal();
+                if (error_cb) {
+                    error_cb();
+                }
+                else {
+                    LoggingService.log({
+                        msg: ERROR.FAILURE_GEOCACHE_LIST_FROM_SERVER, 
+                        http_response: result,
+                        modal: true
+                    });
+                }
             }
 
             function on_db_create_response (result) {

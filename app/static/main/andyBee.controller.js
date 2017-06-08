@@ -70,31 +70,7 @@
                 }).result.then(on_dialog_ok, function(){});
 
                 function on_dialog_ok (db_name) {
-                    var busy_dialog = $uibModal.open({
-                        animation: false,
-                        controller: 'BusyCtrl',
-                        controllerAs: 'busy',
-                        templateUrl: '/static/main/busy.html',
-                        resolve: {
-                            data: busy_dialog_texts
-                        }
-                    });
-                    busy_dialog.result.then(function(){}, function(){});
-
-                    GeocacheService.read_list(db_name, busy_dialog.dismiss, on_read_error);
-
-                    function on_read_error(result) {
-                        busy_dialog.dismiss();
-                        LoggingService.log({
-                            msg: ERROR.FAILURE_GEOCACHE_FROM_SERVER, 
-                            http_response: result,
-                            modal: true
-                        });
-                    }
-
-                    function busy_dialog_texts() {
-                        return {headline: 'Please wait.', bar_text: 'Loading Geocaches...'};
-                    }
+                    GeocacheService.read_list(db_name);
                 }
             }
         }
@@ -111,35 +87,12 @@
             }).result.then(on_dialog_ok, function(){});
 
             function on_dialog_ok (data) {
-                var busy_dialog = $uibModal.open({
-                    animation: false,
-                    controller: 'BusyCtrl',
-                    controllerAs: 'busy',
-                    templateUrl: '/static/main/busy.html',
-                    resolve: {
-                        data: busy_dialog_texts
-                    }
-                });
-                busy_dialog.result.then(function(){}, function(){});
-
-                GpxService.import_gpx(data, read_list, on_gpx_import_error);
+                GpxService.import_gpx(data, read_list);
 
                 function read_list() {
-                    GeocacheService.read_list(vm.geocache.db_name, busy_dialog.dismiss, on_gpx_import_error);
+                    GeocacheService.read_list(vm.geocache.db_name);
                 }
 
-                function on_gpx_import_error (result) {
-                    busy_dialog.dismiss();
-                    LoggingService.log({
-                        msg: ERROR.FAILURE_GPX_IMPORT, 
-                        http_response: result,
-                        modal: true,
-                    });
-                }
-
-                function busy_dialog_texts() {
-                    return {headline: 'Please wait.', bar_text: 'Importing Geocaches...'};
-                }
             }
         }
 

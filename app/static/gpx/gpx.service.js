@@ -5,8 +5,8 @@
         .module('andyBeeApp')
         .factory('GpxService', GpxService);
 
-    GpxService.$inject = ['$resource', '$filter', 'GeocacheService', 'LoggingService', 'ERROR'];
-    function GpxService ($resource, $filter, GeocacheService, LoggingService, ERROR) {
+    GpxService.$inject = ['$resource', '$filter', 'GeocacheService', 'LoggingService', 'BusyService', 'ERROR'];
+    function GpxService ($resource, $filter, GeocacheService, LoggingService, BusyService, ERROR) {
         var rest_import = $resource('/andyBee/api/v1.0/db/:db_name/gpx_import', null, {
             import_gpx: {
                 method: 'POST',
@@ -32,22 +32,29 @@
         return serv;
 
         function import_gpx (data, on_success, on_error) {
-            on_error = on_error || on_import_error;
+            BusyService.open_busy_modal('Please wait.', 'Importing Geocaches from ' + data.gpx_file.name + '.');
             rest_import.import_gpx({db_name: GeocacheService.db_name}, data, 
                     on_import_result, on_error);
 
             function on_import_result(result) {
+                BusyService.close_busy_modal();
                 if (on_success) {
                     on_success();
                 }
             }
 
             function on_import_error(result) {
-                LoggingService.log({
-                    msg: ERROR.FAILURE_GPX_IMPORT, 
-                    http_response: result,
-                    modal: true,
-                });
+                BusyService.close_busy_modal();
+                if (on_error) {
+                    on_error();
+                }
+                else {
+                    LoggingService.log({
+                        msg: ERROR.FAILURE_GPX_IMPORT, 
+                        http_response: result,
+                        modal: true,
+                    });
+                }
             }
         }
 
