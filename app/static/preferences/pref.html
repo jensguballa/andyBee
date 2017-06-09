@@ -4,20 +4,81 @@
     <h3 class="modal-title" id="modal-title">Edit Preferences</h3>
 </div>
 <div class="modal-body">
-    <div class="form-group">
-        <label for="pref_owner">Your geocaching.com account name</label>
-        <input type="text" class="form-control" id="pref_owner" ng-model="pref.data.owner" placeholder="Owner name">
-    </div>    
-    <div class="form-group">
-        <label for="opendb_file">Startup Behaviour</label>
-        <form name="myForm">
-          <label><input type="radio" ng-model="pref.data.auto_load" value="0" convert-to-number>Don't open any DB at startup</label><br/>
-          <label><input type="radio" ng-model="pref.data.auto_load" value="1" convert-to-number>Open the last used DB at startup</label><br/>
-          <label><input type="radio" ng-model="pref.data.auto_load" value="2" convert-to-number>Open the default DB at startup</label><br/>
-        </form> 
 
-        <select ng-model="pref.data.default_db" ng-options="file for file in pref.dbs"></select>
-    </div>    
+    <uib-accordion>
+        <div uib-accordion-group class="panel-default">
+            <uib-accordion-heading>User Account</uib-accordion-heading>
+            <div class="form-group">
+                <label for="pref_owner">Your geocaching.com account name</label>
+                <input type="text" class="form-control" id="pref_owner" ng-model="pref.data.owner" placeholder="Owner name">
+            </div>    
+            <label>Home Location</label>
+            <div class="form-indent">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-1">Lat</label>
+                        <div class="col-sm-11">
+                            <select class="form-control degree-type" ng-model="pref.lat.type" >
+                                <option value="N">N</option>
+                                <option value="S">S</option>
+                            </select>
+                            <input type="text" class="form-control degrees" ng-model="pref.lat.degrees" title="Degrees, 0..90" convert-to-number /> ° 
+                            <input type="text" class="form-control minutes" ng-model="pref.lat.minutes" title="Minutes with 3 positions after decimal point" placeholder="e.g. 36.412"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-1">Lon</label>
+                        <div class="col-sm-11">
+                            <select class="form-control degree-type" ng-model="pref.lon.type" >
+                                <option value="E">E</option>
+                                <option value="W">W</option>
+                            </select>
+                            <input type="text" class="form-control degrees" ng-model="pref.lon.degrees" title="Degrees, 0..180" convert-to-number /> ° 
+                            <input type="text" class="form-control minutes" ng-model="pref.lon.minutes" title="Minutes with 3 positions after decimal point" placeholder="e.g. 25.189"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div uib-accordion-group class="panel-default">
+            <uib-accordion-heading>Database Options</uib-accordion-heading>
+                <label>Importing from GPX</label>
+                <div class="form-indent">
+                    <div class="form-group">
+                        <label>Maximum number of logs per cache</label>
+                        <input type="text" class="form-control" id="pref_max_import" ng-model="pref.data.max_import" placeholder="Number" convert-to-number />
+                    </div>
+                </div>
+                <label>Exporting to GPX</label>
+                <div class="form-indent">
+                    <div class="form-group">
+                        <label>Maximum number of logs per cache</label>
+                        <input type="text" class="form-control" id="pref_max_import" ng-model="pref.data.max_export" placeholder="Number" convert-to-number />
+                        <input type="checkbox" id="pref_export_waypoints" ng-model="pref.data.export_waypoints" />
+                        <label>Include additional waypoints when exporting to GPX</label>
+                    </div>
+                </div>
+        </div>
+        <div uib-accordion-group class="panel-default">
+            <uib-accordion-heading>Behaviour</uib-accordion-heading>
+            <div class="form-group">
+                <input type="checkbox" id="pref_export_waypoints" ng-model="pref.data.sticky_menu" />
+                <label>Sticky Menu</label>
+            </div>    
+            <div class="form-group">
+                <label for="opendb_file">Startup Behaviour</label>
+                <div class="form-indent">
+                    <form name="myForm">
+                      <label><input type="radio" ng-model="pref.data.auto_load" value="0" convert-to-number />Don't open any DB at startup</label><br/>
+                      <label><input type="radio" ng-model="pref.data.auto_load" value="1" convert-to-number />Open the last used DB at startup</label><br/>
+                      <label><input type="radio" ng-model="pref.data.auto_load" value="2" convert-to-number />Open the following DB at startup</label><br/>
+                    </form> 
+
+                    <select ng-model="pref.data.default_db" ng-options="file for file in pref.dbs" ng-disabled="pref.data.auto_load!=2"></select>
+                </div>
+            </div>    
+        </div>
+    </uib-accordion>    
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" type="button" ng-click="pref.close()">OK</button>

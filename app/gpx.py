@@ -26,49 +26,49 @@ max_logs = 5
 pref_owner = 'bauchansatz'
 pref_owner_id = 0
 
-class LogTypePool():
-
-    def __init__(self):
-        self._pool = {}
-        for row in geocache_db.execute('SELECT id, name FROM log_type'):
-            self._pool[row['id']] = row['name']
-
-    def get_name(self, id):
-        if id in self._pool:
-            return self._pool[id]
-        else:
-            return None
-
-    def create_singleton(self, id, name):
-        if id in self._pool:
-            if name != self._pool[id]:
-                geocache_db.execute('UPDATE log_type SET name = ? WHERE id = ?', (name, id))
-                self._pool[id] = name
-        else:
-            geocache_db.execute('INSERT INTO log_type (id, name) VALUES (?,?)', (id, name))
-            self._pool[id] = name
-
-class CacherPool():
-
-    def __init__(self, pref_owner):
-        self._pool = {}
-        self._pref_owner_id = None
-        for row in geocache_db.execute('SELECT id, name FROM cacher'):
-            self._pool[int(row['id'])] = row['name']
-            if row['name'] == pref_owner:
-                self._pref_owner_id = int(row['id'])
-
-    def get_pref_owner_id(self):
-        return self._pref_owner_id
-
-    def create_singleton(self, id, name):
-        if id in self._pool:
-            if name != self._pool[id]:
-                geocache_db.execute('UPDATE cacher SET name = ? WHERE id = ?', (name, id))
-                self._pool[id] = name
-        else:
-            geocache_db.execute('INSERT INTO cacher (id, name) VALUES (?,?)', (id, name))
-            self._pool[id] = name
+#class LogTypePool():
+#
+#    def __init__(self):
+#        self._pool = {}
+#        for row in geocache_db.execute('SELECT id, name FROM log_type'):
+#            self._pool[row['id']] = row['name']
+#
+#    def get_name(self, id):
+#        if id in self._pool:
+#            return self._pool[id]
+#        else:
+#            return None
+#
+#    def create_singleton(self, id, name):
+#        if id in self._pool:
+#            if name != self._pool[id]:
+#                geocache_db.execute('UPDATE log_type SET name = ? WHERE id = ?', (name, id))
+#                self._pool[id] = name
+#        else:
+#            geocache_db.execute('INSERT INTO log_type (id, name) VALUES (?,?)', (id, name))
+#            self._pool[id] = name
+#
+#class CacherPool():
+#
+#    def __init__(self, pref_owner):
+#        self._pool = {}
+#        self._pref_owner_id = None
+#        for row in geocache_db.execute('SELECT id, name FROM cacher'):
+#            self._pool[int(row['id'])] = row['name']
+#            if row['name'] == pref_owner:
+#                self._pref_owner_id = int(row['id'])
+#
+#    def get_pref_owner_id(self):
+#        return self._pref_owner_id
+#
+#    def create_singleton(self, id, name):
+#        if id in self._pool:
+#            if name != self._pool[id]:
+#                geocache_db.execute('UPDATE cacher SET name = ? WHERE id = ?', (name, id))
+#                self._pool[id] = name
+#        else:
+#            geocache_db.execute('INSERT INTO cacher (id, name) VALUES (?,?)', (id, name))
+#            self._pool[id] = name
 
 
 
@@ -196,7 +196,6 @@ class GpxImporter():
         self.pref_owner = pref_owner
 
     def import_gpx(self, gpx_file):
-        print("DB001:")
         try:
             start = time.time()
             tree = etree.parse(gpx_file)

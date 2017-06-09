@@ -10,6 +10,7 @@
 
         var vm = this;
         vm.geocache = GeocacheService;
+        vm.pref = PreferenceService;
         vm.isNavCollapsed = true;
         vm.refreshMap = function () {
             leafletData.getMap().then(function(map) {

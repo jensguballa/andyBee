@@ -216,7 +216,8 @@
         }
     }
 
-    function geocacheCoord() {
+    geocacheCoord.$inject = ['GeocacheService'];
+    function geocacheCoord(GeocacheService) {
         return {
             restrict: 'E',
             template: '<span>{{txt}}</span>',
@@ -233,13 +234,15 @@
             });
 
             function coord(coord, str1, str2) {
-                var str = str1;
-                if (coord < 0) {
-                    coord = -coord;
-                    str = str2;
-                }
-                var degrees = parseInt(coord);
-                return str + ' ' + degrees + ' ' + ((coord - degrees) * 60).toFixed(3);
+                var obj = GeocacheService.coord_to_obj(coord, str1, str2);
+                return obj.type + ' ' + obj.degrees + ' ' + obj.minutes;
+//                var str = str1;
+//                if (coord < 0) {
+//                    coord = -coord;
+//                    str = str2;
+//                }
+//                var degrees = parseInt(coord);
+//                return str + ' ' + degrees + ' ' + ((coord - degrees) * 60).toFixed(3);
             }
         }
     }

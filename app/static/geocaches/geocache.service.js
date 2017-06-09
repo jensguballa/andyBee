@@ -13,6 +13,8 @@
         var serv = {
             // which of the tabs (list, map, detail, console) is active
             selected_tab: 0,
+            home_lat: 30.7,
+            home_lon: 9.9,
             detail: {},
             read: read,
 
@@ -27,6 +29,9 @@
 
             geocache_list: [],
             read_list: read_list,
+
+            coord_to_obj: coord_to_obj,
+            obj_to_coord: obj_to_coord
 
         };
 
@@ -56,8 +61,12 @@
         }
 
         function on_reference_changed(lat, lon) {
-            change_reference(lat, lon);
-            $rootScope.$broadcast('center_updated');
+            if ((lat != serv.home_lat) || (lon != serv.home_lon)) {
+                serv.home_lat = lat;
+                serv.home_lon = lon;
+                change_reference(lat, lon);
+                $rootScope.$broadcast('center_updated');
+            }
         }
 
 
@@ -78,7 +87,7 @@
                 serv.nbr_caches = result.nbr_caches;
                 geocache_list_unfiltered = result.geocaches;
                 serv.detail = {};
-                change_reference(49.0, 9.0);
+                change_reference(serv.home_lat, serv.home_lon);
                 //var reference_point = L.latLng(49.0, 9.0);
                 //for (var i = 0, len = geocache_list_unfiltered.length; i < len; i++) {
                 //    var geocache = geocache_list_unfiltered[i];
@@ -157,6 +166,28 @@
             }
         }
 
+        function coord_to_obj(coord, str1, str2) {
+            var str = str1;
+            if (coord < 0) {
+                coord = -coord;
+                str = str2;
+            }
+            var degrees = parseInt(coord);
+            //return str + ' ' + degrees + ' ' + ((coord - degrees) * 60).toFixed(3);
+            return {
+                type: str,
+                degrees: degrees,
+                minutes: ((coord - degrees) * 60).toFixed(3)
+            };
+        }
+
+        function obj_to_coord(obj) {
+            var coord = obj.degrees + obj.minutes / 60;
+            if ((obj.type == 'W') || (obj.type == 'S')) {
+                coord = -coord;
+            }
+            return coord;
+        }
     }
 
 })();

@@ -36,6 +36,7 @@
             if (db_name) {
                 DbService.read(on_dblist_response, on_dblist_error);
             }
+            GeocacheService.on_reference_changed(PreferenceService.data.home_lat, PreferenceService.data.home_lon);
         }
 
         function on_dblist_response () {

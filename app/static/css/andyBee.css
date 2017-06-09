@@ -68,6 +68,15 @@ table.ng-table > thead {
     background-color: #ddd;
 }
 
+.form-indent {
+    margin-left:20px; 
+    padding:10px; 
+}
+
+.rounded-border {
+    border:1px solid #ddd; 
+    border-radius:5px;
+}
 
 .paragraph {
     margin: 0 0 10px 0;
@@ -94,6 +103,22 @@ dl.table-row > dd {
 .no-indent {
     padding-left: 0;
 }
+
+.degree-type {
+    width: 60px;
+    display: inline-block;
+}
+
+.degrees {
+    width: 50px;
+    display: inline-block;
+}
+
+.minutes {
+    width: 120px;
+    display: inline-block;
+}
+
 
 .detail-type {
     margin-top: 0px;

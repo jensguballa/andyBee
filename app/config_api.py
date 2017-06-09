@@ -31,9 +31,14 @@ def json_to_object(schema, data_mandatory=True):
 
 class PrefSchema(Schema):
     id = fields.Integer()
-    owner = fields.String()
-    default_db = fields.String()
     auto_load = fields.Integer()
+    default_db = fields.String()
+    home_lat = fields.Float()
+    home_lon = fields.Float()
+    max_export = fields.Integer()
+    max_import = fields.Integer()
+    owner = fields.String()
+    sticky_menu = fields.Boolean()
     used_db = fields.String()
 
 class PrefCompleteSchema(Schema):
@@ -138,7 +143,18 @@ class ConfigDb(Db):
         if not os.path.isfile(db):
             self.set_db(db)
             self.create_all()
-            config_db.execute("INSERT INTO preferences (id) VALUES (1)")
+            pref = {'auto_load': 0, 
+                    'default_db': '', 
+                    'owner': '', 
+                    'used_db': '', 
+                    'home_lat': 49.0,
+                    'home_lon': 9.0,
+                    'max_export': 5,
+                    'max_import': 10,
+                    'sticky_menu': False
+                    }
+            config_db.insert(Preferences, pref)
+            #config_db.execute("INSERT INTO preferences (id) VALUES (1)")
             config_db.commit()
         else:
             self.set_db(db)
