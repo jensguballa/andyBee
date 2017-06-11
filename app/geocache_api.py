@@ -147,7 +147,6 @@ class GeocacheListApi(Resource):
         geocaches = [dict(row) for row in geocache_db.execute(stmt)]
 
         for row in geocaches:
-#            row['title'] = row['name']
             row['owner'] = owners[row['owner_id']]
             row['type'] = types[row['type_id']]
             row['container'] = containers[row['container_id']]
@@ -278,14 +277,14 @@ class GpxImportApi(Resource):
         geocache_db.set_db(file_path)
         parse = reqparse.RequestParser()
         parse.add_argument('gpx_file', type=werkzeug.datastructures.FileStorage, location='files')
+        parse.add_argument('max_logs', type=int)
+        parse.add_argument('user_name')
         args = parse.parse_args()
-        # filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'jens')
         gpx_file = args['gpx_file']
         if gpx_file is None:
             return {'msg': 'GPX file name missing.'}, 400 # bad request
-        gpx_import = GpxImporter(geocache_db, 5, 'bauchansatz')
+        gpx_import = GpxImporter(geocache_db, args['max_logs'], args['user_name'])
         gpx_import.import_gpx(gpx_file)
-        #import_gpx(gpx_file)
         return {} 
 
 api.add_resource(GpxImportApi, '/andyBee/api/v1.0/db/<string:db_name>/gpx_import')
@@ -303,7 +302,6 @@ class GpxExportApi(Resource):
         obj, status_code = json_to_object(GeocacheExportSchema())
         if status_code != 200:
             return obj, status_code
-        print("DB01: ", obj)
         response = make_response(export_gpx(obj))
         response.headers['Content-Type'] = 'application/gpx'
         response.headers['Content-Disposition'] = ('attachment; filename=' + obj['file_name'])

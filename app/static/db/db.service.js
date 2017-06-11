@@ -53,6 +53,7 @@
             rest.post({db: db_name}, on_post_response, error_cb);
 
             function on_post_response (result) {
+                serv.db_list.push(db_name);
                 if (success_cb) {
                     success_cb();
                 }
