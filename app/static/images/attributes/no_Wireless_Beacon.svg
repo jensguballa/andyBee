@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="42.643929mm"
+   height="42.643929mm"
+   viewBox="0 0 42.643928 42.643928"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="no_Wireless_Beacon.svg"
+   inkscape:version="0.92.1 r15371">
+  <defs
+     id="defs2">
+    <path
+       d="M 0,0 H 48 V 48 H 0 Z"
+       id="a"
+       inkscape:connector-curvature="0" />
+    <path
+       d="M 0,0 H 48 V 48 H 0 Z"
+       id="a-8"
+       inkscape:connector-curvature="0" />
+    <path
+       d="M 0,0 H 48 V 48 H 0 Z"
+       id="a-6"
+       inkscape:connector-curvature="0" />
+    <path
+       d="M 0,0 H 48 V 48 H 0 Z"
+       id="a-89"
+       inkscape:connector-curvature="0" />
+    <path
+       d="M 0,0 H 48 V 48 H 0 Z"
+       id="a-0"
+       inkscape:connector-curvature="0" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="-714.31383"
+     inkscape:cy="160.45546"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1632"
+     inkscape:window-height="998"
+     inkscape:window-x="48"
+     inkscape:window-y="30"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-189.00289,-307.98425)">
+    <rect
+       ry="5.0684252"
+       y="309.13425"
+       x="190.15289"
+       height="40.343929"
+       width="40.343929"
+       id="rect9537"
+       style="opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#ff0000;stroke-width:2.29999995;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke-width:0.73479921"
+       id="path16371"
+       d="m 210.32485,319.44886 c -5.68,0 -10.28719,4.60721 -10.28719,10.2872 h 2.9392 c 0,-4.05608 3.2919,-7.34798 7.34799,-7.34798 4.05609,0 7.34799,3.2919 7.34799,7.34798 h 2.9392 c 0,-5.67999 -4.60719,-10.2872 -10.28719,-10.2872 z m 1.4696,13.65258 c 1.29324,-0.5658 2.2044,-1.85903 2.2044,-3.36538 0,-2.02804 -1.64595,-3.674 -3.674,-3.674 -2.02805,0 -3.674,1.64596 -3.674,3.674 0,1.50635 0.91116,2.79958 2.2044,3.36538 v 4.84235 l -5.01868,5.01866 2.07948,2.07948 4.4088,-4.4088 4.4088,4.4088 2.07948,-2.07948 -5.01868,-5.01866 z m -1.4696,-19.53095 c -8.92781,0 -16.16558,7.23775 -16.16558,16.16557 h 2.93919 c 0,-7.30391 5.92249,-13.22638 13.22639,-13.22638 7.3039,0 13.2264,5.92247 13.2264,13.22638 h 2.93919 c 0,-8.92782 -7.23778,-16.16557 -16.16559,-16.16557 z"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#ff0000;stroke-width:2.29999995;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 191.69704,347.93403 228.95268,310.6784"
+       id="path9539"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>

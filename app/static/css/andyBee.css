@@ -15,6 +15,22 @@ html {
     padding-bottom: 40px;
 }
 
+.logo > img {
+    height: 58px;
+    float: left;
+    margin-top: -9px;
+    margin-right: 5px;
+}
+
+.navbar-inverse .navbar-brand {
+    color: #ffd;
+}
+
+.navbar-inverse .navbar-brand:hover, 
+.navbar-inverse .navbar-brand:focus {
+    color: #ffd;
+}
+
 .navbar {
     border-radius: 0;
 }

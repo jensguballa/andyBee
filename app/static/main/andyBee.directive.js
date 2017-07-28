@@ -44,20 +44,21 @@
     }
 
     var type_trans = {
-        'Traditional Cache':        'static/images/OCMLogoSmall.svg',
-        'Letterbox Hybrid':         'static/images/letterbox.svg',
-        'Event Cache':              'static/images/event.svg',
-        'Multi-cache':              'static/images/multi.svg',
-        'Wherigo Cache':            'static/images/wherigo.svg',
-        'Mega-Event Cache':         'static/images/mega.svg',
-        'Unknown Cache':            'static/images/unknown.svg',
-        'Earthcache':               'static/images/earth.svg',
-        'Cache In Trash Out Event': 'static/images/cito.svg',
-        'Virtual Cache':            'static/images/virtual.svg',
-        'GPS Adventures Exhibit':   'static/images/other.svg',
-        'Webcam Cache':             'static/images/webcam.svg',
-        'Project APE Cache':        'static/images/other.svg',
-        'Locationless Cache':       'static/images/other.svg',
+        'Traditional Cache':        'static/images/types/traditional.svg',
+        'Letterbox Hybrid':         'static/images/types/letterbox.svg',
+        'Event Cache':              'static/images/types/event.svg',
+        'Multi-cache':              'static/images/types/multi.svg',
+        'Wherigo Cache':            'static/images/types/wherigo.svg',
+        'Mega-Event Cache':         'static/images/types/mega.svg',
+        'Unknown Cache':            'static/images/types/unknown.svg',
+        'Earthcache':               'static/images/types/earth.svg',
+        'Cache In Trash Out Event': 'static/images/types/cito.svg',
+        'Virtual Cache':            'static/images/types/virtual.svg',
+        'GPS Adventures Exhibit':   'static/images/types/adventures.svg',
+        'Webcam Cache':             'static/images/types/webcam.svg',
+        'Project APE Cache':        'static/images/types/ape.svg',
+        'Locationless Cache':       'static/images/types/locationless.svg',
+        'Giga-Event Cache':         'static/images/types/giga.svg',
     };
 
     function geocacheIcon() {
@@ -78,13 +79,13 @@
     }
 
     var size_trans = {
-        'Micro':      'static/images/size_micro.svg',
-        'Small':      'static/images/size_small.svg',
-        'Regular':    'static/images/size_regular.svg',
-        'Large':      'static/images/size_large.svg',
-        'Other':      'static/images/size_other.svg',
-        'Virtual':    'static/images/size_other.svg',
-        'Not chosen': 'static/images/size_other.svg'
+        'Micro':      'static/images/sizes/size_micro.svg',
+        'Small':      'static/images/sizes/size_small.svg',
+        'Regular':    'static/images/sizes/size_regular.svg',
+        'Large':      'static/images/sizes/size_large.svg',
+        'Other':      'static/images/sizes/size_other.svg',
+        'Virtual':    'static/images/sizes/size_other.svg',
+        'Not chosen': 'static/images/sizes/size_other.svg'
     };
 
     function geocacheSize() {
@@ -287,26 +288,26 @@
     }
 
     var log_trans = {
-        "Found it":                    'static/images/found.svg',
-        "Didn't find it":              'static/images/dnf.svg',
-        "Write note":                  'static/images/write_note.svg',
-        "Needs Maintenance":           'static/images/needs_maintenance.svg',
-        "Temporarily Disable Listing": 'static/images/disable_listing.svg',
-        "Owner Maintenance":           'static/images/owner_maintenance.svg',
-        "Enable Listing":              'static/images/enable_listing.svg',
-        "Needs Archived":              'static/images/needs_archived2.svg',
-        "Will Attend":                 'static/images/not_supported.svg',
-        "Attended":                    'static/images/not_supported.svg',
-        "Webcam Photo Taken":          'static/images/not_supported.svg',
-        "Post Reviewer Note":          'static/images/not_supported.svg',
-        "Submit for Review":           'static/images/not_supported.svg',
-        "Publish Listing":             'static/images/not_supported.svg',
-        "Archive":                     'static/images/not_supported.svg',
-        "Announcement":                'static/images/not_supported.svg',
-        "Update Coordinates":          'static/images/not_supported.svg',
-        "Retract":                     'static/images/not_supported.svg',
-        "Unarchive":                   'static/images/not_supported.svg',
-        "Not Supported":               'static/images/not_supported.svg'
+        "Found it":                    'static/images/logtypes/found.svg',
+        "Didn't find it":              'static/images/logtypes/dnf.svg',
+        "Write note":                  'static/images/logtypes/write_note.svg',
+        "Needs Maintenance":           'static/images/logtypes/needs_maintenance.svg',
+        "Temporarily Disable Listing": 'static/images/logtypes/disable_listing.svg',
+        "Owner Maintenance":           'static/images/logtypes/owner_maintenance.svg',
+        "Enable Listing":              'static/images/logtypes/enable_listing.svg',
+        "Needs Archived":              'static/images/logtypes/needs_archived2.svg',
+        "Will Attend":                 'static/images/logtypes/will_attend.svg',
+        "Attended":                    'static/images/logtypes/attended.svg',
+        "Webcam Photo Taken":          'static/images/logtypes/webcam_photo.svg',
+        "Post Reviewer Note":          'static/images/logtypes/reviewer_note.svg',
+        "Submit for Review":           'static/images/logtypes/not_supported.svg',
+        "Publish Listing":             'static/images/logtypes/published.svg',
+        "Archive":                     'static/images/logtypes/archived.svg',
+        "Announcement":                'static/images/logtypes/announcement.svg',
+        "Update Coordinates":          'static/images/logtypes/update_coordinates.svg',
+        "Retract":                     'static/images/logtypes/not_supported.svg',
+        "Unarchive":                   'static/images/logtypes/unarchive.svg',
+        "Not Supported":               'static/images/logtypes/not_supported.svg'
     };
 
     function translate_log_type(type) {

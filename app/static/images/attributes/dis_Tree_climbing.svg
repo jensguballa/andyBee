@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="40.343929mm"
+   height="40.343929mm"
+   viewBox="0 0 40.343929 40.343929"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="dis_Tree_climbing.svg"
+   inkscape:version="0.92.1 r15371">
+  <defs
+     id="defs2">
+    <path
+       d="M 0,0 H 48 V 48 H 0 Z"
+       id="a"
+       inkscape:connector-curvature="0" />
+    <path
+       d="M 0,0 H 48 V 48 H 0 Z"
+       id="a-8"
+       inkscape:connector-curvature="0" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="307.64349"
+     inkscape:cy="-90.291301"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1632"
+     inkscape:window-height="998"
+     inkscape:window-x="48"
+     inkscape:window-y="30"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     showguides="true"
+     inkscape:guide-bbox="true" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-71.868973,-308.06516)">
+    <rect
+       ry="5.0684252"
+       y="308.06516"
+       x="71.868973"
+       height="40.343929"
+       width="40.343929"
+       id="rect9533"
+       style="opacity:1;fill:#969696;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.40000001;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.9703992;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 92.040951,309.91164 c -4.083505,0 -7.623586,2.03231 -9.396847,4.9999 -4.246018,0.40271 -7.558888,3.55599 -7.558888,7.39094 0,4.10758 3.793843,7.43451 8.477869,7.43451 h 3.902254 c 1.790918,5.35491 1.468136,16.8256 1.468136,16.8256 h 6.034156 c 0,0 -1.096326,-11.61356 1.152173,-16.8256 h 5.811976 c 3.89981,0 7.06488,-2.77555 7.06488,-6.1954 0,-3.27121 -2.90301,-5.92264 -6.56263,-6.15188 -0.96082,-4.26245 -5.249855,-7.47807 -10.393079,-7.47807 z"
+       id="path4497"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="scssccccsscs" />
+  </g>
+</svg>
