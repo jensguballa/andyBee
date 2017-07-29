@@ -1,6 +1,4 @@
-import os.path
-#from sqlalchemy.ext.declarative import declarative_base
-#from sqlalchemy import Table, Column, Integer, String, Float, Text, Boolean, ForeignKey
+import os
 from app.db import Db
 from app.config_model import config_tables
 from app import api, app
@@ -140,6 +138,9 @@ class ConfigDb(Db):
 
     def init(self):
         db = app.config['CONFIG_DB']
+        directory = os.path.dirname(db)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         if not os.path.isfile(db):
             self.set_db(db)
             self.create_all()
