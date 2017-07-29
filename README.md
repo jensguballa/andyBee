@@ -40,6 +40,7 @@ The web server will listen on port 5000.
 In your browser, open the URL [localhost:5000](http://localhost:5000/)
 
 #Screenshots
+Refer to [screenshots.md](doc/screenshots.md)
 
 #Licence
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
