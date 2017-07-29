@@ -1,5 +1,5 @@
 # andyBee
-![andiBee](app/static/images/andyBee3D.svg)
+![andiBee](app/static/images/andyBee.png)
 A geocache database with a web frontend
 
 # Installation
