@@ -1,4 +1,5 @@
 # andyBee
+![andiBee](app/static/images/andyBee3D.svg)
 A geocache database with a web frontend
 
 # Installation
@@ -37,3 +38,8 @@ Command to start the *andyBee* web server:
 The web server will listen on port 5000. 
 
 In your browser, open the URL [localhost:5000](http://localhost:5000/)
+
+#Screenshots
+
+#Licence
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
