@@ -1,6 +1,7 @@
 # Screenshots
 This site provides a collection of some screenshots
-##List of geocaches
+
+## List of geocaches
 > [<img src="screenshots/cachelist.png" alt="Drawing" style="width: 200px;"/>](screenshots/cachelist.png)
 
 ## Geocache details

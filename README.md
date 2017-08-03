@@ -3,6 +3,23 @@
 ![andiBee](app/static/images/andyBee.png)
 A geocache database with a web frontend
 
+# Status
+
+The status of this SW is pre-alpha. A lot of features are simply not yet implemented. On the other hand you might already get an impression of the GUI and how this DB will work.
+
+The following features are incomplete (and this list is incomplete as well):
+
+* Filters are only implemented for a very limited set of properties
+* The map does not provide much functionality right now, and for a larger number of geocaches the responsiveness is rather slow
+* Updating the coordinates of geocaches (e.g. for solved mysteries) is not yet implemented
+* DB-maintenance not implemented, e.g. delete geocaches which are not updated for a specific time period
+* Preferences needs to be extended
+* and of course: documentation is missing. For now: Read the code. ;-)
+
+# Screenshots
+
+Refer to [screenshots.md](doc/screenshots.md)
+
 # Installation
 
 The installation of *andyBee* depends on the following SW:
@@ -42,10 +59,6 @@ Command to start the *andyBee* web server:
 The web server will listen on port 5000. 
 
 In your browser, open the URL [localhost:5000](http://localhost:5000/)
-
-# Screenshots
-
-Refer to [screenshots.md](doc/screenshots.md)
 
 # Licence
 
