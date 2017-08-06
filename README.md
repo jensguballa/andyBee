@@ -54,7 +54,7 @@ Commands:
 
 Command to start the *andyBee* web server:
 
-    $ python run.py
+    $ python andyBee.py
 
 The web server will listen on port 5000. 
 
