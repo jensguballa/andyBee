@@ -71,9 +71,9 @@
                     visible: true
                 },
                 circles: {
-                    name: "Minimum Geocache Distance",
+                    name: "Minimum Geocache Clearance",
                     type: "group",
-                    visible: true
+                    visible: false
                 }
             }
         };
@@ -82,8 +82,7 @@
 
         $scope.$on('geocaches_updated', function (event, args) {
             vm.markers = [];
-            vm.circles = [centroid_marker];
-            vm.circles_hidden = [];
+            vm.circles_hidden = [centroid_marker];
             for (var i = 0, len = GeocacheService.geocache_list.length; i < len; i++) {
                 var geocache = GeocacheService.geocache_list[i];
                 vm.markers.push({
@@ -101,30 +100,32 @@
                         popupAnchor:  [0, -36] // point from which the popup should open relative to the iconAnchor
                     }
                 });
-//                vm.circles_hidden.push({
-//                    latlngs: [geocache.lat, geocache.lon],
-//                    color: '#ff0000',
-//                    radius: 161,
-//                    weight: 1,
-//                    opacity: 1,
-//                    type: 'circle',
-//                    layer: 'circles'
-//                });
+                vm.circles_hidden.push({
+                    latlngs: [geocache.lat, geocache.lon],
+                    color: '#ff0000',
+                    radius: 161,
+                    weight: 1,
+                    opacity: 1,
+                    type: 'circle',
+                    layer: 'circles'
+                });
             }
+            vm.circles = vm.circles_hidden;
+
         });
 
         $scope.$on('center_updated', function (event, args) {
             center_map()
         });
 
-//        $scope.$watch("map.centroid.zoom", function (zoom) {
-//            if (zoom >= 14) {
-//                vm.circles = vm.circles_hidden;
-//            }
-//            else {
-//                vm.circles = [];
-//            }
-//        });
+        $scope.$watch("map.centroid.zoom", function (zoom) {
+            if (zoom >= 14) {
+                vm.circles = vm.circles_hidden;
+            }
+            else {
+                vm.circles = [centroid_marker];
+            }
+        });
 
         function center_map() {
             vm.centroid.lat = GeocacheService.home_lat;
