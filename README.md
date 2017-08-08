@@ -10,7 +10,6 @@ The status of this SW is pre-alpha. A lot of features are simply not yet impleme
 The following features are incomplete (and this list is incomplete as well):
 
 * Filters are only implemented for a very limited set of properties
-* The map does not provide much functionality right now, and for a larger number of geocaches the responsiveness is rather slow
 * Updating the coordinates of geocaches (e.g. for solved mysteries) is not yet implemented
 * DB-maintenance not implemented, e.g. delete geocaches which are not updated for a specific time period
 * Preferences needs to be extended

@@ -14,8 +14,22 @@ This site provides a collection of some screenshots
 > [<img src="screenshots/cachelogs.png" alt="Drawing" style="width: 200px;"/>](screenshots/cachelogs.png)
 
 ## Map
-Note, this is only rudimentary implemented and will be improved in the future.
+
+On the following screenshot the blue circle indicates the current center of the map.
+
+Additionally the screenshot shows the clustering feature. Instead of flooding the map with
+geocache markers, multiple markers are clustered and represented by circles with
+the number of geocaches in the center. When zooming in (or out), the clusters are expanded as required.
+
+Hovering over a cluster shows the polygon of the area covered by the cluster.
+
+A click on a cluster zooms in into the corresponding area.
+
 > [<img src="screenshots/map.png" alt="Drawing" style="width: 200px;"/>](screenshots/map.png)
+
+The following screenshot shows how a cluster is expanded when clicking on it.
+> [<img src="screenshots/map2.png" alt="Drawing" style="width: 200px;"/>](screenshots/map2.png)
+
 
 # Filter
 > [<img src="screenshots/filter.png" alt="Drawing" style="width: 200px;"/>](screenshots/filter.png)
