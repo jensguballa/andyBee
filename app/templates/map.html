@@ -1,3 +1,7 @@
 <div ng-controller="GeocacheMapCtrl as map">
-    <leaflet width="100%" height="480px" markers="map.markers" layers="map.layers"></leaflet>
+    <leaflet width="100%" height="480px" lf-center="map.centroid" markers="map.markers" paths="map.circles" layers="map.layers"></leaflet>
+    <button class="btn btn-primary btn-sm"
+            ng-click="map.center_map()">
+        <span class="glyphicon glyphicon-globe"></span> Zoom to Map Center
+    </button>
 </div>
