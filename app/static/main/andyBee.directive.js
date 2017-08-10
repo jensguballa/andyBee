@@ -192,6 +192,7 @@
         'Telephone nearby': 'Telephone_nearby.svg',
         'Thorns': 'Thorns.svg',
         'Ticks': 'Ticks.svg',
+        'Tourist Friendly': 'Tourist_friendly.svg',
         'Truck Driver/RV': 'Truck_Driver_RV.svg',
         'UV Light Required': 'UV_Light_Required.svg',
         'Watch for livestock': 'Watch_for_livestock.svg',
