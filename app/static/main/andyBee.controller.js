@@ -5,21 +5,14 @@
         .module('andyBeeApp')
         .controller('andyBeeCtrl', andyBeeCtrl);
             
-    andyBeeCtrl.$inject = ['$uibModal', '$timeout', 'ERROR', 'GeocacheService', 'GpxService', 'PreferenceService', 'DbService', 'LoggingService', 'FilterService', 'leafletData'];
-    function andyBeeCtrl ($uibModal, $timeout, ERROR, GeocacheService, GpxService, PreferenceService, DbService, LoggingService, FilterService, leafletData) {
+    andyBeeCtrl.$inject = ['$uibModal', '$timeout', 'ERROR', 'GeocacheService', 'GpxService', 'PreferenceService', 'DbService', 'LoggingService', 'FilterService'];
+    function andyBeeCtrl ($uibModal, $timeout, ERROR, GeocacheService, GpxService, PreferenceService, DbService, LoggingService, FilterService) {
 
         var vm = this;
         vm.geocache = GeocacheService;
         vm.pref = PreferenceService;
         vm.isNavCollapsed = true;
-        vm.refreshMap = function () {
-            leafletData.getMap().then(function(map) {
-                $timeout(function() {
-                  map.invalidateSize();
-                }, 300);
-            });
-        }
-
+        vm.refreshMap = GeocacheService.refreshMap;
         vm.filter = FilterService;
 
         vm.open_db_dialog = open_db_dialog;

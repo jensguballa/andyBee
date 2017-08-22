@@ -6,8 +6,8 @@
         .controller('GeocacheListCtrl', GeocacheListCtrl);
 
 
-    GeocacheListCtrl.$inject = ['$scope', '$filter', 'GeocacheService', 'NgTableParams'];
-    function GeocacheListCtrl($scope, $filter, GeocacheService, NgTableParams) {
+    GeocacheListCtrl.$inject = ['$scope', '$rootScope', '$filter', 'GeocacheService', 'NgTableParams'];
+    function GeocacheListCtrl($scope, $rootScope, $filter, GeocacheService, NgTableParams) {
         var vm = this;
         vm.cols = [];
         vm.tableParams = new NgTableParams({}, {
@@ -64,8 +64,12 @@
             GeocacheService.read(id); // cache detail tab
         }
 
-        function show_map(id) {
-            GeocacheService.selected_tab = 1; // cache detail tab
+        function show_map(gc_code) {
+            GeocacheService.selected_tab = 1; // map tab
+            GeocacheService.refreshMap();
+            $rootScope.$broadcast('map_pane_updated', {
+                marker_gc_code: gc_code
+            });
         }
 
         function set_center(lat, lon) {

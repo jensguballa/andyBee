@@ -12,7 +12,7 @@
                 <span ng-class="{strike: row.archived, 'bg-danger': !row.available}">{{row.gc_code|angular}}</span>
                 <div class="btn-group pull-right" role="group" aria-label="...">
                     <button type="button" class="btn btn-default" ng-click="geolist.show_details(row.id)" title="Show more geocache details"><span class="glyphicon glyphicon glyphicon-list-alt" aria-hidden="true"></span></button>
-                    <button type="button" class="btn btn-default" ng-click="geolist.show_details(row.id)" title="Show geocache on map"><span class="glyphicon glyphicon glyphicon-map-marker" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-default" ng-click="geolist.show_map(row.gc_code)" title="Show geocache on map"><span class="glyphicon glyphicon glyphicon-map-marker" aria-hidden="true"></span></button>
                     <div class="btn-group" uib-dropdown>
                         <button type="button" class="btn btn-default" title="Show Dropdown Menu" uib-dropdown-toggle>
                             <span class="glyphicon glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>

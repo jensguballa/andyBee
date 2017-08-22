@@ -5,8 +5,8 @@
         .module('andyBeeApp')
         .factory('GeocacheService', GeocacheService);
 
-    GeocacheService.$inject = ['$rootScope', '$resource', 'PreferenceService', 'LoggingService', 'DbService', 'FilterService', 'BusyService', 'ERROR'];
-    function GeocacheService ($rootScope, $resource, PreferenceService, LoggingService, DbService, FilterService, BusyService, ERROR) {
+    GeocacheService.$inject = ['$rootScope', '$resource', '$timeout', 'PreferenceService', 'LoggingService', 'DbService', 'FilterService', 'BusyService', 'ERROR', 'leafletData'];
+    function GeocacheService ($rootScope, $resource, $timeout, PreferenceService, LoggingService, DbService, FilterService, BusyService, ERROR, leafletData) {
         var modal;
         var rest = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id');
         var geocache_list_unfiltered = [];
@@ -31,7 +31,9 @@
             read_list: read_list,
 
             coord_to_obj: coord_to_obj,
-            obj_to_coord: obj_to_coord
+            obj_to_coord: obj_to_coord,
+
+            refreshMap: refreshMap
 
         };
 
@@ -187,6 +189,14 @@
                 coord = -coord;
             }
             return coord;
+        }
+
+        function refreshMap() {
+            leafletData.getMap().then(function(map) {
+                $timeout(function() {
+                  map.invalidateSize();
+                }, 0);
+            });
         }
     }
 

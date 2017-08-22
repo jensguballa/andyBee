@@ -159,6 +159,7 @@
         'Field Puzzle': 'Field_Puzzle.svg',
         'Flashlight required': 'Flashlight_required.svg',
         'Food Nearby': 'Food_Nearby.svg',
+        'Front Yard (Private Residence)': 'Frontyard.svg',
         'Fuel Nearby': 'Fuel_Nearby.svg',
         'Horses': 'Horses.svg',
         'Hunting': 'Hunting.svg',
@@ -189,10 +190,12 @@
         'Stealth required': 'Stealth_required.svg',
         'Stroller accessible': 'Stroller_accessible.svg',
         'Takes less than an hour': 'Takes_less_than_an_hour.svg',
+        'Teamwork Required': 'Teamwork_required.svg',
         'Telephone nearby': 'Telephone_nearby.svg',
         'Thorns': 'Thorns.svg',
         'Ticks': 'Ticks.svg',
         'Tourist Friendly': 'Tourist_friendly.svg',
+        'Tree Climbing': 'Tree_climbing.svg',
         'Truck Driver/RV': 'Truck_Driver_RV.svg',
         'UV Light Required': 'UV_Light_Required.svg',
         'Watch for livestock': 'Watch_for_livestock.svg',
@@ -213,7 +216,13 @@
             scope.title = attr.attr;
 
             attr.$observe('attr', function () {
-                scope.src = 'static/images/attributes/' + (attr.inc == "true" ? 'yes' : 'no') + '_' + attr_trans[attr.attr];
+                var img_name = attr_trans[attr.attr];
+                if (img_name) {
+                    scope.src = 'static/images/attributes/' + (attr.inc == "true" ? 'yes' : 'no') + '_' + img_name;
+                }
+                else {
+                    scope.src = 'static/images/not_supported.svg';
+                }
             });
         }
     }
