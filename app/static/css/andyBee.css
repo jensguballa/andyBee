@@ -116,6 +116,12 @@ dl.table-row > dd {
     padding-right: 30px;
 }
 
+
+dl.table-row > dd.last-column {
+    padding-right: 0px;
+}
+
+
 .no-indent {
     padding-left: 0;
 }
@@ -165,6 +171,10 @@ geocache-log.last_log > img {
     padding: 1px;
 }
 
+geocache-log.last_log_popup > img {
+    height: 14px;
+    padding: 1px;
+}
 geocache-log.user_log > img {
     height: 16px;
     margin-right: 5px;
@@ -183,6 +193,15 @@ hr.dark {
 
 .size_detail {
     height: 12px;
+}
+
+.rating_popup {
+    height: 11px;
+    vertical-align: inherit;
+}
+
+.size_popup {
+    height: 11px;
 }
 
 .attr_detail {
@@ -204,3 +223,34 @@ hr.dark {
     padding-bottom: 5px;
     z-index: 10;
 }
+
+.leaflet-popup {
+    width: 400px;
+}
+
+.popup {
+    width: 360px;
+}
+
+.popup-title {
+    font-size: 1.3em;
+}
+
+.popup .gc_code {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.angular-leaflet-map {
+    border: 2px solid #888;
+}
+
+.tiny-gap-top {
+    margin-top: 3px;
+}
+
+.tiny-gap-bottom {
+    margin-bottom: 3px;
+}
+
+

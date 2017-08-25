@@ -80,6 +80,8 @@
         };
 
         vm.center_map = center_map;
+        vm.show_geocache_details = show_geocache_details;
+        vm.set_center = set_center;
 
         $scope.$on('geocaches_updated', function (event, args) {
             vm.markers = {};
@@ -89,7 +91,28 @@
                 vm.markers[geocache.gc_code] = {
                     lat: geocache.lat,
                     lng: geocache.lon,
-                    message: geocache.title,
+                    message: 
+                        '<div class="popup">' +
+                        '  <div><a href ng-click="map.show_geocache_details(' + geocache.id + ')" class="popup-title">' + geocache.title + '</a></div>' +
+                        '  <div class="gc_code">' + geocache.gc_code + '</div>' +
+                        '  <div class="table">' +
+                        '      <dl class="table-row">' +
+                        '          <dt>Difficulty: </dt>' +
+                        '          <dd><geocache-rating value="' + geocache.difficulty + '" class="rating_popup"></geocache-rating> (' + geocache.difficulty + ')</dd>' +
+                        '          <dt>Cache Size: </dt>' +
+                        '          <dd class="last-column"><geocache-size size="' + geocache.container + '" class="size_popup"></geocache-size> (' + geocache.container + ')</dd>' +
+                        '      </dl>' +
+                        '      <dl class="table-row paragraph">' +
+                        '          <dt>Terrain: </dt>' +
+                        '          <dd><geocache-rating value="' + geocache.terrain + '" class="rating_popup"></geocache-rating> (' + geocache.terrain + ')</dd>' +
+                        '          <dt>Last Logs: </dt>' +
+                        '          <dd class="last-column"><geocache-log ng-repeat="log in \'' + geocache.last_logs.replace(/'/g, "\\\'") + '\'.split(\';\') track by $index" type="{{log}}" title="{{log}}" class="last_log_popup"></geocache-log></dd>' +
+                        '      </dl>' +
+                        '  </div>' +
+                        '  <div><button class="btn btn-primary btn-sm" ng-click="map.set_center(' + geocache.lat + ', ' + geocache.lon + ')"> <span class="glyphicon glyphicon-map-marker"></span> Set as Map Center </button></div>' +
+                        '</div>',
+                    compileMessage: true,
+                    getMessageScope : function() { return $scope; },
                     layer: "geocaches",
                     icon: {
                         iconUrl: marker_trans[geocache.type],
@@ -155,6 +178,13 @@
             centroid_marker.latlngs = [GeocacheService.home_lat, GeocacheService.home_lon];
         }
 
+        function show_geocache_details(id) {
+            GeocacheService.read(id); // cache detail tab
+        }
+
+        function set_center(lat, lon) {
+            GeocacheService.on_reference_changed(lat, lon);
+        }
     }
 
 })();

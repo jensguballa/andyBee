@@ -27,7 +27,7 @@ A click on a cluster zooms in into the corresponding area.
 
 > [<img src="screenshots/map.png" alt="Drawing" style="width: 200px;"/>](screenshots/map.png)
 
-The following screenshot shows how a cluster is expanded when clicking on it.
+The following screenshot shows how a cluster is expanded when clicking on it. Additionally, the popup is shown when clicking on a geocache marker.
 > [<img src="screenshots/map2.png" alt="Drawing" style="width: 200px;"/>](screenshots/map2.png)
 
 The following screenshot shows the minimum distance clearance (161 meters) around each geocache on the map.

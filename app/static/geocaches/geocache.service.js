@@ -13,6 +13,7 @@
         var serv = {
             // which of the tabs (list, map, detail, console) is active
             selected_tab: 0,
+            selected_detailed_tab: 0,
             home_lat: 30.7,
             home_lon: 9.9,
             detail: {},
@@ -143,6 +144,7 @@
         function read (id, success_cb, error_cb) {
             error_cb = error_cb || on_get_error;
             serv.selected_tab = 2; // switch to the details tab
+            serv.selected_detailed_tab = 0; // switch to overview tab
             rest.get({db: serv.db_name, geocache_id: id}, get_response, error_cb);
 
             function get_response (result) {

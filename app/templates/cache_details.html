@@ -1,5 +1,5 @@
 <div ng-controller="GeocacheDetailCtrl as geocache">
-    <uib-tabset>
+    <uib-tabset active="geocache.serv.selected_detailed_tab">
         <uib-tab index="0" heading="Overview">
             <div class="container-fluid cache-detail">
                 <div class="pull-left">
@@ -47,7 +47,7 @@
                 <geocache-attr ng-repeat="att in geocache.serv.detail.attributes" attr="{{att.name|angular}}" inc="{{att.inc|angular}}" class="attr_detail"></geocache-attr>
             </div>
             <div>
-                <a href="{{geocache.serv.detail.url|angular}}" target="_blank" class="btn btn-info btn-sm" role="button">Open Listing on geocaching.com</a>
+                <a href="{{geocache.serv.detail.url|angular}}" target="_blank" class="btn btn-primary btn-sm" role="button"><span class="glyphicon glyphicon-globe"></span> Open Listing on geocaching.com</a>
             </div>
         </uib-tab>
         <uib-tab index="1" heading="Description">

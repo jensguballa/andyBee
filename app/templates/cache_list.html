@@ -1,10 +1,10 @@
 <div ng-controller="GeocacheListCtrl as geolist" class="container-fluid">
-    <button class="btn btn-primary btn-sm pull-right"
+    <button class="btn btn-primary btn-sm pull-right tiny-gap-bottom"
             ng-disabled="!(geolist.tableParams.orderBy().length || geolist.tableParams.hasFilter())"
             ng-click="geolist.reset_filter()">
         <span class="glyphicon glyphicon-filter"></span> Reset Table Filter
     </button>
-    <table ng-table-dynamic="geolist.tableParams with geolist.cols" class="table table-condensed table-bordered table-striped">
+    <table ng-table-dynamic="geolist.tableParams with geolist.cols" class="table table-condensed table-bordered table-striped ">
         <tr ng-repeat="row in $data">
             <!--td ng-repeat="col in $columns">{{"{{row[col.field]}}"}}</td-->
             <td ng-if="true"><!-- img src="static/images/OCMLogoSmall.svg" height="20px"/--> 
