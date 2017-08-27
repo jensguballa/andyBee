@@ -5,8 +5,8 @@
         .module('andyBeeApp')
         .controller('GeocacheMapCtrl', GeocacheMapCtrl);
 
-    GeocacheMapCtrl.$inject = ['$scope', '$timeout', 'GeocacheService'];
-    function GeocacheMapCtrl($scope, $timeout, GeocacheService) {
+    GeocacheMapCtrl.$inject = ['$scope', '$timeout', 'GeocacheService', 'Functions'];
+    function GeocacheMapCtrl($scope, $timeout, GeocacheService, Functions) {
         var icon_size = 36;
 
         var marker_trans = {
@@ -88,6 +88,22 @@
             pathes = {centroid_marker: centroid_marker};
             for (var i = 0, len = GeocacheService.geocache_list.length; i < len; i++) {
                 var geocache = GeocacheService.geocache_list[i];
+
+                var difficulty_stars = Functions.rating_to_imgs(geocache.difficulty);
+                var difficulty_html = '';
+                var terrain_stars = Functions.rating_to_imgs(geocache.difficulty);
+                var terrain_html = '';
+                for (var j = 0; j < 5; j++) {
+                    difficulty_html += '<img src="' + difficulty_stars[j] + '" class="rating_popup" />';
+                    terrain_html += '<img src="' + terrain_stars[j] + '" class="rating_popup" />';
+                }
+
+                var last_logs = geocache.last_logs.replace(/'/g, "\\\'").split(';');
+                var last_logs_html = ''
+                for (var j = 0; j < last_logs.length; j++) {
+                    last_logs_html += '<img src="' + Functions.log_to_img(last_logs[j]) + '" title="' + last_logs[j] + '" class="last_log_popup" />';
+                }
+
                 vm.markers[geocache.gc_code] = {
                     lat: geocache.lat,
                     lng: geocache.lon,
@@ -98,15 +114,15 @@
                         '  <div class="table">' +
                         '      <dl class="table-row">' +
                         '          <dt>Difficulty: </dt>' +
-                        '          <dd><geocache-rating value="' + geocache.difficulty + '" class="rating_popup"></geocache-rating> (' + geocache.difficulty + ')</dd>' +
+                        '          <dd>' + difficulty_html + ' (' + geocache.difficulty + ')</dd>' +
                         '          <dt>Cache Size: </dt>' +
-                        '          <dd class="last-column"><geocache-size size="' + geocache.container + '" class="size_popup"></geocache-size> (' + geocache.container + ')</dd>' +
+                        '          <dd class="last-column"><img src="' + Functions.size_to_img(geocache.container) + '" class="size_popup"> (' + geocache.container + ')</dd>' +
                         '      </dl>' +
                         '      <dl class="table-row paragraph">' +
                         '          <dt>Terrain: </dt>' +
-                        '          <dd><geocache-rating value="' + geocache.terrain + '" class="rating_popup"></geocache-rating> (' + geocache.terrain + ')</dd>' +
+                        '          <dd>' + terrain_html + ' (' + geocache.terrain + ')</dd>' +
                         '          <dt>Last Logs: </dt>' +
-                        '          <dd class="last-column"><geocache-log ng-repeat="log in \'' + geocache.last_logs.replace(/'/g, "\\\'") + '\'.split(\';\') track by $index" type="{{log}}" title="{{log}}" class="last_log_popup"></geocache-log></dd>' +
+                        '          <dd class="last-column">' + last_logs_html + '</dd>' +
                         '      </dl>' +
                         '  </div>' +
                         '  <div><button class="btn btn-primary btn-sm" ng-click="map.set_center(' + geocache.lat + ', ' + geocache.lon + ')"> <span class="glyphicon glyphicon-map-marker"></span> Set as Map Center </button></div>' +
@@ -167,7 +183,7 @@
 
         // Another odd: the framework does not update marker.focus when a
         // popup is closed. :-(
-        $scope.$on('leafletDirectiveMarker.popupclose', function(event, args){
+        $scope.$on('leafletDirectiveMarker.popupclose', function(event, args) {
             vm.markers[args.modelName].focus = false;
         });
 

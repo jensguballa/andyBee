@@ -171,7 +171,7 @@ geocache-log.last_log > img {
     padding: 1px;
 }
 
-geocache-log.last_log_popup > img {
+img.last_log_popup {
     height: 14px;
     padding: 1px;
 }

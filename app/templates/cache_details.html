@@ -31,6 +31,7 @@
                     <dd><geocache-log ng-repeat="log in geocache.serv.detail.last_logs.split(';') track by $index" type="{{log|angular}}" title="{{log|angular}}" class="last_log"></geocache-log></dd>
                 </dl>
             </div>
+            {{geocache.serv.detail.last_logs|angular}} Jens
             <div class="table">
                 <dl class="table-row">
                     <dt>Hidden: </dt>
