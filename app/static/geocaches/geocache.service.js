@@ -24,15 +24,12 @@
             resolve_db_name: resolve_db_name,
             on_filter_changed: on_filter_changed,
             on_filter_reset: on_filter_reset,
-            on_reference_changed: on_reference_changed,
+            trigger_center_update: trigger_center_update,
 
             // stuff related to geocaches within a db
 
             geocache_list: [],
             read_list: read_list,
-
-            coord_to_obj: coord_to_obj,
-            obj_to_coord: obj_to_coord,
 
             refreshMap: refreshMap
 
@@ -54,7 +51,7 @@
             $rootScope.$broadcast('geocaches_updated');
         }
 
-        function change_reference(lat, lon) {
+        function recalc_distance(lat, lon) {
             var reference_point = L.latLng(lat, lon);
             for (var i = 0, len = geocache_list_unfiltered.length; i < len; i++) {
                 var geocache = geocache_list_unfiltered[i];
@@ -63,11 +60,11 @@
             }
         }
 
-        function on_reference_changed(lat, lon) {
+        function trigger_center_update(lat, lon) {
             if ((lat != serv.home_lat) || (lon != serv.home_lon)) {
                 serv.home_lat = lat;
                 serv.home_lon = lon;
-                change_reference(lat, lon);
+                recalc_distance(lat, lon);
                 $rootScope.$broadcast('center_updated');
             }
         }
@@ -90,13 +87,7 @@
                 serv.nbr_caches = result.nbr_caches;
                 geocache_list_unfiltered = result.geocaches;
                 serv.detail = {};
-                change_reference(serv.home_lat, serv.home_lon);
-                //var reference_point = L.latLng(49.0, 9.0);
-                //for (var i = 0, len = geocache_list_unfiltered.length; i < len; i++) {
-                //    var geocache = geocache_list_unfiltered[i];
-                //    geocache.point = L.latLng(geocache.lat, geocache.lon);
-                //    geocache.distance = geocache.point.distanceTo(reference_point);
-                //}
+                recalc_distance(serv.home_lat, serv.home_lon);
                 serv.geocache_list = FilterService.apply_basic_filter(result.geocaches);
                 BusyService.close_busy_modal();
                 $rootScope.$broadcast('geocaches_updated');
@@ -168,29 +159,6 @@
                 });
 
             }
-        }
-
-        function coord_to_obj(coord, str1, str2) {
-            var str = str1;
-            if (coord < 0) {
-                coord = -coord;
-                str = str2;
-            }
-            var degrees = parseInt(coord);
-            //return str + ' ' + degrees + ' ' + ((coord - degrees) * 60).toFixed(3);
-            return {
-                type: str,
-                degrees: degrees,
-                minutes: ((coord - degrees) * 60).toFixed(3)
-            };
-        }
-
-        function obj_to_coord(obj) {
-            var coord = obj.degrees + obj.minutes / 60;
-            if ((obj.type == 'W') || (obj.type == 'S')) {
-                coord = -coord;
-            }
-            return coord;
         }
 
         function refreshMap() {

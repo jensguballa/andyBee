@@ -30,9 +30,11 @@ def json_to_object(schema, data_mandatory=True):
 class PrefSchema(Schema):
     id = fields.Integer()
     auto_load = fields.Integer()
+    cluster_zoom = fields.Integer()
     default_db = fields.String()
     home_lat = fields.Float()
     home_lon = fields.Float()
+    marker_size = fields.Integer()
     max_export = fields.Integer()
     max_import = fields.Integer()
     owner = fields.String()
@@ -145,11 +147,13 @@ class ConfigDb(Db):
             self.set_db(db)
             self.create_all()
             pref = {'auto_load': 0, 
+                    'cluster_zoom': 14,
                     'default_db': '', 
                     'owner': '', 
                     'used_db': '', 
                     'home_lat': 49.0,
                     'home_lon': 9.0,
+                    'marker_size': 36,
                     'max_export': 5,
                     'max_import': 10,
                     'sticky_menu': False

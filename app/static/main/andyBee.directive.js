@@ -122,8 +122,8 @@
         }
     }
 
-    geocacheCoord.$inject = ['GeocacheService'];
-    function geocacheCoord(GeocacheService) {
+    geocacheCoord.$inject = ['Functions'];
+    function geocacheCoord(Functions) {
         return {
             restrict: 'E',
             template: '<span>{{txt}}</span>',
@@ -140,7 +140,7 @@
             });
 
             function coord(coord, str1, str2) {
-                var obj = GeocacheService.coord_to_obj(coord, str1, str2);
+                var obj = Functions.coord_to_obj(coord, str1, str2);
                 return obj.type + ' ' + obj.degrees + ' ' + obj.minutes;
 //                var str = str1;
 //                if (coord < 0) {

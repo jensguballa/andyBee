@@ -66,6 +66,14 @@
                 <label>Sticky Menu</label>
             </div>    
             <div class="form-group">
+                <label for="pref_marker_size">Marker size (in pixel)</label>
+                <input type="text" class="form-control" id="pref_marker_size" ng-model="pref.data.marker_size" placeholder="Number" convert-to-number />
+            </div>    
+            <div class="form-group">
+                <label for="pref_cluster_zoom">Zoom level at which all clusters are expanded (requires reload)</label>
+                <input type="text" class="form-control" id="pref_cluster_zoom" ng-model="pref.data.cluster_zoom" placeholder="Number" convert-to-number />
+            </div>    
+            <div class="form-group">
                 <label for="opendb_file">Startup Behaviour</label>
                 <div class="form-indent">
                     <form name="myForm">

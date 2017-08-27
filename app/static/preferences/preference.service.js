@@ -5,8 +5,8 @@
         .module('andyBeeApp')
         .factory('PreferenceService', PreferenceService);
 
-    PreferenceService.$inject = ['$resource', '$injector', 'LoggingService', 'ERROR'];
-    function PreferenceService ($resource, $injector, LoggingService, ERROR) {
+    PreferenceService.$inject = ['$resource', '$injector', '$rootScope', 'LoggingService', 'ERROR'];
+    function PreferenceService ($resource, $injector, $rootScope, LoggingService, ERROR) {
         var rest = $resource('/andyBee/api/v1.0/config/:id/preference', null, {update: {method: 'PUT'}});
         var serv = {
             data: {},
@@ -42,9 +42,13 @@
             rest.update({id: 1}, {preference: data}, on_update_response, error_cb);
             
             function on_update_response () {
-                var home_changed = false;
+                var lat = serv.data.lat;
+                var lon = serv.data.lon;
                 serv.data = data;
-                $injector.get('GeocacheService').on_reference_changed(data.home_lat, data.home_lon);
+                if ((lat != serv.data.lat) || (lon != serv.data.lon)) {
+                    $injector.get('GeocacheService').trigger_center_update(data.home_lat, data.home_lon);
+                }
+                $rootScope.$broadcast('preferences_updated', data);
                 if (success_cb) {
                     success_cb();
                 }

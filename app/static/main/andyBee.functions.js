@@ -1,6 +1,24 @@
 (function () {
     'use strict';
 
+    var marker_trans = {
+        'Traditional Cache':        'static/images/marker/traditional.svg',
+        'Letterbox Hybrid':         'static/images/marker/letterbox.svg',
+        'Event Cache':              'static/images/marker/event.svg',
+        'Multi-cache':              'static/images/marker/multi.svg',
+        'Wherigo Cache':            'static/images/marker/wherigo.svg',
+        'Mega-Event Cache':         'static/images/marker/mega.svg',
+        'Unknown Cache':            'static/images/marker/unknown.svg',
+        'Earthcache':               'static/images/marker/earth.svg',
+        'Cache In Trash Out Event': 'static/images/marker/cito.svg',
+        'Virtual Cache':            'static/images/marker/virtual.svg',
+        'GPS Adventures Exhibit':   'static/images/marker/adventures.svg',
+        'Webcam Cache':             'static/images/marker/webcam.svg',
+        'Project APE Cache':        'static/images/marker/ape.svg',
+        'Locationless Cache':       'static/images/marker/locationless.svg',
+        'Giga-Event Cache':         'static/images/marker/giga.svg',
+    };
+
     var type_trans = {
         'Traditional Cache':        'static/images/types/traditional.svg',
         'Letterbox Hybrid':         'static/images/types/letterbox.svg',
@@ -130,7 +148,10 @@
             rating_to_imgs: rating_to_imgs,
             attr_to_img: attr_to_img,
             log_to_img: log_to_img,
+            type_to_marker_img: type_to_marker_img,
 
+            obj_to_coord: obj_to_coord,
+            coord_to_obj: coord_to_obj
         };
 
         return func;
@@ -138,6 +159,10 @@
 
         function type_to_img (type) {
             return type_trans[type];
+        }
+
+        function type_to_marker_img (type) {
+            return marker_trans[type];
         }
 
         function size_to_img (size) {
@@ -179,6 +204,29 @@
                 img = log_trans['Not Supported'];
             }
             return img;
+        }
+
+        function coord_to_obj(coord, str1, str2) {
+            var str = str1;
+            if (coord < 0) {
+                coord = -coord;
+                str = str2;
+            }
+            var degrees = parseInt(coord);
+            //return str + ' ' + degrees + ' ' + ((coord - degrees) * 60).toFixed(3);
+            return {
+                type: str,
+                degrees: degrees,
+                minutes: ((coord - degrees) * 60).toFixed(3)
+            };
+        }
+
+        function obj_to_coord(obj) {
+            var coord = obj.degrees + obj.minutes / 60;
+            if ((obj.type == 'W') || (obj.type == 'S')) {
+                coord = -coord;
+            }
+            return coord;
         }
     }
 

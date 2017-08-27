@@ -12,6 +12,7 @@ class Preferences(SqlTable):
 	used_db TEXT, 
         home_lat FLOAT,
         home_lon FLOAT,
+        marker_size INTEGER,
         max_export INTEGER,
         max_import INTEGER,
         sticky_menu BOOLEAN,

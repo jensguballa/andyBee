@@ -18,12 +18,13 @@
         }
     }
 
-    open_startup_db.$inject = ['PreferenceService', 'GeocacheService', 'DbService', 'LoggingService', 'ERROR']
-    function open_startup_db (PreferenceService, GeocacheService, DbService, LoggingService, ERROR) {
+    open_startup_db.$inject = ['$rootScope', 'PreferenceService', 'GeocacheService', 'DbService', 'LoggingService', 'ERROR']
+    function open_startup_db ($rootScope, PreferenceService, GeocacheService, DbService, LoggingService, ERROR) {
         var db_name;
         PreferenceService.read(on_read_result);
 
         function on_read_result() {
+            $rootScope.$broadcast('preferences_available');
             var auto_load = PreferenceService.data.auto_load;
             if (auto_load == 0) { // don't open any DB at all
             }
@@ -36,7 +37,7 @@
             if (db_name) {
                 DbService.read(on_dblist_response, on_dblist_error);
             }
-            GeocacheService.on_reference_changed(PreferenceService.data.home_lat, PreferenceService.data.home_lon);
+            GeocacheService.trigger_center_update(PreferenceService.data.home_lat, PreferenceService.data.home_lon);
         }
 
         function on_dblist_response () {

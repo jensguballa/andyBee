@@ -15,6 +15,11 @@ html {
     padding-bottom: 40px;
 }
 
+nav.navbar-fixed-top + #content {
+    margin-top: 70px;
+}
+
+
 .logo > img {
     height: 58px;
     float: left;

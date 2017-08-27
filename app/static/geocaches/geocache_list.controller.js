@@ -73,7 +73,7 @@
         }
 
         function set_center(lat, lon) {
-            GeocacheService.on_reference_changed(lat, lon);
+            GeocacheService.trigger_center_update(lat, lon);
         }
 
         function geocache_filter(data, filter_values) {

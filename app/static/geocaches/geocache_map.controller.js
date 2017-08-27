@@ -5,27 +5,10 @@
         .module('andyBeeApp')
         .controller('GeocacheMapCtrl', GeocacheMapCtrl);
 
-    GeocacheMapCtrl.$inject = ['$scope', '$timeout', 'GeocacheService', 'Functions'];
-    function GeocacheMapCtrl($scope, $timeout, GeocacheService, Functions) {
+    GeocacheMapCtrl.$inject = ['$scope', '$timeout', 'GeocacheService', 'PreferenceService', 'Functions'];
+    function GeocacheMapCtrl($scope, $timeout, GeocacheService, PreferenceService, Functions) {
         var icon_size = 36;
-
-        var marker_trans = {
-            'Traditional Cache':        'static/images/marker/traditional.svg',
-            'Letterbox Hybrid':         'static/images/marker/letterbox.svg',
-            'Event Cache':              'static/images/marker/event.svg',
-            'Multi-cache':              'static/images/marker/multi.svg',
-            'Wherigo Cache':            'static/images/marker/wherigo.svg',
-            'Mega-Event Cache':         'static/images/marker/mega.svg',
-            'Unknown Cache':            'static/images/marker/unknown.svg',
-            'Earthcache':               'static/images/marker/earth.svg',
-            'Cache In Trash Out Event': 'static/images/marker/cito.svg',
-            'Virtual Cache':            'static/images/marker/virtual.svg',
-            'GPS Adventures Exhibit':   'static/images/marker/adventures.svg',
-            'Webcam Cache':             'static/images/marker/webcam.svg',
-            'Project APE Cache':        'static/images/marker/ape.svg',
-            'Locationless Cache':       'static/images/marker/locationless.svg',
-            'Giga-Event Cache':         'static/images/marker/giga.svg',
-        };
+        var disable_clustering_zoom = 10;
 
         var vm = this;
         vm.centroid = {
@@ -57,15 +40,15 @@
                 }
             },
             overlays: {
-                geocaches: {
-                    name: "Geocaches",
-                    type: "markercluster",
-                    visible: true,
-                    layerOptions: {
-                        disableClusteringAtZoom: 14,
-                        spiderfyOnMaxZoom: false
-                    }
-                },
+//                geocaches: {
+//                    name: "Geocaches",
+//                    type: "markercluster",
+//                    visible: true,
+//                    layerOptions: {
+//                        disableClusteringAtZoom: disable_clustering_zoom,
+//                        spiderfyOnMaxZoom: false
+//                    }
+//                },
                 centroid: {
                     name: "Show Map Center",
                     type: "group",
@@ -78,10 +61,27 @@
                 }
             }
         };
+        vm.controls = {
+            scale: true
+        }
 
         vm.center_map = center_map;
         vm.show_geocache_details = show_geocache_details;
         vm.set_center = set_center;
+
+        $scope.$on('preferences_available', function (event, args) {
+            icon_size = PreferenceService.data.marker_size;
+            disable_clustering_zoom = PreferenceService.data.cluster_zoom
+            vm.layers.overlays['geocaches'] = {
+                name: "Geocaches",
+                type: "markercluster",
+                visible: true,
+                layerOptions: {
+                    disableClusteringAtZoom: disable_clustering_zoom,
+                    spiderfyOnMaxZoom: false
+                }
+            };
+        });
 
         $scope.$on('geocaches_updated', function (event, args) {
             vm.markers = {};
@@ -131,7 +131,7 @@
                     getMessageScope : function() { return $scope; },
                     layer: "geocaches",
                     icon: {
-                        iconUrl: marker_trans[geocache.type],
+                        iconUrl: Functions.type_to_marker_img(geocache.type),
                         iconSize:     [icon_size, icon_size], // size of the icon
                         iconAnchor:   [icon_size / 2, icon_size], // point of the icon which will correspond to marker's location
 //                        shadowUrl:    'static/images/marker/shadow.svg',
@@ -154,11 +154,23 @@
         });
 
         $scope.$on('center_updated', function (event, args) {
-            center_map()
+            center_map();
+        });
+
+        $scope.$on('preferences_updated', function (event, preferences) {
+            if (icon_size != preferences.marker_size) {
+                icon_size = preferences.marker_size;
+                for (var marker in vm.markers) {
+                    if(!vm.markers.hasOwnProperty(marker)) continue;
+                    vm.markers[marker].icon.iconSize = [icon_size, icon_size];
+                    vm.markers[marker].icon.iconAnchor = [icon_size / 2, icon_size];
+                    vm.markers[marker].icon.popupAnchor = [0, -icon_size];
+                }
+            }
         });
 
         $scope.$watch("map.centroid.zoom", function (zoom) {
-            if (zoom >= 14) {
+            if (zoom >= disable_clustering_zoom) {
                 vm.pathes = pathes;
             }
             else {
@@ -168,7 +180,7 @@
 
         $scope.$on('map_pane_updated', function (event, args) {
             var gc_code = args.marker_gc_code;
-            vm.centroid.zoom = 14;
+            vm.centroid.zoom = disable_clustering_zoom;
             vm.centroid.lat = vm.markers[args.marker_gc_code].lat;
             vm.centroid.lng = vm.markers[args.marker_gc_code].lng;
 
@@ -190,7 +202,7 @@
         function center_map() {
             vm.centroid.lat = GeocacheService.home_lat;
             vm.centroid.lng = GeocacheService.home_lon;
-            vm.centroid.zoom = 14;
+            vm.centroid.zoom = disable_clustering_zoom;
             centroid_marker.latlngs = [GeocacheService.home_lat, GeocacheService.home_lon];
         }
 
@@ -199,7 +211,7 @@
         }
 
         function set_center(lat, lon) {
-            GeocacheService.on_reference_changed(lat, lon);
+            GeocacheService.trigger_center_update(lat, lon);
         }
     }
 
