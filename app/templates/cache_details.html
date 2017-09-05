@@ -49,6 +49,9 @@
             <div>
                 <a href="{{geocache.serv.detail.url|angular}}" target="_blank" class="btn btn-primary btn-sm" role="button"><span class="glyphicon glyphicon-globe"></span> Open Listing on geocaching.com</a>
             </div>
+            <button class="btn btn-primary btn-sm tiny-gap-top" ng-click="geocache.update_coords(geocache.serv.detail.id)">
+                <span class="glyphicon glyphicon-map-marker"></span> Update Coordinates
+            </button>
         </uib-tab>
         <uib-tab index="1" heading="Description">
             <geocache-descr text="{{geocache.serv.detail.short_desc|angular}}" html="{{geocache.serv.detail.short_html|angular}}"></geocache-descr>

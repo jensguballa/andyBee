@@ -68,6 +68,7 @@
         vm.center_map = center_map;
         vm.show_geocache_details = show_geocache_details;
         vm.set_center = set_center;
+        vm.update_coordinates = update_coordinates;
 
         $scope.$on('preferences_available', function (event, args) {
             icon_size = PreferenceService.data.marker_size;
@@ -98,13 +99,14 @@
                     terrain_html += '<img src="' + terrain_stars[j] + '" class="rating_popup" />';
                 }
 
-                var last_logs = geocache.last_logs.replace(/'/g, "\\\'").split(';');
+                var last_logs = geocache.last_logs.split(';');
                 var last_logs_html = ''
                 for (var j = 0; j < last_logs.length; j++) {
                     last_logs_html += '<img src="' + Functions.log_to_img(last_logs[j]) + '" title="' + last_logs[j] + '" class="last_log_popup" />';
                 }
 
                 vm.markers[geocache.gc_code] = {
+                    id: geocache.id,
                     lat: geocache.lat,
                     lng: geocache.lon,
                     message: 
@@ -125,7 +127,8 @@
                         '          <dd class="last-column">' + last_logs_html + '</dd>' +
                         '      </dl>' +
                         '  </div>' +
-                        '  <div><button class="btn btn-primary btn-sm" ng-click="map.set_center(' + geocache.lat + ', ' + geocache.lon + ')"> <span class="glyphicon glyphicon-map-marker"></span> Set as Map Center </button></div>' +
+                        '  <div><button class="btn btn-primary btn-sm" ng-click="map.set_center(' + geocache.id + ')"> <span class="glyphicon glyphicon-map-marker"></span> Set as Map Center </button></div>' +
+                        '  <div><button class="btn btn-primary btn-sm tiny-gap-top" ng-click="map.update_coordinates(' + geocache.id + ')"> <span class="glyphicon glyphicon-map-marker"></span> Update Coordinates </button></div>' +
                         '</div>',
                     compileMessage: true,
                     getMessageScope : function() { return $scope; },
@@ -185,7 +188,7 @@
             vm.centroid.lng = vm.markers[args.marker_gc_code].lng;
 
             // Found by reverse engineering: simply setting marker.focus to true
-            // does not do the job as expected, the popup occurs on with an offset,
+            // does not do the job as expected, the popup occurs with an offset,
             // and the size is rather strange.
             // Using a timeout of 0 milliseconds does the trick. :-(
             $timeout(function () {
@@ -199,19 +202,43 @@
             vm.markers[args.modelName].focus = false;
         });
 
+        $scope.$on('coordinates_updated', function(event, args) {
+            if (vm.markers.hasOwnProperty(args.geocache.gc_code)) {
+                vm.markers[args.geocache.gc_code].lat = args.geocache.lat;
+                vm.markers[args.geocache.gc_code].lng = args.geocache.lon;
+                vm.markers[args.geocache.gc_code].focus = false;
+                vm.pathes[args.geocache.gc_code].latlngs = [args.geocache.lat, args.geocache.lon];
+                vm.centroid.lat = args.geocache.lat;
+                vm.centroid.lng = args.geocache.lon;
+                $timeout(function () {
+                    vm.markers[args.geocache.gc_code].focus = true;
+                }, 100);
+            }
+        });
+
         function center_map() {
-            vm.centroid.lat = GeocacheService.home_lat;
-            vm.centroid.lng = GeocacheService.home_lon;
+            vm.centroid.lat = GeocacheService.center_point.lat;
+            vm.centroid.lng = GeocacheService.center_point.lng;
             vm.centroid.zoom = disable_clustering_zoom;
-            centroid_marker.latlngs = [GeocacheService.home_lat, GeocacheService.home_lon];
+            centroid_marker.latlngs = [GeocacheService.center_point.lat, GeocacheService.center_point.lng];
         }
 
         function show_geocache_details(id) {
             GeocacheService.read(id); // cache detail tab
         }
 
-        function set_center(lat, lon) {
-            GeocacheService.trigger_center_update(lat, lon);
+        function update_coordinates(id) {
+            var geocache = GeocacheService.get_geocache(id);
+            GeocacheService.update_coord_dialog(id);
+            vm.markers[geocache.gc_code].focus = false;
+            $timeout(function () {
+                vm.markers[geocache.gc_code].focus = true;
+            }, 100);
+        }
+
+        function set_center(id) {
+            var geocache = GeocacheService.get_geocache(id);
+            GeocacheService.trigger_center_update(geocache.lat, geocache.lon);
         }
     }
 

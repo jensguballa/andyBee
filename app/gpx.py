@@ -70,14 +70,28 @@ pref_owner_id = 0
 #            geocache_db.execute('INSERT INTO cacher (id, name) VALUES (?,?)', (id, name))
 #            self._pool[id] = name
 
+def coords_to_string(coord, str1, str2):
+    string = str1
+    if coord < 0:
+        coord = -coord
+        string = str2
+    degrees = int(coord)
+    string += ' ' + str(degrees) + ' ' + '%.3f' % ((coord - degrees) * 60)
+    return string
 
-
-def wpt_to_xml(parent, waypoint, data):
-    data['latmin'] = min(data['latmin'], waypoint.lat)
-    data['latmax'] = max(data['latmax'], waypoint.lat)
-    data['lonmin'] = min(data['lonmin'], waypoint.lon)
-    data['lonmax'] = max(data['lonmax'], waypoint.lon)
-    w_wpt = subnode(parent, GPX+"wpt", attrib={'lat': str(waypoint.lat), 'lon': str(waypoint.lon)})
+def wpt_to_xml(parent, geocache, data):
+    waypoint = geocache.waypoint
+    if geocache.coords_updated:
+        lat = geocache.corr_lat
+        lon = geocache.corr_lon
+    else:
+        lat = waypoint.lat
+        lon = waypoint.lon
+    data['latmin'] = min(data['latmin'], lat)
+    data['latmax'] = max(data['latmax'], lat)
+    data['lonmin'] = min(data['lonmin'], lon)
+    data['lonmax'] = max(data['lonmax'], lon)
+    w_wpt = subnode(parent, GPX+"wpt", attrib={'lat': str(lat), 'lon': str(lon)})
     subnode(w_wpt, GPX+"time", text=waypoint.time)
     subnode(w_wpt, GPX+"name", text=waypoint.name)
     subnode(w_wpt, GPX+"cmt", text=waypoint.cmt)
@@ -89,7 +103,7 @@ def wpt_to_xml(parent, waypoint, data):
     return w_wpt
 
 def geocache_to_xml(parent, geocache, data):
-    wpt_node = wpt_to_xml(parent, geocache.waypoint, data)
+    wpt_node = wpt_to_xml(parent, geocache, data)
     cache_node = subnode(wpt_node, GS+"cache", nsmap={'groundspeak':GS_NS}, 
             attrib={
                 'id': str(geocache.id),
@@ -113,7 +127,14 @@ def geocache_to_xml(parent, geocache, data):
     subnode(cache_node, GS+"state", text=geocache.state.name)
     subnode(cache_node, GS+"short_description", text=geocache.short_desc,
             attrib={'html': "True" if geocache.short_html else "False"})
-    subnode(cache_node, GS+"long_description", text=geocache.long_desc,
+
+    orig_coords_txt = ''
+    if geocache.update_coords:
+        orig_coords_txt = 'Original coordinates: ' + coords_to_string(geocache.lat, 'N', 'S') + ' ' + coords_to_string(geocache.lon, 'E', 'W')
+        if geocache.long_html:
+            orig_coords_txt = '<p>' + orig_coords_txt + '</p>'
+
+    subnode(cache_node, GS+"long_description", text=geocache.long_desc + orig_coords_txt,
             attrib={'html': "True" if geocache.long_html else "False"})
     subnode(cache_node, GS+"encoded_hints", text=geocache.encoded_hints)
     if len(geocache.logs) and (data['max_logs'] > 0):

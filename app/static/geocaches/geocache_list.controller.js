@@ -15,6 +15,7 @@
         });
         vm.show_details = show_details;
         vm.show_map = show_map;
+        vm.update_coordinates = update_coordinates;
         vm.set_center = set_center;
         vm.reset_filter = reset_filter;
 
@@ -53,6 +54,11 @@
             }
         });
 
+        $scope.$on('coordinates_updated', function (event, args) {
+            vm.tableParams.reload();
+        });
+
+
         function reset_filter() {
             vm.tableParams.reload();
             vm.tableParams.page(1);
@@ -70,6 +76,10 @@
             $rootScope.$broadcast('map_pane_updated', {
                 marker_gc_code: gc_code
             });
+        }
+
+        function update_coordinates(geocache_id) {
+            GeocacheService.update_coord_dialog(geocache_id);
         }
 
         function set_center(lat, lon) {

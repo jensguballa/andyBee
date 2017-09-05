@@ -5,17 +5,28 @@
         .module('andyBeeApp')
         .factory('GeocacheService', GeocacheService);
 
-    GeocacheService.$inject = ['$rootScope', '$resource', '$timeout', 'PreferenceService', 'LoggingService', 'DbService', 'FilterService', 'BusyService', 'ERROR', 'leafletData'];
-    function GeocacheService ($rootScope, $resource, $timeout, PreferenceService, LoggingService, DbService, FilterService, BusyService, ERROR, leafletData) {
+    GeocacheService.$inject = ['$rootScope', '$resource', '$timeout', '$uibModal', 'PreferenceService', 'LoggingService', 'DbService', 'FilterService', 'BusyService', 'ERROR', 'leafletData'];
+    function GeocacheService ($rootScope, $resource, $timeout, $uibModal, PreferenceService, LoggingService, DbService, FilterService, BusyService, ERROR, leafletData) {
+        L.LatLng.MAX_MARGIN = 1e-6;
         var modal;
         var rest = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id');
+        var rest_upd_coord = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id/update_coords/', null, {
+            post: {
+                method: 'POST'
+            }
+        });
+
+
         var geocache_list_unfiltered = [];
+        var unfiltered_id_to_idx = {};
+
         var serv = {
             // which of the tabs (list, map, detail, console) is active
             selected_tab: 0,
             selected_detailed_tab: 0,
-            home_lat: 30.7,
-            home_lon: 9.9,
+            center_point: L.latLng(0,0),
+//            home_lat: 30.7,
+//            home_lon: 9.9,
             detail: {},
             read: read,
 
@@ -30,8 +41,11 @@
 
             geocache_list: [],
             read_list: read_list,
+//            update_coordinates: update_coordinates,
+            update_coord_dialog: update_coord_dialog,
 
-            refreshMap: refreshMap
+            refreshMap: refreshMap,
+            get_geocache: get_geocache
 
         };
 
@@ -41,8 +55,12 @@
             return serv.db_name;
         }
 
+        function apply_filter(list) {
+            return FilterService.apply_basic_filter(list);
+        }
+
         function on_filter_changed() {
-            serv.geocache_list = FilterService.apply_basic_filter(geocache_list_unfiltered);
+            serv.geocache_list = apply_filter(geocache_list_unfiltered);
             $rootScope.$broadcast('geocaches_updated');
         }
 
@@ -51,20 +69,22 @@
             $rootScope.$broadcast('geocaches_updated');
         }
 
-        function recalc_distance(lat, lon) {
-            var reference_point = L.latLng(lat, lon);
+        function recalc_distance_all() {
+//            var reference_point = L.latLng(lat, lon);
             for (var i = 0, len = geocache_list_unfiltered.length; i < len; i++) {
                 var geocache = geocache_list_unfiltered[i];
-                geocache.point = L.latLng(geocache.lat, geocache.lon);
-                geocache.distance = geocache.point.distanceTo(reference_point);
+                geocache.latlng = L.latLng(geocache.lat, geocache.lon);
+                geocache.distance = geocache.latlng.distanceTo(serv.center_point);
             }
         }
 
         function trigger_center_update(lat, lon) {
-            if ((lat != serv.home_lat) || (lon != serv.home_lon)) {
-                serv.home_lat = lat;
-                serv.home_lon = lon;
-                recalc_distance(lat, lon);
+            var latlng = L.latLng(lat, lon);
+            if (!latlng.equals(serv.center_point)) {
+                serv.center_point = latlng;
+//                serv.home_lat = lat;
+//                serv.home_lon = lon;
+                recalc_distance_all();
                 $rootScope.$broadcast('center_updated');
             }
         }
@@ -86,9 +106,13 @@
                 PreferenceService.update_used_db(db_name);
                 serv.nbr_caches = result.nbr_caches;
                 geocache_list_unfiltered = result.geocaches;
+                unfiltered_id_to_idx = {};
+                for (var i = 0; i < geocache_list_unfiltered.length; i++) {
+                    unfiltered_id_to_idx[geocache_list_unfiltered[i].id] = i;
+                }
                 serv.detail = {};
-                recalc_distance(serv.home_lat, serv.home_lon);
-                serv.geocache_list = FilterService.apply_basic_filter(result.geocaches);
+                recalc_distance_all();
+                serv.geocache_list = apply_filter(geocache_list_unfiltered);
                 BusyService.close_busy_modal();
                 $rootScope.$broadcast('geocaches_updated');
                 if (success_cb) {
@@ -154,11 +178,88 @@
             function on_get_error (result) {
                 LoggingService.log({
                     msg: ERROR.FAILURE_GEOCACHE_FROM_SERVER, 
-                    http_response: result,
+                    http_response: result, 
                     modal: true
                 });
 
             }
+        }
+
+        function update_coord_dialog(id) {
+            var geocache = get_geocache(id);
+            $uibModal.open({
+                animation: false,
+                controller: 'GeocacheUpdateCtrl',
+                controllerAs: 'coord',
+                templateUrl: '/static/geocaches/update_coords.html',
+                resolve: {
+                    geocache: geocache
+                }
+            }).result.then(on_dialog_ok, function(){});
+
+            function on_dialog_ok (coords) {
+                var geocache_orig = L.latLng(geocache.orig_lat, geocache.orig_lon);
+                var action = "update";
+                if (!coords.equals(geocache.latlng)) {
+                    if (coords.equals(geocache_orig)) {
+                        action = "reset";
+                    }
+                    rest_upd_coord.post({db: serv.db_name, geocache_id: geocache.id}, {
+                        action: action, 
+                        lat: coords.lat, 
+                        lon: coords.lng}, on_post_response, on_post_error);
+                }
+
+                function on_post_response(result) {
+                    if (!geocache.coords_updated) {
+                        geocache.coords_updated = true;
+                        geocache.orig_lat = geocache.lat;
+                        geocache.orig_lon = geocache.lon;
+                    }
+                    else if (coords.equals(geocache_orig)) {
+                        geocache.coords_updated = false;
+                    }
+
+                    geocache.lat = coords.lat;
+                    geocache.lon = coords.lng;
+                    geocache.latlng = coords;
+
+                    recalc_distance_all();
+                    serv.geocache_list = apply_filter(geocache_list_unfiltered);
+
+                    serv.detail.lat = geocache.lat;
+                    serv.detail.lon = geocache.lon;
+                    serv.detail.orig_lat = geocache.orig_lat;
+                    serv.detail.orig_lon = geocache.orig_lon;
+                    serv.detail.distance = geocache.distance;
+                    serv.detail.coords_updated = geocache.coords_updated;
+
+                    $rootScope.$broadcast('coordinates_updated', {geocache: geocache});
+//                    geocache.point = L.latLng(coords.lat, coords.lng);
+//                    geocache.distance = geocache.point.distanceTo(serv.center_point);
+                    // Hm, here we needs to update all view models:
+                    //   - list 
+                    //     - what, if list was sorted according to the distance?
+                    //   - details
+                    //   - map
+                    //   Also, if the current geocache was selected as the map center, 
+                    //   we should update the map center as well, I think. If so,
+                    //   we might need to update all distances as well.
+                }
+
+                function on_post_error(result) {
+                    LoggingService.log({
+                        msg: ERROR.FAILURE_GEOCACHE_UPDATE_COORD,
+                        http_response: result, 
+                        modal: true
+                    });
+                }
+            }
+
+        }
+
+        function get_geocache(id) {
+            return geocache_list_unfiltered[unfiltered_id_to_idx[id]]
         }
 
         function refreshMap() {

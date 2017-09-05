@@ -1,0 +1,58 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="coord.dismiss()" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3 class="modal-title" id="modal-title">Update Coordinates</h3>
+</div>
+<div class="modal-body">
+
+    <div class="container-fluid cache-detail">
+        <div class="pull-left">
+            <geocache-icon type="{{coord.geocache.type}}" class="detail-type"></geocache-icon>
+        </div>
+        <div class="pull-left">
+            <div class="container-fluid">
+                <h4><strong>{{coord.geocache.gc_code}}: {{coord.geocache.title}}</strong> <small>{{coord.geocache.type}}</small></h4>
+                <h4><strong><geocache-coord lat="{{coord.geocache.lat}}"></geocache-coord>
+                        <geocache-coord lon="{{coord.geocache.lon}}"></geocache-coord></strong>
+                    <small>{{coord.geocache.state}}, {{coord.geocache.country}}</small>
+                </h4>
+            </div>
+        </div>
+        <label>New Coordinates</label>
+        <div class="form-indent">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-1">Lat</label>
+                    <div class="col-sm-11">
+                        <select class="form-control degree-type" ng-model="coord.lat.type" >
+                            <option value="N">N</option>
+                            <option value="S">S</option>
+                        </select>
+                        <input type="text" class="form-control degrees" ng-model="coord.lat.degrees" title="Degrees, 0..90" convert-to-number /> ° 
+                        <input type="text" class="form-control minutes" ng-model="coord.lat.minutes" title="Minutes with 3 positions after decimal point" placeholder="e.g. 36.412"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-1">Lon</label>
+                    <div class="col-sm-11">
+                        <select class="form-control degree-type" ng-model="coord.lon.type" >
+                            <option value="E">E</option>
+                            <option value="W">W</option>
+                        </select>
+                        <input type="text" class="form-control degrees" ng-model="coord.lon.degrees" title="Degrees, 0..180" convert-to-number /> ° 
+                        <input type="text" class="form-control minutes" ng-model="coord.lon.minutes" title="Minutes with 3 positions after decimal point" placeholder="e.g. 25.189"/>
+                    </div>
+                </div>
+                <div class="form-group col-sm-12">
+                    <button class="btn btn-primary btn-sm" ng-click="coord.reset_to_original()" ng-if="coord.geocache.coords_updated">
+                        <span class="glyphicon glyphicon-home"></span> Reset to original Coordinates
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="coord.close()">OK</button>
+    <button class="btn btn-warning" type="button" ng-click="coord.dismiss()">Cancel</button>
+</div>

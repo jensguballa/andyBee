@@ -3,8 +3,6 @@ import werkzeug
 from flask_restful import Resource, reqparse, request
 from app import app, api, geocache_db
 from marshmallow import Schema, fields
-#from sqlalchemy import func, text
-#from sqlalchemy.orm import joinedload, noload, subqueryload
 from gpx import export_gpx, GpxImporter
 from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState
 from flask import send_from_directory, send_file, Response, make_response
@@ -71,6 +69,7 @@ class GeocacheBasicSchema(Schema):
     archived   = fields.Boolean()
     available  = fields.Boolean()
     container  = fields.String()
+    coords_updated = fields.Boolean()
     country    = fields.String()
     difficulty = fields.Float()
     found      = fields.Boolean()
@@ -78,6 +77,8 @@ class GeocacheBasicSchema(Schema):
     last_logs  = fields.String()
     lat        = fields.Float()
     lon        = fields.Float()
+    orig_lat   = fields.Float()
+    orig_lon   = fields.Float()
     owner      = fields.String()
     placed_by  = fields.String()
     state      = fields.String()
@@ -142,11 +143,13 @@ class GeocacheListApi(Resource):
         stmt = 'SELECT id, available, archived, name, ' \
                 'placed_by, owner_id, type_id, container_id, terrain, difficulty, ' \
                 'country_id, state_id, last_logs, lat, lon, gc_code, url, found, ' \
-                'short_desc, short_html, long_desc, long_html, encoded_hints ' \
+                'short_desc, short_html, long_desc, long_html, encoded_hints, ' \
+                'coords_updated, corr_lat, corr_lon '\
                 'FROM cache'
         geocaches = [dict(row) for row in geocache_db.execute(stmt)]
 
         for row in geocaches:
+            update_corrected_coordinates(row)
             row['owner'] = owners[row['owner_id']]
             row['type'] = types[row['type_id']]
             row['container'] = containers[row['container_id']]
@@ -167,6 +170,7 @@ class GeocacheListApi(Resource):
 
 api.add_resource(GeocacheListApi, '/andyBee/api/v1.0/db/<string:db_name>/geocaches')
 
+
 class GeocacheSingleSchema(Schema):
     geocache   = fields.Nested(GeocacheFullSchema)
 
@@ -184,6 +188,9 @@ class GeocacheApi(Resource):
                 cache.archived AS archived,
                 cache.available AS available,
                 cache_container.name AS container,
+                cache.coords_updated AS coords_updated,
+                cache.corr_lat AS corr_lat,
+                cache.corr_lon AS corr_lon,
                 cache_country.name AS country,
                 cache.difficulty AS difficulty,
                 cache.encoded_hints AS encoded_hints,
@@ -213,6 +220,8 @@ class GeocacheApi(Resource):
                 WHERE cache.id = ?
         '''
         geocache = dict(geocache_db.execute(stmt,(id,)).fetchone())
+
+        update_corrected_coordinates(geocache)
 
         stmt = '''SELECT
                 attribute.inc AS inc,
@@ -266,6 +275,30 @@ class GeocacheApi(Resource):
 
 api.add_resource(GeocacheApi, '/andyBee/api/v1.0/db/<string:db_name>/geocaches/<int:id>')
 
+class GeocacheUpdateCoordsApi(Resource):
+
+    def post(self, db_name, id):
+        parse = reqparse.RequestParser()
+        parse.add_argument('action', type=str, location='json')
+        parse.add_argument('lat', type=float, location='json')
+        parse.add_argument('lon', type=float, location='json')
+        args = parse.parse_args()
+        lat = args['lat']
+        lon = args['lon']
+        file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
+        if not os.path.isfile(file_path):
+            return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
+        geocache_db.set_db(file_path)
+        if args['action'] == 'reset':
+            geocache_db.update(Cache, id, {'coords_updated': False, 'corr_lat': None, 'corr_lon': None})
+        else:
+            geocache_db.update(Cache, id, {'coords_updated': True, 'corr_lat': lat, 'corr_lon': lon})
+        geocache_db.commit()
+        return {}
+
+api.add_resource(GeocacheUpdateCoordsApi, '/andyBee/api/v1.0/db/<string:db_name>/geocaches/<int:id>/update_coords')
+
+
 class GpxImportApi(Resource):
 
     def post(self, db_name):
@@ -307,6 +340,14 @@ class GpxExportApi(Resource):
         response.headers['Content-Disposition'] = ('attachment; filename=' + obj['file_name'])
         return response 
 
+def update_corrected_coordinates(geocache):
+    if geocache['coords_updated']:
+        geocache['orig_lat'] = geocache['lat']
+        geocache['orig_lon'] = geocache['lon']
+        geocache['lat'] = geocache['corr_lat']
+        geocache['lon'] = geocache['corr_lon']
+    else:
+        geocache['coords_updated'] = False
 
 api.add_resource(GpxExportApi, '/andyBee/api/v1.0/db/<string:db_name>/gpx_export')
 
