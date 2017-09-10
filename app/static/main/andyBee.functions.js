@@ -151,7 +151,9 @@
             type_to_marker_img: type_to_marker_img,
 
             obj_to_coord: obj_to_coord,
-            coord_to_obj: coord_to_obj
+            coord_to_obj: coord_to_obj,
+            coord_equal: coord_equal,
+            latlng_equal: latlng_equal
         };
 
         return func;
@@ -228,6 +230,17 @@
             }
             return coord;
         }
+
+        function coord_equal(coord1, coord2) {
+            var c1 = coord_to_obj(coord1, 'A', 'B');
+            var c2 = coord_to_obj(coord2, 'A', 'B');
+            return ((c1.type == c2.type) && (c1.degrees == c2.degrees) && (c1.minutes == c2.minutes));
+        }
+
+        function latlng_equal(latlng1, latlng2) {
+            return (coord_equal(latlng1.lat, latlng2.lat) && coord_equal(latlng1.lng, latlng2.lng));
+        }
+
     }
 
 })();

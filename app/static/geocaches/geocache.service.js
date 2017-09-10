@@ -5,8 +5,8 @@
         .module('andyBeeApp')
         .factory('GeocacheService', GeocacheService);
 
-    GeocacheService.$inject = ['$rootScope', '$resource', '$timeout', '$uibModal', 'PreferenceService', 'LoggingService', 'DbService', 'FilterService', 'BusyService', 'ERROR', 'leafletData'];
-    function GeocacheService ($rootScope, $resource, $timeout, $uibModal, PreferenceService, LoggingService, DbService, FilterService, BusyService, ERROR, leafletData) {
+    GeocacheService.$inject = ['$rootScope', '$resource', '$timeout', '$uibModal', 'PreferenceService', 'LoggingService', 'DbService', 'FilterService', 'Functions', 'BusyService', 'ERROR', 'leafletData'];
+    function GeocacheService ($rootScope, $resource, $timeout, $uibModal, PreferenceService, LoggingService, DbService, FilterService, Functions, BusyService, ERROR, leafletData) {
         L.LatLng.MAX_MARGIN = 1e-6;
         var modal;
         var rest = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id');
@@ -25,8 +25,6 @@
             selected_tab: 0,
             selected_detailed_tab: 0,
             center_point: L.latLng(0,0),
-//            home_lat: 30.7,
-//            home_lon: 9.9,
             detail: {},
             read: read,
 
@@ -41,7 +39,6 @@
 
             geocache_list: [],
             read_list: read_list,
-//            update_coordinates: update_coordinates,
             update_coord_dialog: update_coord_dialog,
 
             refreshMap: refreshMap,
@@ -70,7 +67,6 @@
         }
 
         function recalc_distance_all() {
-//            var reference_point = L.latLng(lat, lon);
             for (var i = 0, len = geocache_list_unfiltered.length; i < len; i++) {
                 var geocache = geocache_list_unfiltered[i];
                 geocache.latlng = L.latLng(geocache.lat, geocache.lon);
@@ -80,10 +76,8 @@
 
         function trigger_center_update(lat, lon) {
             var latlng = L.latLng(lat, lon);
-            if (!latlng.equals(serv.center_point)) {
+            if (!Functions.latlng_equal(latlng, serv.center_point)) {
                 serv.center_point = latlng;
-//                serv.home_lat = lat;
-//                serv.home_lon = lon;
                 recalc_distance_all();
                 $rootScope.$broadcast('center_updated');
             }
@@ -200,8 +194,8 @@
             function on_dialog_ok (coords) {
                 var geocache_orig = L.latLng(geocache.orig_lat, geocache.orig_lon);
                 var action = "update";
-                if (!coords.equals(geocache.latlng)) {
-                    if (coords.equals(geocache_orig)) {
+                if (!Functions.latlng_equal(coords, geocache.latlng)) {
+                    if (Functions.latlng_equal(coords, geocache_orig)) {
                         action = "reset";
                     }
                     rest_upd_coord.post({db: serv.db_name, geocache_id: geocache.id}, {
@@ -216,7 +210,7 @@
                         geocache.orig_lat = geocache.lat;
                         geocache.orig_lon = geocache.lon;
                     }
-                    else if (coords.equals(geocache_orig)) {
+                    else if (Functions.latlng_equal(coords, geocache_orig)) {
                         geocache.coords_updated = false;
                     }
 
@@ -235,16 +229,6 @@
                     serv.detail.coords_updated = geocache.coords_updated;
 
                     $rootScope.$broadcast('coordinates_updated', {geocache: geocache});
-//                    geocache.point = L.latLng(coords.lat, coords.lng);
-//                    geocache.distance = geocache.point.distanceTo(serv.center_point);
-                    // Hm, here we needs to update all view models:
-                    //   - list 
-                    //     - what, if list was sorted according to the distance?
-                    //   - details
-                    //   - map
-                    //   Also, if the current geocache was selected as the map center, 
-                    //   we should update the map center as well, I think. If so,
-                    //   we might need to update all distances as well.
                 }
 
                 function on_post_error(result) {
