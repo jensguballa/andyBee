@@ -7,6 +7,7 @@ class Preferences(SqlTable):
     CREATE TABLE IF NOT EXISTS preferences (
 	id INTEGER NOT NULL, 
 	auto_load INTEGER, 
+        cluster_zoom INTEGER,
 	default_db TEXT, 
 	owner TEXT, 
 	used_db TEXT, 

@@ -8,33 +8,23 @@ Most important item comes first. Hm, not really.
       - display the center-cache (or coordinates) as info
       - limit by number
       - limit by maximum distance
-    o Cache details
     o Allow to delete filtered/unfiltered geocaches
     o Allow to delete a dedicated geocache
-    o Table filter: for D and T implement an exact match
-    o Progress bar for long lasting operations? E.g. stream a GPX-export?
     o Status line
       - idea: allow to reset the filer from the status line
         (e.g. popup menu)
     o Preferences, e.g homezone, height of map, ...
-      - make menu sticky
       - make status line optional
       - make console optional
-    o More work on map, dedicated icons, etc.
-    o Option to display 161m circles on the map
-      - switch to detailed view, i.e. display only one cache and
-        its waypoints
     o Console (configurable, delete all entries, ...)
-    o Icons missing, e.g. for log types and some seldom attributes
     o Use https for map tiles
-    o Support markup for logs (e.g. [8D], **bold text**, etc.)
     o Add more info logs, e.g. when reading a DB, exporting, etc
     o Catch exceptions in case DB-access fails
-    o Optimization, e.g. cache DB-tables for owner, attributes, etc
-    o Optimization, e.g. limit the number of markers on the map, etc
     o Implement DB-upgrade into the app
     o Maintenance for DB, e.g. check for dead entries, "compress" DB
     o Special fields per geocache:
       - date of last update (used to cleanup the DB)
-      - modified coordinates (use this as a filter criteria as well)
-
+    o Waypoint not yet treated at all
+    o Support user defined notes per geocache
+    o Map: provide more indications per geocache, e.g. found, owned, disabled 
+    o Add a route planer, e.g. by selecting dedicated geocaches
