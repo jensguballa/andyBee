@@ -5,6 +5,8 @@ from db import DbInterface
 import re
 import datetime
 import time
+import calendar
+from dateutil.parser import parse
 
 GPX_NS = "http://www.topografix.com/GPX/1/0"
 GPX = "{%s}" % GPX_NS
@@ -215,6 +217,7 @@ class GpxImporter():
         self.deleted_wpt = {}
         self.max_logs = max_logs
         self.pref_owner = pref_owner
+        self.last_updated = 0
 
     def import_gpx(self, gpx_file):
         try:
@@ -227,6 +230,14 @@ class GpxImporter():
         gpx = tree.getroot()
 
         if gpx.tag == GPX+"gpx":
+
+            # First, parse all the common elements
+            for node in gpx:
+                if node.tag == GPX+"time":
+                    self.last_updated = calendar.timegm(parse(node.text).utctimetuple())
+                    break
+
+            # Second, parse all waypoints
             for node in gpx:
                 if node.tag == GPX+"wpt":
                     wpt = self._parse_wpt(node)
@@ -278,6 +289,7 @@ class GpxImporter():
 
     def _parse_cache(self, node):
         cache = Cache()
+        cache.db['last_updated'] = self.last_updated
         cache.db['id'] = int(node.get("id"))
         cache.db['available'] = (node.get("available") == "True")
         cache.db['archived'] = (node.get("archived") == "True")

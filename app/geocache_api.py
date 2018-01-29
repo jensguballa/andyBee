@@ -7,6 +7,7 @@ from gpx import export_gpx, GpxImporter
 from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState
 from flask import send_from_directory, send_file, Response, make_response
 from app.api import json_to_object
+import time
 
 class DbListSchema(Schema):
     dbs = fields.List(fields.String())
@@ -75,6 +76,7 @@ class GeocacheBasicSchema(Schema):
     found      = fields.Boolean()
     gc_code    = fields.String()
     last_logs  = fields.String()
+    last_updated = fields.Integer()
     lat        = fields.Float()
     lon        = fields.Float()
     orig_lat   = fields.Float()
@@ -142,7 +144,7 @@ class GeocacheListApi(Resource):
 
         stmt = 'SELECT id, available, archived, name, ' \
                 'placed_by, owner_id, type_id, container_id, terrain, difficulty, ' \
-                'country_id, state_id, last_logs, lat, lon, gc_code, url, found, ' \
+                'country_id, state_id, last_logs, last_updated, lat, lon, gc_code, url, found, ' \
                 'short_desc, short_html, long_desc, long_html, encoded_hints, ' \
                 'coords_updated, corr_lat, corr_lon '\
                 'FROM cache'
@@ -198,6 +200,7 @@ class GeocacheApi(Resource):
                 cache.gc_code AS gc_code,
                 cache.hidden AS hidden,
                 cache.last_logs AS last_logs,
+                cache.last_updated AS last_updated,
                 cache.lat AS lat,
                 cache.lon AS lon,
                 cache.long_desc AS long_desc,
@@ -289,10 +292,11 @@ class GeocacheUpdateCoordsApi(Resource):
         if not os.path.isfile(file_path):
             return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
         geocache_db.set_db(file_path)
+        now = int(time.time())
         if args['action'] == 'reset':
-            geocache_db.update(Cache, id, {'coords_updated': False, 'corr_lat': None, 'corr_lon': None})
+            geocache_db.update(Cache, id, {'coords_updated': False, 'corr_lat': None, 'corr_lon': None, 'last_updated': now})
         else:
-            geocache_db.update(Cache, id, {'coords_updated': True, 'corr_lat': lat, 'corr_lon': lon})
+            geocache_db.update(Cache, id, {'coords_updated': True, 'corr_lat': lat, 'corr_lon': lon, 'last_updated': now})
         geocache_db.commit()
         return {}
 
@@ -341,9 +345,9 @@ class GpxExportApi(Resource):
         return response 
 
 def update_corrected_coordinates(geocache):
+    geocache['orig_lat'] = geocache['lat']
+    geocache['orig_lon'] = geocache['lon']
     if geocache['coords_updated']:
-        geocache['orig_lat'] = geocache['lat']
-        geocache['orig_lon'] = geocache['lon']
         geocache['lat'] = geocache['corr_lat']
         geocache['lon'] = geocache['corr_lon']
     else:

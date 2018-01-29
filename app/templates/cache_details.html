@@ -40,6 +40,14 @@
                     <dt>Owner: </dt>
                     <dd>{{geocache.serv.detail.owner|angular}}</dd>
                 </dl>
+                <dl class="table-row">
+                    <dt>Last updated: </dt>
+                    <dd>
+                      <span ng-if="geocache.serv.detail.age == 0">today</span>
+                      <span ng-if="geocache.serv.detail.age == 1">1 day ago</span>
+                      <span ng-if="geocache.serv.detail.age > 1">{{geocache.serv.detail.age|angular}} days ago</span>
+                    </dd>
+                </dl>
             </div>
 
             <div ng-if="geocache.serv.detail.attributes.length" class="paragraph">

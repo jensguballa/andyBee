@@ -101,7 +101,9 @@
                 serv.nbr_caches = result.nbr_caches;
                 geocache_list_unfiltered = result.geocaches;
                 unfiltered_id_to_idx = {};
+                var now = Date.now() / 1000;
                 for (var i = 0; i < geocache_list_unfiltered.length; i++) {
+                    geocache_list_unfiltered[i].age = Math.floor((now - geocache_list_unfiltered[i].last_updated) / (24*3600));
                     unfiltered_id_to_idx[geocache_list_unfiltered[i].id] = i;
                 }
                 serv.detail = {};
@@ -162,6 +164,7 @@
                     result.geocache.encoded_hints = '';
                 }
                 result.geocache.show_hint = false;
+                result.geocache.age =  Math.floor((Date.now()/1000 - result.geocache.last_updated) / (24*3600));
                 serv.detail = result.geocache;
                 $rootScope.$broadcast('geocache_details_updated');
                 if (success_cb) {
@@ -217,6 +220,7 @@
                     geocache.lat = coords.lat;
                     geocache.lon = coords.lng;
                     geocache.latlng = coords;
+                    geocache.age = 0;
 
                     recalc_distance_all();
                     serv.geocache_list = apply_filter(geocache_list_unfiltered);
@@ -227,6 +231,7 @@
                     serv.detail.orig_lon = geocache.orig_lon;
                     serv.detail.distance = geocache.distance;
                     serv.detail.coords_updated = geocache.coords_updated;
+                    serv.detail.age = 0;
 
                     $rootScope.$broadcast('coordinates_updated', {geocache: geocache});
                 }

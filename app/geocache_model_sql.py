@@ -34,6 +34,7 @@ class Cache(SqlTable):
             gc_code TEXT,
             hidden TEXT,
             last_logs TEXT, 
+            last_updated INTEGER,
             lat FLOAT, 
             lon FLOAT, 
             long_desc TEXT, 
