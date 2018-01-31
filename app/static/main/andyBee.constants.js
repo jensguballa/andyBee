@@ -56,7 +56,21 @@
         }) 
         .constant('TYPE_TO_STRING', {
             // will be filled on startup based on TYPE_TRANSLATION
+        })
+        .constant('CONTAINER_TRANSLATION', [
+            {prop: 'micro',      text: 'Micro'},
+            {prop: 'small',      text: 'Small'},
+            {prop: 'regular',    text: 'Regular'},
+            {prop: 'large',      text: 'Large'},
+            {prop: 'other',      text: 'Other'},
+            {prop: 'not_chosen', text: 'Not chosen'}
+        ])
+        .constant('CONTAINER_TO_PROP', {
+            // will be filled on startup based on CONTAINER_TRANSLATION
+        })
+        .constant('CONTAINER_TO_STRING', {
+            // will be filled on startup based on CONTAINER_TRANSLATION
         });
-                         
+  
 })();           
                          

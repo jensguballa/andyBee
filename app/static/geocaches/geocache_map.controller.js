@@ -92,7 +92,7 @@
 
                 var difficulty_stars = Functions.rating_to_imgs(geocache.difficulty);
                 var difficulty_html = '';
-                var terrain_stars = Functions.rating_to_imgs(geocache.difficulty);
+                var terrain_stars = Functions.rating_to_imgs(geocache.terrain);
                 var terrain_html = '';
                 for (var j = 0; j < 5; j++) {
                     difficulty_html += '<img src="' + difficulty_stars[j] + '" class="rating_popup" />';

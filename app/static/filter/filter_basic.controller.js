@@ -5,8 +5,8 @@
         .module('andyBeeApp')
         .controller('BasicFilterCtrl', BasicFilterCtrl);
 
-    BasicFilterCtrl.$inject = ['$uibModalInstance', 'FilterService', 'filter', 'TYPE_TRANSLATION', 'TYPE_TO_PROP'];
-    function BasicFilterCtrl($uibModalInstance, FilterService, filter, TYPE_TRANSLATION, TYPE_TO_PROP) {
+    BasicFilterCtrl.$inject = ['$uibModalInstance', 'FilterService', 'filter', 'TYPE_TRANSLATION', 'TYPE_TO_PROP', 'CONTAINER_TRANSLATION', 'CONTAINER_TO_PROP'];
+    function BasicFilterCtrl($uibModalInstance, FilterService, filter, TYPE_TRANSLATION, TYPE_TO_PROP, CONTAINER_TRANSLATION, CONTAINER_TO_PROP) {
         var vm = this;
 
         // modal controls
@@ -14,7 +14,8 @@
         vm.close = close_modal;
         vm.load_filter = load_filter;
 
-        vm.on_changed_0 = on_changed_0
+        vm.on_changed_0 = on_changed_0;
+        vm.on_changed_1 = on_changed_1;
 
         vm.filter_list = [];
         vm.select = -1;
@@ -23,6 +24,7 @@
             difficulty: map_diff_to_vm,
             terrain: map_terr_to_vm,
             type: map_type_to_vm,
+            container: map_container_to_vm
         }
 
         vm.name = filter.name;
@@ -66,6 +68,17 @@
                     ret_filter.filter_atom.push({name: "type", op: "set", value: vals.join(',')});
                 }
             }
+            if (vm.container_active) {
+                var vals = [];
+                for (var i = 0, len = CONTAINER_TRANSLATION.length; i < len; i++) {
+                    if (vm.container[CONTAINER_TRANSLATION[i].prop]) {
+                        vals.push(CONTAINER_TRANSLATION[i].text);
+                    }
+                }
+                if (vals.length) {
+                    ret_filter.filter_atom.push({name: "container", op: "set", value: vals.join(',')});
+                }
+            }
             $uibModalInstance.close(ret_filter);
         };
 
@@ -92,8 +105,17 @@
                 vm.type[TYPE_TRANSLATION[i].prop] = false;
             }
 
+            // container
+            vm.container_active = false;
+            vm.container = {};
+            for (var i = 0, len = CONTAINER_TRANSLATION.length; i < len; i++) {
+                vm.container[CONTAINER_TRANSLATION[i].prop] = false;
+            }
+
             // accordion[0] changed? (diff, terr, type)
             vm.changed_0 = false;
+            // accordion[1] changed? (container)
+            vm.changed_1 = false;
         }
 
         // map the filter to the vm
@@ -108,6 +130,7 @@
                 }
             }
             on_changed_0();
+            on_changed_1();
         }
 
         function is_terr_applicable () {
@@ -129,8 +152,23 @@
             return false;
         }
 
+        function is_container_applicable () {
+            if (vm.container_active) {
+                for (var i = 0, len = CONTAINER_TRANSLATION.length; i < len; i++) {
+                    if (vm.container[CONTAINER_TRANSLATION[i].prop]) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         function on_changed_0 () {
             vm.changed_0 = is_terr_applicable() || is_diff_applicable() || is_type_applicable();
+        }
+
+        function on_changed_1 () {
+            vm.changed_1 = is_container_applicable();
         }
 
         function map_diff_to_vm (filter_atom) {
@@ -150,6 +188,14 @@
             var types = filter_atom.value.split(',');
             for (var i = 0, len = types.length; i < len; i++) {
                 vm.type[TYPE_TO_PROP[types[i]]] = true;
+            }
+        }
+
+        function map_container_to_vm (filter_atom) {
+            vm.container_active = true;
+            var containers = filter_atom.value.split(',');
+            for (var i = 0, len = containers.length; i < len; i++) {
+                vm.container[CONTAINER_TO_PROP[containers[i]]] = true;
             }
         }
 

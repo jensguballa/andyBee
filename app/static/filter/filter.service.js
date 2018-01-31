@@ -41,6 +41,7 @@
             difficulty: int_prop_to_condition,
             terrain: int_prop_to_condition,
             type: type_to_condition,
+            container: container_to_condition
         };
 
         var op_to_func_map = {
@@ -229,6 +230,15 @@
             var hash = {};
             for (var i = 0, len = types.length; i < len; i++) {
                 hash[types[i]] = true;
+            }
+            return {property: filter_atom.name, func: check_prop_in_array, hash: hash};
+        }
+
+        function container_to_condition (filter_atom) {
+            var containers = filter_atom.value.split(',');
+            var hash = {};
+            for (var i = 0, len = containers.length; i < len; i++) {
+                hash[containers[i]] = true;
             }
             return {property: filter_atom.name, func: check_prop_in_array, hash: hash};
         }

@@ -7,6 +7,7 @@
             $logProvider.debugEnabled(false);
         })
         .run(init_geocache_type)
+        .run(init_geocache_size)
         .run(open_startup_db)
         .run(get_filter_list);
 
@@ -15,6 +16,14 @@
         for (var i = 0, len = TYPE_TRANSLATION.length; i < len; i++) {
             TYPE_TO_PROP[TYPE_TRANSLATION[i].text] = TYPE_TRANSLATION[i].prop;
             TYPE_TO_STRING[TYPE_TRANSLATION[i].prop] = TYPE_TRANSLATION[i].text;
+        }
+    }
+
+    init_geocache_size.$inject = ['CONTAINER_TRANSLATION', 'CONTAINER_TO_PROP', 'CONTAINER_TO_STRING'];
+    function init_geocache_size (CONTAINER_TRANSLATION, CONTAINER_TO_PROP, CONTAINER_TO_STRING) {
+        for (var i = 0, len = CONTAINER_TRANSLATION.length; i < len; i++) {
+            CONTAINER_TO_PROP[CONTAINER_TRANSLATION[i].text] = CONTAINER_TRANSLATION[i].prop;
+            CONTAINER_TO_STRING[CONTAINER_TRANSLATION[i].prop] = CONTAINER_TRANSLATION[i].text;
         }
     }
 

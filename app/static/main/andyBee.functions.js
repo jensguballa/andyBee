@@ -91,6 +91,7 @@
         'Recommended for kids': 'Recommended_for_kids.svg',
         'Scenic view': 'Scenic_view.svg',
         'Scuba gear': 'Scuba_gear.svg',
+        'Seasonal Access': 'Seasonal_access.svg',
         'Short hike (less than 1km)': 'Short_hike_(less_than_1km).svg',
         'Significant Hike': 'Significant_Hike.svg',
         'Snowmobiles': 'Snowmobiles.svg',

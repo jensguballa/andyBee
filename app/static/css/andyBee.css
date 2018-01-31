@@ -186,6 +186,10 @@ geocache-log.user_log > img {
 /*    margin-left: 5px; */
 }
 
+img.filter_type {
+    width: 20px;
+}
+
 
 hr.dark {
     border-top: 1px solid #aaa;
