@@ -91,12 +91,12 @@ table.ng-table > thead {
 
 .form-indent {
     margin-left:20px; 
-    padding:10px; 
 }
 
 .rounded-border {
-    border:1px solid #ddd; 
-    border-radius:5px;
+    border: 1px solid #ddd; 
+    border-radius: 5px;
+    padding: 10px;
 }
 
 .paragraph {

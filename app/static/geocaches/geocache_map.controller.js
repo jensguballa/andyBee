@@ -84,7 +84,7 @@
             };
         });
 
-        $scope.$on('geocaches_updated', function (event, args) {
+        $scope.$on('geocache_list_updated', function (event, args) {
             vm.markers = {};
             pathes = {centroid_marker: centroid_marker};
             for (var i = 0, len = GeocacheService.geocache_list.length; i < len; i++) {

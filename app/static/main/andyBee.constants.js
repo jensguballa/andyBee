@@ -34,6 +34,8 @@
             FAILURE_DELETE_FILTER_FROM_SERVER: 'Cannot delete the filter on the server.',
             FAILURE_UPDATE_FILTER_ON_SERVER:   'Cannot update the filter on the server.',
             FAILURE_CREATE_FILTER_ON_SERVER:   'Cannot create the filter on the server.',
+            FAILURE_FILTER_ON_DESCRIPTION:     'Cannot retrieve filtered list from the server.',
+
         }) 
         .constant('TYPE_TRANSLATION', [
             {prop: 'tradi',     text: 'Traditional Cache'},                      

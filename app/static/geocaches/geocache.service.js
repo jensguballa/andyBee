@@ -11,11 +11,8 @@
         var modal;
         var rest = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id');
         var rest_upd_coord = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id/update_coords/', null, {
-            post: {
-                method: 'POST'
-            }
+            post: {method: 'POST'}
         });
-
 
         var geocache_list_unfiltered = [];
         var unfiltered_id_to_idx = {};
@@ -58,12 +55,12 @@
 
         function on_filter_changed() {
             serv.geocache_list = apply_filter(geocache_list_unfiltered);
-            $rootScope.$broadcast('geocaches_updated');
+            $rootScope.$broadcast('geocache_list_updated');
         }
 
         function on_filter_reset() {
             serv.geocache_list = geocache_list_unfiltered;
-            $rootScope.$broadcast('geocaches_updated');
+            $rootScope.$broadcast('geocache_list_updated');
         }
 
         function recalc_distance_all() {
@@ -110,7 +107,7 @@
                 recalc_distance_all();
                 serv.geocache_list = apply_filter(geocache_list_unfiltered);
                 BusyService.close_busy_modal();
-                $rootScope.$broadcast('geocaches_updated');
+                $rootScope.$broadcast('geocache_list_updated');
                 if (success_cb) {
                     success_cb();
                 }
@@ -136,7 +133,7 @@
                 serv.nbr_caches = 0;
                 geocache_list_unfiltered = [];
                 serv.geocache_list = [];
-                $rootScope.$broadcast('geocaches_updated');
+                $rootScope.$broadcast('geocache_list_updated');
                 if (success_cb) {
                     success_cb();
                 }

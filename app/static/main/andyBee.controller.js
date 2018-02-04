@@ -131,8 +131,8 @@
             }
 
             function on_dialog_ok (filter) {
-                FilterService.filter = filter;
-                GeocacheService.on_filter_changed();
+                FilterService.filter_settings_updated(filter);
+//                GeocacheService.on_filter_changed();
             }
 
         }

@@ -40,7 +40,7 @@
             {field: "owner",      title: "Owner",     sortable: "owner"     , filter: {owner: "text"}}
         ];
 
-        $scope.$on('geocaches_updated', function (event, args) {
+        $scope.$on('geocache_list_updated', function (event, args) {
             vm.tableParams.settings({dataset: GeocacheService.geocache_list});
         });
 

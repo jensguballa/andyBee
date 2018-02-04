@@ -5,14 +5,18 @@
         .module('andyBeeApp')
         .factory('FilterService', FilterService);
 
-    FilterService.$inject = ['$resource', '$uibModal', 'LoggingService', 'ERROR'];
-    function FilterService ($resource, $uibModal, LoggingService, ERROR) {
-        var conditions = [];
+    FilterService.$inject = ['$resource', '$uibModal', '$injector', '$q', 'LoggingService', 'ERROR'];
+    function FilterService ($resource, $uibModal, $injector, $q, LoggingService, ERROR) {
 
         var rest = $resource('/andyBee/api/v1.0/config/:id/filter/:filter_id', null, {
             update: {method: 'PUT'},
             create: {method: 'POST'}
         });
+
+        var rest_filter_on_descr = $resource('/andyBee/api/v1.0/db/:db/filter_on_descr', null, {
+            post: {method: 'POST'}
+        });
+
         var serv = {
             read_list: read_list,
             apply_basic_filter: apply_basic_filter,
@@ -20,13 +24,16 @@
             delete_filter: delete_filter,
             edit_filter: edit_filter,
             reset_filter: reset_filter,
+            filter_settings_updated: filter_settings_updated,
 
             filter: {
                 name: "",
                 id:-1,
                 sequence: -1,
-                filter_atom: []
+                filter_atoms: []
             },
+            conditions: [],
+
             resolve_filter: resolve_filter,
             filter_applied: false,
             filter_name: "",
@@ -41,7 +48,8 @@
             difficulty: int_prop_to_condition,
             terrain: int_prop_to_condition,
             type: type_to_condition,
-            container: container_to_condition
+            container: container_to_condition,
+            description: description_to_condition
         };
 
         var op_to_func_map = {
@@ -84,7 +92,7 @@
             rest.create({id: 1}, {
                 name: filter_name,
                 sequence: serv.nbr_filters + 1,
-                filter_atom: serv.filter.filter_atom
+                filter_atoms: serv.filter.filter_atoms
             }, on_create_response, on_create_error);
 
             function on_create_response (result) {
@@ -92,7 +100,7 @@
                     name: filter_name,
                     id: result.id,
                     sequence: serv.nbr_filters + 1,
-                    filter_atom: angular.copy(serv.filter)
+                    filter_atoms: angular.copy(serv.filter)
                 });
                 serv.nbr_filters++;
                 if (on_success) {
@@ -164,21 +172,35 @@
         function reset_filter() {
             serv.filter_applied = false;
             serv.filter_name = "";
+        }
 
+        function filter_settings_updated (filter) {
+            serv.filter = filter;
+            var promise = generate_conditions(filter.filter_atoms);
+            if (promise) {
+                promise.then(filter_settings_complete);
+            }
+            else {
+                filter_settings_complete();
+            }
+
+            function filter_settings_complete () {
+                $injector.get('GeocacheService').on_filter_changed();
+            }
         }
 
         function apply_basic_filter (geocache_list) {
-            var conditions = generate_conditions(serv.filter.filter_atom);
-            if (conditions.length == 0) {
+            if (serv.conditions.length == 0) {
                 // nothing to filter
                 return geocache_list;
             }
+
             var filtered_list = [];
             for (var i = 0, len = geocache_list.length; i < len; i++) {
                 var geocache = geocache_list[i];
                 var filtered = false;
-                for (var j = 0, len2 = conditions.length; j < len2; j++) {
-                    if (!conditions[j].func(geocache, conditions[j])) {
+                for (var j = 0, len2 = serv.conditions.length; j < len2; j++) {
+                    if (!serv.conditions[j].func(geocache, serv.conditions[j])) {
                         filtered = true;
                         break;
                     }
@@ -191,16 +213,16 @@
             return filtered_list;
         }
 
-
         function generate_conditions (filter_atoms) {
-            var conditions = [];
+            serv.conditions = [];
+            var promises = [];
             for (var i = 0, len = filter_atoms.length; i < len; i++) {
                 var filter_atom = filter_atoms[i];
-                var func = atom_to_condition_map[filter_atoms[i].name];
+                var func = atom_to_condition_map[filter_atom.name];
                 if (func) {
-                    var condition = func(filter_atom);
-                    if (condition) {
-                        conditions.push(condition);
+                    var promise = func(filter_atom);
+                    if (promise) {
+                        promises.push(promise);
                     }
                 }
                 else {
@@ -210,19 +232,21 @@
                     });
                 }
             }
-            return conditions;
+            return $q.all(promises);
         }
 
         function int_prop_to_condition (filter_atom) {
             var op_func = op_to_func_map[filter_atom.op];
-            if (!op_func) {
+            if (op_func) {
+                serv.conditions.push({property: filter_atom.name, func: op_func, value: parseFloat(filter_atom.value)});
+            }
+            else {
                 LoggingService.log({
                     msg: "Filter: Unknown or unsupported operation: '" + filter_atom.op + "'. The filter condition will be ignored.",
                     type: 'warning',
                 });
-                return undefined;
             }
-            return {property: filter_atom.name, func: op_func, value: parseFloat(filter_atom.value)};
+            return undefined; // no promise
         }
 
         function type_to_condition (filter_atom) {
@@ -231,7 +255,8 @@
             for (var i = 0, len = types.length; i < len; i++) {
                 hash[types[i]] = true;
             }
-            return {property: filter_atom.name, func: check_prop_in_array, hash: hash};
+            serv.conditions.push({property: filter_atom.name, func: check_prop_in_array, hash: hash});
+            return undefined; // no promise
         }
 
         function container_to_condition (filter_atom) {
@@ -240,16 +265,41 @@
             for (var i = 0, len = containers.length; i < len; i++) {
                 hash[containers[i]] = true;
             }
-            return {property: filter_atom.name, func: check_prop_in_array, hash: hash};
+            serv.conditions.push({property: filter_atom.name, func: check_prop_in_array, hash: hash});
+            return undefined; // no promise
         }
 
-        function single_geocache_filter (geocache) {
-            return a_sample_filter.every(check_filter_atom);
+        function description_to_condition (filter_atom) {
+            var hash = {};
+            var db_name =  $injector.get('GeocacheService').db_name;
 
-            function check_filter_atom(filter_atom) {
-                return filter_atom.func(geocache, filter_atom);
+            var resource = rest_filter_on_descr.post({db: db_name}, {search_for: filter_atom.value}, on_post_response, on_post_error);
+            serv.conditions.push({property: "id", func: check_prop_in_array, hash: hash});
+            return resource.$promise;
+
+            function on_post_response (result) {
+                for (var i = 0, len = result.filtered_list.length; i < len; i++) {
+                    hash[result.filtered_list[i]] = true;
+                }
+            }
+
+            function on_post_error(result) {
+                LoggingService.log({
+                    msg: ERROR.FAILURE_FILTER_ON_DESCRIPTION,
+                    http_response: result,
+                    modal: true
+                });
             }
         }
+
+
+//        function single_geocache_filter (geocache) {
+//            return a_sample_filter.every(check_filter_atoms);
+//
+//            function check_filter_atoms(filter_atoms) {
+//                return filter_atoms.func(geocache, filter_atoms);
+//            }
+//        }
 
         function check_prop_eq (geocache, condition) {
             return geocache[condition.property] == condition.value;

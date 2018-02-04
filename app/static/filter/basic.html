@@ -21,110 +21,122 @@
     <uib-accordion>
         <div uib-accordion-group class="panel-default">
             <uib-accordion-heading><span ng-class="{'bold': basic.changed_0}">Difficulty, Terrain, Type</span></uib-accordion-heading>
-            <div class="row">
-                <div class="form-group form-inline col-xs-3">
-                    <input type="checkbox" ng-model="basic.diff_active" ng-change="basic.on_changed_0()">
-                    <label> Difficulty</label>
-                </div>
-                <div class="form-group form-inline col-xs-9">
-                    <select class="form-control" ng-model="basic.diff_op" ng-disabled="!basic.diff_active" ng-change="basic.on_changed_0()">
-                        <option value="ge">Geater than or equal to ("&gt;=")</option>
-                        <option value="eq">Equal to ("=")</option>
-                        <option value="le">Less than or equal to ("&lt;=")</option>
-                    </select>
-                    <select class="form-control" ng-model="basic.diff_val" ng-disabled="!basic.diff_active" ng-change="basic.on_changed_0()">
-                        <option>1</option>
-                        <option>1.5</option>
-                        <option>2</option>
-                        <option>2.5</option>
-                        <option>3</option>
-                        <option>3.5</option>
-                        <option>4</option>
-                        <option>4.5</option>
-                        <option>5</option>
-                    </select> 
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group form-inline col-xs-3">
-                    <input type="checkbox" ng-model="basic.terr_active" ng-change="basic.on_changed_0()">
-                    <label> Terrain</label>
-                </div>
-                <div class="form-group form-inline col-xs-9">
-                    <select class="form-control" ng-model="basic.terr_op" ng-disabled="!basic.terr_active" ng-change="basic.on_changed_0()">
-                        <option value="ge">Geater than or equal to ("&gt;=")</option>
-                        <option value="eq">Equal to ("=")</option>
-                        <option value="le">Less than or equal to ("&lt;=")</option>
-                    </select>
-                    <select class="form-control" ng-model="basic.terr_val" ng-disabled="!basic.terr_active" ng-change="basic.on_changed_0()">
-                        <option>1</option>
-                        <option>1.5</option>
-                        <option>2</option>
-                        <option>2.5</option>
-                        <option>3</option>
-                        <option>3.5</option>
-                        <option>4</option>
-                        <option>4.5</option>
-                        <option>5</option>
-                    </select>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <input type="checkbox" ng-model="basic.diff_active" ng-change="basic.on_changed_0()">
+                        <label> Difficulty</label>
+                    </div>
+                    <div class="form-inline col-xs-9">
+                        <select class="form-control" ng-model="basic.diff_op" ng-disabled="!basic.diff_active" ng-change="basic.on_changed_0()">
+                            <option value="ge">Geater than or equal to ("&gt;=")</option>
+                            <option value="eq">Equal to ("=")</option>
+                            <option value="le">Less than or equal to ("&lt;=")</option>
+                        </select>
+                        <select class="form-control" ng-model="basic.diff_val" ng-disabled="!basic.diff_active" ng-change="basic.on_changed_0()">
+                            <option>1</option>
+                            <option>1.5</option>
+                            <option>2</option>
+                            <option>2.5</option>
+                            <option>3</option>
+                            <option>3.5</option>
+                            <option>4</option>
+                            <option>4.5</option>
+                            <option>5</option>
+                        </select> 
+                    </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="form-group form-inline col-xs-3">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <input type="checkbox" ng-model="basic.terr_active" ng-change="basic.on_changed_0()">
+                        <label> Terrain</label>
+                    </div>
+                    <div class="form-inline col-xs-9">
+                        <select class="form-control" ng-model="basic.terr_op" ng-disabled="!basic.terr_active" ng-change="basic.on_changed_0()">
+                            <option value="ge">Geater than or equal to ("&gt;=")</option>
+                            <option value="eq">Equal to ("=")</option>
+                            <option value="le">Less than or equal to ("&lt;=")</option>
+                        </select>
+                        <select class="form-control" ng-model="basic.terr_val" ng-disabled="!basic.terr_active" ng-change="basic.on_changed_0()">
+                            <option>1</option>
+                            <option>1.5</option>
+                            <option>2</option>
+                            <option>2.5</option>
+                            <option>3</option>
+                            <option>3.5</option>
+                            <option>4</option>
+                            <option>4.5</option>
+                            <option>5</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div>
                     <input type="checkbox" ng-model="basic.type_active" ng-change="basic.on_changed_0()">
                     <label> Cache Type</label>
                 </div>
-                <div class="col-xs-9"></div>
-            </div>
-            <div class="form-indent rounded-border" ng-class="{'text-muted': !basic.type_active}">
-                <div class="row">
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.tradi"     ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/traditional.svg"  class="filter_type"> Traditional</label></div>
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.letter"    ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/letterbox.svg"    class="filter_type"> Letterbox</label></div>
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.event"     ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/event.svg"        class="filter_type"> Event Cache</label></div>
-                </div>
-                <div class="row">
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.multi"     ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/multi.svg"        class="filter_type"> Multi Cache</label></div>
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.wherigo"   ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/wherigo.svg"      class="filter_type"> Wherigo</label></div>
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.mega"      ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/mega.svg"         class="filter_type"> Mega Event</label></div>
-                </div>
-                <div class="row">
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.unknown"   ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/unknown.svg"      class="filter_type"> Unknown</label></div>
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.earth"     ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/earth.svg"        class="filter_type"> Earth Cache</label></div>
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.cito"      ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/cito.svg"         class="filter_type"> CITO</label></div>
-                </div>
-                <div class="row">
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.virtual"   ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/virtual.svg"      class="filter_type"> Virtual</label></div>
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.adventure" ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/adventures.svg"   class="filter_type"> Adventure</label></div>
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.webcam"    ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/webcam.svg"       class="filter_type"> Webcam</label></div>
-                </div>
-                <div class="row">
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.ape"       ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/ape.svg"          class="filter_type"> A.P.E.</label></div>
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.less"      ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/locationless.svg" class="filter_type"> Locationless</label></div>
-                    <div class="col-xs-4"></div>
+                <div class="form-indent rounded-border" ng-class="{'text-muted': !basic.type_active}">
+                    <div class="row">
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.tradi"     ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/traditional.svg"  class="filter_type"> Traditional</label></div>
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.letter"    ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/letterbox.svg"    class="filter_type"> Letterbox</label></div>
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.event"     ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/event.svg"        class="filter_type"> Event Cache</label></div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.multi"     ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/multi.svg"        class="filter_type"> Multi Cache</label></div>
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.wherigo"   ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/wherigo.svg"      class="filter_type"> Wherigo</label></div>
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.mega"      ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/mega.svg"         class="filter_type"> Mega Event</label></div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.unknown"   ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/unknown.svg"      class="filter_type"> Unknown</label></div>
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.earth"     ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/earth.svg"        class="filter_type"> Earth Cache</label></div>
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.cito"      ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/cito.svg"         class="filter_type"> CITO</label></div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.virtual"   ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/virtual.svg"      class="filter_type"> Virtual</label></div>
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.adventure" ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/adventures.svg"   class="filter_type"> Adventure</label></div>
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.webcam"    ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/webcam.svg"       class="filter_type"> Webcam</label></div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.ape"       ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/ape.svg"          class="filter_type"> A.P.E.</label></div>
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.type.less"      ng-change="basic.on_changed_0()" ng-disabled="!basic.type_active"> <label> <img src="static/images/types/locationless.svg" class="filter_type"> Locationless</label></div>
+                        <div class="col-xs-4"></div>
+                    </div>
                 </div>
             </div>
                 
         </div>
         <div uib-accordion-group class="panel-default">
             <uib-accordion-heading><span ng-class="{'bold': basic.changed_1}">Container, Description, Status</span></uib-accordion-heading>
-            <div class="row">
-                <div class="form-group form-inline col-xs-3">
+            <div class="form-group">
+                <div>
                     <input type="checkbox" ng-model="basic.container_active" ng-change="basic.on_changed_1()">
                     <label> Cache container</label>
                 </div>
-                <div class="col-xs-9"></div>
-            </div>
-            <div class="form-indent rounded-border" ng-class="{'text-muted': !basic.container_active}">
-                <div class="row">
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.container.micro"      ng-change="basic.on_changed_1()" ng-disabled="!basic.container_active"> <label> Micro</label></div>
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.container.small"      ng-change="basic.on_changed_1()" ng-disabled="!basic.container_active"> <label> Small</label></div>
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.container.regular"    ng-change="basic.on_changed_1()" ng-disabled="!basic.container_active"> <label> Regular</label></div>
+                <div class="form-indent rounded-border" ng-class="{'text-muted': !basic.container_active}">
+                    <div class="row">
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.container.micro"      ng-change="basic.on_changed_1()" ng-disabled="!basic.container_active"> <label> Micro</label></div>
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.container.small"      ng-change="basic.on_changed_1()" ng-disabled="!basic.container_active"> <label> Small</label></div>
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.container.regular"    ng-change="basic.on_changed_1()" ng-disabled="!basic.container_active"> <label> Regular</label></div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.container.large"      ng-change="basic.on_changed_1()" ng-disabled="!basic.container_active"> <label> Large</label></div>
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.container.other"      ng-change="basic.on_changed_1()" ng-disabled="!basic.container_active"> <label> Virtual</label></div>
+                        <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.container.not_chosen" ng-change="basic.on_changed_1()" ng-disabled="!basic.container_active"> <label> Not chosen</label></div>
+                    </div>
                 </div>
-                <div class="row">
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.container.large"      ng-change="basic.on_changed_1()" ng-disabled="!basic.container_active"> <label> Large</label></div>
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.container.other"      ng-change="basic.on_changed_1()" ng-disabled="!basic.container_active"> <label> Virtual</label></div>
-                    <div class="form-group form-inline col-xs-4"><input type="checkbox" ng-model="basic.container.not_chosen" ng-change="basic.on_changed_1()" ng-disabled="!basic.container_active"> <label> Not chosen</label></div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <input type="checkbox" ng-model="basic.description_active" ng-change="basic.on_changed_1()">
+                    <label> Cache description contains the following text:</label>
+                </div>
+                <div class="form-indent">
+                    <input type="text" class="form-control" ng-model="basic.description">
                 </div>
             </div>
         </div>

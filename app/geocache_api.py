@@ -172,7 +172,6 @@ class GeocacheListApi(Resource):
 
 api.add_resource(GeocacheListApi, '/andyBee/api/v1.0/db/<string:db_name>/geocaches')
 
-
 class GeocacheSingleSchema(Schema):
     geocache   = fields.Nested(GeocacheFullSchema)
 
@@ -334,7 +333,7 @@ class GpxExportApi(Resource):
         file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
         if not os.path.isfile(file_path):
             return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
-        geocache_db.set_uri(app.config['CACHE_URI_PREFIX'] + file_path)
+        geocache_db.set_db(app.config['CACHE_URI_PREFIX'] + file_path)
 
         obj, status_code = json_to_object(GeocacheExportSchema())
         if status_code != 200:
@@ -343,6 +342,40 @@ class GpxExportApi(Resource):
         response.headers['Content-Type'] = 'application/gpx'
         response.headers['Content-Disposition'] = ('attachment; filename=' + obj['file_name'])
         return response 
+
+
+class FilterOnDescrSchema(Schema):
+    search_for = fields.String()
+
+class FilteredListSchema(Schema):
+    filtered_list = fields.List(fields.Integer())
+
+class FilterOnDescrApi(Resource):
+
+    def post(self, db_name):
+        if db_name is None:
+            return {'msg': 'Database name missing.'}, 400 # bad request
+        file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
+        if not os.path.isfile(file_path):
+            return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
+        geocache_db.set_db(file_path)
+
+        obj, status_code = json_to_object(FilterOnDescrSchema())
+        if status_code != 200:
+            return obj, status_code
+        search_for = '%{}%'.format(obj['search_for'])
+        filtered_list = []
+        for row in geocache_db.execute('SELECT id FROM cache WHERE long_desc LIKE ? OR short_desc LIKE ?', (search_for, search_for)):
+            filtered_list.append(row['id'])
+        data, errors = FilteredListSchema().dump({
+            'filtered_list': filtered_list
+            })
+        if errors:
+            errors['msg'] = 'Internal error, could not dump list of geocaches.'
+            return errors, 422
+        return data
+
+api.add_resource(FilterOnDescrApi, '/andyBee/api/v1.0/db/<string:db_name>/filter_on_descr')
 
 def update_corrected_coordinates(geocache):
     geocache['orig_lat'] = geocache['lat']
