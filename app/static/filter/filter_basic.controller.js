@@ -25,7 +25,8 @@
             terrain: map_terr_to_vm,
             type: map_type_to_vm,
             container: map_container_to_vm,
-            description: map_description_to_vm
+            description: map_description_to_vm,
+            title: map_title_to_vm
         }
 
         vm.name = filter.name;
@@ -80,6 +81,9 @@
                     ret_filter.filter_atoms.push({name: "container", op: "set", value: vals.join(',')});
                 }
             }
+            if (vm.title_active && (vm.title != '')) {
+                ret_filter.filter_atoms.push({name: "title", op: "search", value: vm.title});
+            }
             if (vm.description_active && (vm.description != '')) {
                 ret_filter.filter_atoms.push({name: "description", op: "search", value: vm.description});
             }
@@ -115,6 +119,10 @@
             for (var i = 0, len = CONTAINER_TRANSLATION.length; i < len; i++) {
                 vm.container[CONTAINER_TRANSLATION[i].prop] = false;
             }
+
+            // title
+            vm.title_active = false;
+            vm.title = "";
 
             // description
             vm.description_active = false;
@@ -175,13 +183,16 @@
             return vm.description_active && vm.description != "";
         }
 
+        function is_title_applicable () {
+            return vm.title_active && vm.title != "";
+        }
 
         function on_changed_0 () {
             vm.changed_0 = is_terr_applicable() || is_diff_applicable() || is_type_applicable();
         }
 
         function on_changed_1 () {
-            vm.changed_1 = is_container_applicable() || is_description_applicable();
+            vm.changed_1 = is_container_applicable() || is_title_applicable() || is_description_applicable();
         }
 
         function map_diff_to_vm (filter_atoms) {
@@ -215,6 +226,11 @@
         function map_description_to_vm (filter_atoms) {
             vm.description_active = true;
             vm.description = filter_atoms.value;
+        }
+
+        function map_title_to_vm (filter_atoms) {
+            vm.title_active = true;
+            vm.title = filter_atoms.value;
         }
 
     }

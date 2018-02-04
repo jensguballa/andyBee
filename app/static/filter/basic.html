@@ -132,6 +132,15 @@
             </div>
             <div class="form-group">
                 <div>
+                    <input type="checkbox" ng-model="basic.title_active" ng-change="basic.on_changed_1()">
+                    <label> Cache title contains the following text:</label>
+                </div>
+                <div class="form-indent">
+                    <input type="text" class="form-control" ng-model="basic.title">
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
                     <input type="checkbox" ng-model="basic.description_active" ng-change="basic.on_changed_1()">
                     <label> Cache description contains the following text:</label>
                 </div>

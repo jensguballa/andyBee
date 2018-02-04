@@ -49,13 +49,15 @@
             terrain: int_prop_to_condition,
             type: type_to_condition,
             container: container_to_condition,
-            description: description_to_condition
+            description: description_to_condition,
+            title: search_prop_to_condition
         };
 
         var op_to_func_map = {
             eq: check_prop_eq,
             ge: check_prop_ge,
             le: check_prop_le,
+            search: check_prop_search
         };
 
         return serv;
@@ -249,6 +251,10 @@
             return undefined; // no promise
         }
 
+        function search_prop_to_condition (filter_atom) {
+            serv.conditions.push({property: filter_atom.name, func: check_prop_search, value: new RegExp(filter_atom.value, "i")});
+        }
+
         function type_to_condition (filter_atom) {
             var types = filter_atom.value.split(',');
             var hash = {};
@@ -315,6 +321,10 @@
 
         function check_prop_in_array (geocache, condition) {
             return condition.hash[geocache[condition.property]];
+        }
+
+        function check_prop_search (geocache, condition) {
+            return geocache[condition.property].search(condition.value) != -1;
         }
 
     }
