@@ -72,7 +72,7 @@ class FilterSchema(Schema):
     id = fields.Integer()
     sequence = fields.Integer(required=True)
     name = fields.String(required=True)
-    filter_atom = fields.List(fields.Nested(FilterAtomSchema))
+    filter_atoms = fields.List(fields.Nested(FilterAtomSchema))
 
 
 class FilterListSchema(Schema):
@@ -87,7 +87,7 @@ class FilterListApi(Resource):
         config_db.init()
         filters = [dict(row) for row in config_db.execute('SELECT * from filter')]
         for filt in filters:
-            filt['filter_atom'] = [dict(atom) for atom in config_db.execute('SELECT * from filter_atom WHERE filter_id=?', (filt['id'],))]
+            filt['filter_atoms'] = [dict(atom) for atom in config_db.execute('SELECT * from filter_atom WHERE filter_id=?', (filt['id'],))]
         return FilterListSchema().dump({'filter': filters})
 
 
@@ -101,7 +101,7 @@ class FilterListApi(Resource):
         config_db.execute('INSERT INTO filter (sequence, name) VALUES (?,?)', 
                 (obj['sequence'], obj['name']))
         new_filter_id = config_db.cursor.lastrowid
-        for filter_atom in obj['filter_atom']:
+        for filter_atom in obj['filter_atoms']:
             config_db.execute('INSERT INTO filter_atom (filter_id, name, op, value) VALUES (?,?,?,?)',
                     (new_filter_id, filter_atom['name'], filter_atom['op'], filter_atom['value']))
         config_db.commit()
@@ -127,7 +127,7 @@ class FilterApi(Resource):
         config_db.execute('UPDATE filter SET sequence = ?, name = ? WHERE (id = ?)',
                 (req['sequence'], req['name'], filter_id))
         config_db.execute('DELETE FROM filter_atom WHERE filter_id = ?', (filter_id,))
-        for atom in req['filter_atom']:
+        for atom in req['filter_atoms']:
             config_db.execute('INSERT INTO filter_atom (filter_id, name, op, value) VALUES (?,?,?,?)',
                     (filter_id, atom['name'], atom['op'], atom['value']))
         config_db.commit()

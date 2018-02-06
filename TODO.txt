@@ -2,6 +2,12 @@ TODO list, backlog.
 
 Most important item comes first. Hm, not really.
 
+    o Filter: The settings for the default filter should not
+      be reset when called another time
+    o Filter: a Reset-to-default button
+    o Manage-Filter: reapply the current filter after the modal
+      is closed
+    o Manage-Filter: Confirmation dialog for delete operation
     o Import of GPX-files
       - allow a "merge"- and a replace mode
     o Export to GPX-file

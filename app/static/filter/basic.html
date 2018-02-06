@@ -5,7 +5,7 @@
 <div class="modal-body">
 
     <div class="container-fluid">
-        <div class="form-group pull-left" ng-if="basic.show_name" >
+        <div class="form-group pull-left" ng-if="basic.name != ''" >
             <label>Filter Name</label>
             <input type="text" class="form-control" ng-model="basic.name" placeholder="Name of the Filter">
         </div>
@@ -144,8 +144,10 @@
                     <input type="checkbox" ng-model="basic.description_active" ng-change="basic.on_changed_1()">
                     <label> Cache description contains the following text:</label>
                 </div>
-                <div class="form-indent">
-                    <input type="text" class="form-control" ng-model="basic.description">
+                <div class="form-indent" ng-class="{'text-muted': !basic.description_active}">
+                    <input type="text" class="form-control" ng-model="basic.description" ng-change="basic.on_changed_1()" ng-disabled="!basic.description_active">
+                    <input type="checkbox" ng-model="basic.description_case" ng-disabled="!basic.description_active">
+                    <label>case-sensitive</label>
                 </div>
             </div>
         </div>

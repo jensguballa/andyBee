@@ -132,7 +132,6 @@
 
             function on_dialog_ok (filter) {
                 FilterService.filter_settings_updated(filter);
-//                GeocacheService.on_filter_changed();
             }
 
         }
@@ -155,8 +154,7 @@
         }
 
         function apply_filter (idx) {
-            FilterService.filter = FilterService.filter_list[idx];
-            GeocacheService.on_filter_changed();
+            FilterService.filter_settings_updated(FilterService.filter_list[idx]);
         }
 
         function reset_filter() {

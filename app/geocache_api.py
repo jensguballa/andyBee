@@ -8,6 +8,7 @@ from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCo
 from flask import send_from_directory, send_file, Response, make_response
 from app.api import json_to_object
 import time
+import re
 
 class DbListSchema(Schema):
     dbs = fields.List(fields.String())
@@ -346,6 +347,7 @@ class GpxExportApi(Resource):
 
 class FilterOnDescrSchema(Schema):
     search_for = fields.String()
+    case_sensitive = fields.Boolean()
 
 class FilteredListSchema(Schema):
     filtered_list = fields.List(fields.Integer())
@@ -363,9 +365,12 @@ class FilterOnDescrApi(Resource):
         obj, status_code = json_to_object(FilterOnDescrSchema())
         if status_code != 200:
             return obj, status_code
-        search_for = '%{}%'.format(obj['search_for'])
+        if obj['case_sensitive']:
+            search_for = obj['search_for']
+        else:
+            search_for = '(?i)' + obj['search_for']
         filtered_list = []
-        for row in geocache_db.execute('SELECT id FROM cache WHERE long_desc LIKE ? OR short_desc LIKE ?', (search_for, search_for)):
+        for row in geocache_db.execute('SELECT id FROM cache WHERE long_desc REGEXP ? OR short_desc REGEXP ?', (search_for, search_for)):
             filtered_list.append(row['id'])
         data, errors = FilteredListSchema().dump({
             'filtered_list': filtered_list

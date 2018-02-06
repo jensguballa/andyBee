@@ -1,6 +1,7 @@
 import sqlite3
 import datetime
 from pprint import pprint
+import re
 
 def _str(obj):
     if type(obj) is str:
@@ -11,6 +12,10 @@ def _str(obj):
         return '1' if obj else '0'
     else:
         return str(obj)
+
+def regexp(expr, item):
+    reg = re.compile(expr, flags=re.UNICODE)
+    return reg.search(item) is not None
 
 class Db(object):
 
@@ -33,6 +38,7 @@ class Db(object):
             self.connection = sqlite3.connect(db, check_same_thread=False)
             self.connection.row_factory = sqlite3.Row
             self.cursor = self.connection.cursor()
+            self.connection.create_function("REGEXP", 2, regexp)
 #            rows = self.execute('SELECT name FROM sqlite_master WHERE type="table"').fetchall()
 #            tables = [row[0] for row in rows]
 #            commit_required = False

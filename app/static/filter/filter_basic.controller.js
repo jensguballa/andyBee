@@ -85,7 +85,7 @@
                 ret_filter.filter_atoms.push({name: "title", op: "search", value: vm.title});
             }
             if (vm.description_active && (vm.description != '')) {
-                ret_filter.filter_atoms.push({name: "description", op: "search", value: vm.description});
+                ret_filter.filter_atoms.push({name: "description", op: vm.description_case ? "search_case" : "search", value: vm.description});
             }
             $uibModalInstance.close(ret_filter);
         };
@@ -127,6 +127,7 @@
             // description
             vm.description_active = false;
             vm.description = "";
+            vm.description_case = false;
 
             // accordion[0] changed? (diff, terr, type)
             vm.changed_0 = false;
@@ -180,7 +181,7 @@
         }
 
         function is_description_applicable () {
-            return vm.description_active && vm.description != "";
+            return (vm.description_active && (vm.description != ""));
         }
 
         function is_title_applicable () {
@@ -226,6 +227,7 @@
         function map_description_to_vm (filter_atoms) {
             vm.description_active = true;
             vm.description = filter_atoms.value;
+            vm.description_case = (filter_atoms.op == "search_case");
         }
 
         function map_title_to_vm (filter_atoms) {

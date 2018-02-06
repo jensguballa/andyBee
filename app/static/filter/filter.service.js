@@ -177,7 +177,6 @@
         }
 
         function filter_settings_updated (filter) {
-            serv.filter = filter;
             var promise = generate_conditions(filter.filter_atoms);
             if (promise) {
                 promise.then(filter_settings_complete);
@@ -279,7 +278,12 @@
             var hash = {};
             var db_name =  $injector.get('GeocacheService').db_name;
 
-            var resource = rest_filter_on_descr.post({db: db_name}, {search_for: filter_atom.value}, on_post_response, on_post_error);
+            var resource = rest_filter_on_descr.post(
+                {db: db_name}, 
+                {search_for: filter_atom.value, case_sensitive: filter_atom.op == "search_case"}, 
+                on_post_response, 
+                on_post_error
+            );
             serv.conditions.push({property: "id", func: check_prop_in_array, hash: hash});
             return resource.$promise;
 
@@ -297,15 +301,6 @@
                 });
             }
         }
-
-
-//        function single_geocache_filter (geocache) {
-//            return a_sample_filter.every(check_filter_atoms);
-//
-//            function check_filter_atoms(filter_atoms) {
-//                return filter_atoms.func(geocache, filter_atoms);
-//            }
-//        }
 
         function check_prop_eq (geocache, condition) {
             return geocache[condition.property] == condition.value;
