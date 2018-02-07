@@ -125,12 +125,13 @@
                     controllerAs: "basic",
                     templateUrl: '/static/filter/basic.html',
                     resolve: {
-                        filter: FilterService.resolve_filter
+                        filter: FilterService.resolve_scratch_filter
                     }
                 }).result.then(on_dialog_ok, function(){});
             }
 
             function on_dialog_ok (filter) {
+                FilterService.scratch_filter_updated(filter);
                 FilterService.filter_settings_updated(filter);
             }
 

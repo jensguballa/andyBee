@@ -12,6 +12,7 @@
         // modal controls
         vm.dismiss = dismiss_modal;
         vm.close = close_modal;
+        vm.reset = reset_filter;
         vm.load_filter = load_filter;
 
         vm.on_changed_0 = on_changed_0;
@@ -29,10 +30,14 @@
             title: map_title_to_vm
         }
 
+        vm.scratch_name = FilterService.scratch_filter.name;
         vm.name = filter.name;
         vm.show_name = (vm.name != "");
         filter_to_vm(filter.filter_atoms);
 
+        if (filter.name != FilterService.scratch_filter.name) {
+            vm.filter_list.push({id: -1, name: FilterService.scratch_filter.name});
+        }
         for (var i = 0, len = FilterService.filter_list.length; i < len; i++) {
             var filt = FilterService.filter_list[i];
             if (filt.name != filter.name) {
@@ -44,7 +49,7 @@
 
         function dismiss_modal () {
             $uibModalInstance.dismiss(); 
-        };
+        }
 
         function close_modal () {
             var ret_filter = {
@@ -82,16 +87,25 @@
                 }
             }
             if (vm.title_active && (vm.title != '')) {
-                ret_filter.filter_atoms.push({name: "title", op: "search", value: vm.title});
+                ret_filter.filter_atoms.push({name: "title", op: vm.title_case ? "search_case" : "search", value: vm.title});
             }
             if (vm.description_active && (vm.description != '')) {
                 ret_filter.filter_atoms.push({name: "description", op: vm.description_case ? "search_case" : "search", value: vm.description});
             }
             $uibModalInstance.close(ret_filter);
-        };
+        }
 
         function load_filter (id) {
-            filter_to_vm(FilterService.filter_list[id].filter_atoms);
+            if (id == -1) {
+                filter_to_vm(FilterService.scratch_filter.filter_atoms);
+            }
+            else {
+                filter_to_vm(FilterService.filter_list[id].filter_atoms);
+            }
+        }
+
+        function reset_filter () {
+            filter_to_vm([]);    
         }
 
         function init_vm () {

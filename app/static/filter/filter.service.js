@@ -25,16 +25,17 @@
             edit_filter: edit_filter,
             reset_filter: reset_filter,
             filter_settings_updated: filter_settings_updated,
+            scratch_filter_updated: scratch_filter_updated,
 
-            filter: {
-                name: "",
+            scratch_filter: {
+                name: "*Scratch*",
                 id:-1,
                 sequence: -1,
                 filter_atoms: []
             },
             conditions: [],
 
-            resolve_filter: resolve_filter,
+            resolve_scratch_filter: resolve_scratch_filter,
             filter_applied: false,
             filter_name: "",
 
@@ -64,8 +65,8 @@
 
         /// functions
 
-        function resolve_filter () {
-            return serv.filter;
+        function resolve_scratch_filter () {
+            return serv.scratch_filter;
         }
 
         function read_list(on_success, on_error) {
@@ -94,7 +95,7 @@
             rest.create({id: 1}, {
                 name: filter_name,
                 sequence: serv.nbr_filters + 1,
-                filter_atoms: serv.filter.filter_atoms
+                filter_atoms: serv.scratch_filter.filter_atoms
             }, on_create_response, on_create_error);
 
             function on_create_response (result) {
@@ -102,7 +103,7 @@
                     name: filter_name,
                     id: result.id,
                     sequence: serv.nbr_filters + 1,
-                    filter_atoms: angular.copy(serv.filter)
+                    filter_atoms: angular.copy(serv.scratch_filter)
                 });
                 serv.nbr_filters++;
                 if (on_success) {
@@ -176,6 +177,10 @@
             serv.filter_name = "";
         }
 
+        function scratch_filter_updated (filter) {
+            serv.scratch_filter.filter_atoms = filter.filter_atoms;
+        }
+
         function filter_settings_updated (filter) {
             var promise = generate_conditions(filter.filter_atoms);
             if (promise) {
@@ -186,6 +191,7 @@
             }
 
             function filter_settings_complete () {
+                serv.filter_name = filter.name;
                 $injector.get('GeocacheService').on_filter_changed();
             }
         }
@@ -251,7 +257,14 @@
         }
 
         function search_prop_to_condition (filter_atom) {
-            serv.conditions.push({property: filter_atom.name, func: check_prop_search, value: new RegExp(filter_atom.value, "i")});
+            var regex;
+            if (filter_atom.op == "search_case") {
+                regex = new RegExp(filter_atom.value);
+            }
+            else {
+                regex = new RegExp(filter_atom.value, "i");
+            }
+            serv.conditions.push({property: filter_atom.name, func: check_prop_search, value: regex});
         }
 
         function type_to_condition (filter_atom) {

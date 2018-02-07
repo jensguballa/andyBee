@@ -7,7 +7,7 @@
     <div class="container-fluid">
         <div class="form-group pull-left" ng-if="basic.name != ''" >
             <label>Filter Name</label>
-            <input type="text" class="form-control" ng-model="basic.name" placeholder="Name of the Filter">
+            <input type="text" class="form-control" ng-model="basic.name" placeholder="Name of the Filter" ng-disabled="basic.name == basic.scratch_name">
         </div>
         <div class="form-group pull-right" ng-if="basic.filter_list.length">
             <label>Use settings from</label>
@@ -135,8 +135,10 @@
                     <input type="checkbox" ng-model="basic.title_active" ng-change="basic.on_changed_1()">
                     <label> Cache title contains the following text:</label>
                 </div>
-                <div class="form-indent">
-                    <input type="text" class="form-control" ng-model="basic.title">
+                <div class="form-indent" ng-class="{'text-muted': !basic.title_active}">
+                    <input type="text" class="form-control" ng-model="basic.title" ng-change="basic.on_changed_1()" ng-disabled="!basic.title_active">
+                    <input type="checkbox" ng-model="basic.title_case" ng-disabled="!basic.title_active">
+                    <label>case-sensitive</label>
                 </div>
             </div>
             <div class="form-group">
@@ -164,6 +166,9 @@
             <uib-accordion-heading>Updated, Found</uib-accordion-heading>
         </div>
     </uib-accordion>
+    <div class="right-aligned">
+        <button class="btn" type="button" ng-click="basic.reset()">Reset filter settings</button>
+    </div>
 
 </div>
 <div class="modal-footer">

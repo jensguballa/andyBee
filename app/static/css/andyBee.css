@@ -136,6 +136,10 @@ dl.table-row > dd.last-column {
     display: inline-block;
 }
 
+.right-aligned {
+    text-align: right;
+}
+
 .degrees {
     width: 50px;
     display: inline-block;
