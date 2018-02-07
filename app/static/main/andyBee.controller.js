@@ -61,9 +61,9 @@
                         dbs: DbService.resolve_db_list,
                         selected: GeocacheService.resolve_db_name
                     }
-                }).result.then(on_dialog_ok, function(){});
+                }).result.then(on_dialog_close, on_dialog_close);
 
-                function on_dialog_ok (db_name) {
+                function on_dialog_close (db_name) {
                     GeocacheService.read_list(db_name);
                 }
             }
@@ -132,7 +132,7 @@
 
             function on_dialog_ok (filter) {
                 FilterService.scratch_filter_updated(filter);
-                FilterService.filter_settings_updated(filter);
+                FilterService.filter_settings_updated(-1);
             }
 
         }
@@ -155,7 +155,7 @@
         }
 
         function apply_filter (idx) {
-            FilterService.filter_settings_updated(FilterService.filter_list[idx]);
+            FilterService.filter_settings_updated(idx);
         }
 
         function reset_filter() {

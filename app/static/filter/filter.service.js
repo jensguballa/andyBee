@@ -26,6 +26,7 @@
             reset_filter: reset_filter,
             filter_settings_updated: filter_settings_updated,
             scratch_filter_updated: scratch_filter_updated,
+            resolve_scratch_filter: resolve_scratch_filter,
 
             scratch_filter: {
                 name: "*Scratch*",
@@ -35,9 +36,9 @@
             },
             conditions: [],
 
-            resolve_scratch_filter: resolve_scratch_filter,
             filter_applied: false,
             filter_name: "",
+            applied_filter_idx: -1,
 
             filter_list: [],
             nbr_filters: 0
@@ -160,6 +161,9 @@
 
                 function on_update_result (result) {
                     serv.filter_list[idx] = filter;
+                    if (serv.filter_applied && (idx == serv.applied_filter_idx)) {
+                        filter_settings_updated(serv.applied_filter_idx);
+                    }
                 }
 
                 function on_update_error (result) {
@@ -181,7 +185,9 @@
             serv.scratch_filter.filter_atoms = filter.filter_atoms;
         }
 
-        function filter_settings_updated (filter) {
+        function filter_settings_updated (idx) {
+            serv.applied_filter_idx = idx;
+            var filter = (idx == -1) ? serv.scratch_filter : serv.filter_list[idx];
             var promise = generate_conditions(filter.filter_atoms);
             if (promise) {
                 promise.then(filter_settings_complete);
