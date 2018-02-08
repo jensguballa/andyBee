@@ -5,8 +5,8 @@
         .module('andyBeeApp')
         .controller('BasicFilterCtrl', BasicFilterCtrl);
 
-    BasicFilterCtrl.$inject = ['$uibModalInstance', 'FilterService', 'filter', 'TYPE_TRANSLATION', 'TYPE_TO_PROP', 'CONTAINER_TRANSLATION', 'CONTAINER_TO_PROP'];
-    function BasicFilterCtrl($uibModalInstance, FilterService, filter, TYPE_TRANSLATION, TYPE_TO_PROP, CONTAINER_TRANSLATION, CONTAINER_TO_PROP) {
+    BasicFilterCtrl.$inject = ['$uibModalInstance', 'FilterService', 'PreferenceService', 'filter', 'TYPE_TRANSLATION', 'TYPE_TO_PROP', 'CONTAINER_TRANSLATION', 'CONTAINER_TO_PROP'];
+    function BasicFilterCtrl($uibModalInstance, FilterService, PreferenceService, filter, TYPE_TRANSLATION, TYPE_TO_PROP, CONTAINER_TRANSLATION, CONTAINER_TO_PROP) {
         var vm = this;
 
         // modal controls
@@ -27,7 +27,11 @@
             type: map_type_to_vm,
             container: map_container_to_vm,
             description: map_description_to_vm,
-            title: map_title_to_vm
+            title: map_title_to_vm,
+            available: map_available_to_vm,
+            archived: map_archived_to_vm,
+            found: map_found_to_vm,
+            owned: map_owned_to_vm
         }
 
         vm.scratch_name = FilterService.scratch_filter.name;
@@ -92,6 +96,18 @@
             if (vm.description_active && (vm.description != '')) {
                 ret_filter.filter_atoms.push({name: "description", op: vm.description_case ? "search_case" : "search", value: vm.description});
             }
+            if (vm.available_active) {
+                ret_filter.filter_atoms.push({name: "available", op: "eq", value: vm.available});
+            }
+            if (vm.archived_active) {
+                ret_filter.filter_atoms.push({name: "archived", op: "eq", value: vm.archived});
+            }
+            if (vm.found_active) {
+                ret_filter.filter_atoms.push({name: "found", op: "eq", value: vm.found});
+            }
+            if (vm.owned_active) {
+                ret_filter.filter_atoms.push({name: "owned", op: vm.owned ? "eq" : "ne", value: PreferenceService.data.owner});
+            }
             $uibModalInstance.close(ret_filter);
         }
 
@@ -142,6 +158,16 @@
             vm.description_active = false;
             vm.description = "";
             vm.description_case = false;
+
+            // status
+            vm.available = true;
+            vm.available_active = false;
+            vm.archived = true;
+            vm.archived_active = false;
+            vm.found = true;
+            vm.found_active = false;
+            vm.owned = true;
+            vm.owned_active = false;
 
             // accordion[0] changed? (diff, terr, type)
             vm.changed_0 = false;
@@ -202,53 +228,88 @@
             return vm.title_active && vm.title != "";
         }
 
+        function is_available_applicable () {
+            return vm.available_active;
+        }
+
+        function is_archived_applicable () {
+            return vm.archived_active;
+        }
+
+        function is_found_applicable () {
+            return vm.found_active;
+        }
+
+        function is_owned_applicable () {
+            return vm.owned_active;
+        }
+
         function on_changed_0 () {
             vm.changed_0 = is_terr_applicable() || is_diff_applicable() || is_type_applicable();
         }
 
         function on_changed_1 () {
-            vm.changed_1 = is_container_applicable() || is_title_applicable() || is_description_applicable();
+            vm.changed_1 = is_container_applicable() || is_title_applicable() || is_description_applicable() || is_available_applicable() || is_archived_applicable() || is_found_applicable() || is_owned_applicable();
         }
 
-        function map_diff_to_vm (filter_atoms) {
+        function map_diff_to_vm (filter_atom) {
             vm.diff_active = true;
-            vm.diff_op = filter_atoms.op;
-            vm.diff_val = filter_atoms.value;
+            vm.diff_op = filter_atom.op;
+            vm.diff_val = filter_atom.value;
         }
 
-        function map_terr_to_vm (filter_atoms) {
+        function map_terr_to_vm (filter_atom) {
             vm.terr_active = true;
-            vm.terr_op = filter_atoms.op;
-            vm.terr_val = filter_atoms.value;
+            vm.terr_op = filter_atom.op;
+            vm.terr_val = filter_atom.value;
         }
 
-        function map_type_to_vm (filter_atoms) {
+        function map_type_to_vm (filter_atom) {
             vm.type_active = true;
-            var types = filter_atoms.value.split(',');
+            var types = filter_atom.value.split(',');
             for (var i = 0, len = types.length; i < len; i++) {
                 vm.type[TYPE_TO_PROP[types[i]]] = true;
             }
         }
 
-        function map_container_to_vm (filter_atoms) {
+        function map_container_to_vm (filter_atom) {
             vm.container_active = true;
-            var containers = filter_atoms.value.split(',');
+            var containers = filter_atom.value.split(',');
             for (var i = 0, len = containers.length; i < len; i++) {
                 vm.container[CONTAINER_TO_PROP[containers[i]]] = true;
             }
         }
 
-        function map_description_to_vm (filter_atoms) {
+        function map_description_to_vm (filter_atom) {
             vm.description_active = true;
-            vm.description = filter_atoms.value;
-            vm.description_case = (filter_atoms.op == "search_case");
+            vm.description = filter_atom.value;
+            vm.description_case = (filter_atom.op == "search_case");
         }
 
-        function map_title_to_vm (filter_atoms) {
+        function map_title_to_vm (filter_atom) {
             vm.title_active = true;
-            vm.title = filter_atoms.value;
+            vm.title = filter_atom.value;
         }
 
+        function map_available_to_vm (filter_atom) {
+            vm.available_active = true;
+            vm.available = filter_atom.value;
+        }
+
+        function map_archived_to_vm (filter_atom) {
+            vm.archived_active = true;
+            vm.archived = filter_atom.value;
+        }
+
+        function map_found_to_vm (filter_atom) {
+            vm.found_active = true;
+            vm.found = filter_atom.value;
+        }
+
+        function map_owned_to_vm (filter_atom) {
+            vm.owned_active = true;
+            vm.owned = (filter_atom.op == "eq");
+        }
     }
 })();
 

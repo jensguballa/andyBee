@@ -52,11 +52,16 @@
             type: type_to_condition,
             container: container_to_condition,
             description: description_to_condition,
-            title: search_prop_to_condition
+            title: search_prop_to_condition,
+            available: boolean_prop_to_condition,
+            archived: boolean_prop_to_condition,
+            found: boolean_prop_to_condition,
+            owned: owned_to_condition,
         };
 
         var op_to_func_map = {
             eq: check_prop_eq,
+            ne: check_prop_ne,
             ge: check_prop_ge,
             le: check_prop_le,
             search: check_prop_search
@@ -267,6 +272,11 @@
             return undefined; // no promise
         }
 
+        function boolean_prop_to_condition (filter_atom) {
+            serv.conditions.push({property: filter_atom.name, func: check_prop_eq, value: filter_atom.value});
+            return undefined; // no promise
+        }
+
         function search_prop_to_condition (filter_atom) {
             var regex;
             if (filter_atom.op == "search_case") {
@@ -326,8 +336,17 @@
             }
         }
 
+        function owned_to_condition (filter_atom) {
+            serv.conditions.push({property: "owner", func: op_to_func_map[filter_atom.op], value: filter_atom.value});
+            return undefined; // no promise
+        }
+
         function check_prop_eq (geocache, condition) {
             return geocache[condition.property] == condition.value;
+        }
+
+        function check_prop_ne (geocache, condition) {
+            return geocache[condition.property] != condition.value;
         }
 
         function check_prop_ge (geocache, condition) {

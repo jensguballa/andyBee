@@ -152,6 +152,62 @@
                     <label>case-sensitive</label>
                 </div>
             </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div>
+                            <input type="checkbox" ng-model="basic.available_active" ng-change="basic.on_changed_1()">
+                            <label> Available status:</label>
+                        </div>
+                        <div class="form-indent" ng-class="{'text-muted': !basic.available_active}">
+                            <form>
+                                <label><input type="radio" ng-model="basic.available" ng-value="true"  ng-disabled="!basic.available_active" /> Cache is available</label><br/>
+                                <label><input type="radio" ng-model="basic.available" ng-value="false" ng-disabled="!basic.available_active" /> Cache is disabled</label><br/>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div>
+                            <input type="checkbox" ng-model="basic.archived_active" ng-change="basic.on_changed_1()">
+                            <label> Archived status:</label>
+                        </div>
+                        <div class="form-indent" ng-class="{'text-muted': !basic.archived_active}">
+                            <form>
+                                <label><input type="radio" ng-model="basic.archived" ng-value="true"  ng-disabled="!basic.archived_active" /> Cache is archived</label><br/>
+                                <label><input type="radio" ng-model="basic.archived" ng-value="false" ng-disabled="!basic.archived_active" /> Cache is not archived</label><br/>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div>
+                            <input type="checkbox" ng-model="basic.found_active" ng-change="basic.on_changed_1()">
+                            <label> Found status:</label>
+                        </div>
+                        <div class="form-indent" ng-class="{'text-muted': !basic.found_active}">
+                            <form>
+                                <label><input type="radio" ng-model="basic.found" ng-value="true"  ng-disabled="!basic.found_active" /> Cache found by me</label><br/>
+                                <label><input type="radio" ng-model="basic.found" ng-value="false" ng-disabled="!basic.found_active" /> Cache not found by me</label><br/>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div>
+                            <input type="checkbox" ng-model="basic.owned_active" ng-change="basic.on_changed_1()">
+                            <label> Owner status:</label>
+                        </div>
+                        <div class="form-indent" ng-class="{'text-muted': !basic.owned_active}">
+                            <form>
+                                <label><input type="radio" ng-model="basic.owned" ng-value="true" ng-disabled="!basic.owned_active" /> Cache is owned by me</label><br/>
+                                <label><input type="radio" ng-model="basic.owned" ng-value="false" ng-disabled="!basic.owned_active" /> Cache is not owned by me</label><br/>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div uib-accordion-group class="panel-default">
             <uib-accordion-heading>Placement, Location</uib-accordion-heading>
