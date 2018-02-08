@@ -76,7 +76,12 @@
 
             function on_get_response (result) {
                 serv.filter_list = result.filter;
-                serv.nbr_filters = serv.filter_list.length;
+                serv.nbr_filters = 0;
+                for (var i = 0, len = serv.filter_list.length; i < len; i++) {
+                    if (serv.filter_list[i].sequence > serv.nbr_filters) {
+                        serv.nbr_filters = serv.filter_list[i].sequence;
+                    }
+                }
                 if (on_success) {
                     on_success();
                 }
