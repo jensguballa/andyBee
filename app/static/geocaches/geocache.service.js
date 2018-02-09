@@ -35,6 +35,8 @@
             // stuff related to geocaches within a db
 
             geocache_list: [],
+            countries: [],
+            states: [],
             read_list: read_list,
             update_coord_dialog: update_coord_dialog,
 
@@ -98,11 +100,26 @@
                 serv.nbr_caches = result.nbr_caches;
                 geocache_list_unfiltered = result.geocaches;
                 unfiltered_id_to_idx = {};
+                serv.countries = [];
+                serv.states = [];
                 var now = Date.now() / 1000;
                 for (var i = 0; i < geocache_list_unfiltered.length; i++) {
                     geocache_list_unfiltered[i].age = Math.floor((now - geocache_list_unfiltered[i].last_updated) / (24*3600));
                     unfiltered_id_to_idx[geocache_list_unfiltered[i].id] = i;
+
+                    var country = geocache_list_unfiltered[i].country;
+                    if (serv.countries.indexOf(country) == -1) {
+                        serv.countries.push(country);
+                    }
+                    var state = geocache_list_unfiltered[i].state;
+                    if (serv.states.indexOf(state) == -1) {
+                        serv.states.push(state);
+                    }
                 }
+                serv.countries = serv.countries.sort();
+                serv.countries.unshift("");
+                serv.states = serv.states.sort();
+                serv.states.unshift("");
                 serv.detail = {};
                 recalc_distance_all();
                 serv.geocache_list = apply_filter(geocache_list_unfiltered);

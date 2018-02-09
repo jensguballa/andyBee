@@ -111,7 +111,7 @@
                 
         </div>
         <div uib-accordion-group class="panel-default">
-            <uib-accordion-heading><span ng-class="{'bold': basic.changed_1}">Container, Description, Status</span></uib-accordion-heading>
+            <uib-accordion-heading><span ng-class="{'bold': basic.changed_1}">Container, Description, Title, Status</span></uib-accordion-heading>
             <div class="form-group">
                 <div>
                     <input type="checkbox" ng-model="basic.container_active" ng-change="basic.on_changed_1()">
@@ -210,7 +210,27 @@
             </div>
         </div>
         <div uib-accordion-group class="panel-default">
-            <uib-accordion-heading>Placement, Location</uib-accordion-heading>
+            <uib-accordion-heading><span ng-class="{'bold': basic.changed_2}">Placement, Location</span></uib-accordion-heading>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <label>Country</label>
+                    </div>
+                    <div class="form-inline col-xs-9">
+                        <select ng-model="basic.country" ng-options="country for country in basic.countries" ng-change="basic.on_changed_2()" ></select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <label>State</label>
+                    </div>
+                    <div class="form-inline col-xs-9">
+                        <select ng-model="basic.state" ng-options="state for state in basic.states" ng-change="basic.on_changed_2()" ></select>
+                    </div>
+                </div>
+            </div>
         </div>
         <div uib-accordion-group class="panel-default">
             <uib-accordion-heading>Notes, User Data, Waypoints, Corrected</uib-accordion-heading>

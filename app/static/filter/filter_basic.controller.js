@@ -5,8 +5,8 @@
         .module('andyBeeApp')
         .controller('BasicFilterCtrl', BasicFilterCtrl);
 
-    BasicFilterCtrl.$inject = ['$uibModalInstance', 'FilterService', 'PreferenceService', 'filter', 'TYPE_TRANSLATION', 'TYPE_TO_PROP', 'CONTAINER_TRANSLATION', 'CONTAINER_TO_PROP'];
-    function BasicFilterCtrl($uibModalInstance, FilterService, PreferenceService, filter, TYPE_TRANSLATION, TYPE_TO_PROP, CONTAINER_TRANSLATION, CONTAINER_TO_PROP) {
+    BasicFilterCtrl.$inject = ['$uibModalInstance', 'FilterService', 'PreferenceService', 'GeocacheService', 'filter', 'TYPE_TRANSLATION', 'TYPE_TO_PROP', 'CONTAINER_TRANSLATION', 'CONTAINER_TO_PROP'];
+    function BasicFilterCtrl($uibModalInstance, FilterService, PreferenceService, GeocacheService, filter, TYPE_TRANSLATION, TYPE_TO_PROP, CONTAINER_TRANSLATION, CONTAINER_TO_PROP) {
         var vm = this;
 
         // modal controls
@@ -17,9 +17,12 @@
 
         vm.on_changed_0 = on_changed_0;
         vm.on_changed_1 = on_changed_1;
+        vm.on_changed_2 = on_changed_2;
 
         vm.filter_list = [];
         vm.select = -1;
+        vm.countries = GeocacheService.countries;
+        vm.states = GeocacheService.states;
 
         var atom_to_vm_map = {
             difficulty: map_diff_to_vm,
@@ -31,7 +34,9 @@
             available: map_available_to_vm,
             archived: map_archived_to_vm,
             found: map_found_to_vm,
-            owned: map_owned_to_vm
+            owned: map_owned_to_vm,
+            country: map_country_to_vm,
+            state: map_state_to_vm
         }
 
         vm.scratch_name = FilterService.scratch_filter.name;
@@ -90,23 +95,29 @@
                     ret_filter.filter_atoms.push({name: "container", op: "set", value: vals.join(',')});
                 }
             }
-            if (vm.title_active && (vm.title != '')) {
+            if (is_title_applicable()) {
                 ret_filter.filter_atoms.push({name: "title", op: vm.title_case ? "search_case" : "search", value: vm.title});
             }
-            if (vm.description_active && (vm.description != '')) {
+            if (is_description_applicable()) {
                 ret_filter.filter_atoms.push({name: "description", op: vm.description_case ? "search_case" : "search", value: vm.description});
             }
-            if (vm.available_active) {
+            if (is_available_applicable()) {
                 ret_filter.filter_atoms.push({name: "available", op: "eq", value: vm.available});
             }
-            if (vm.archived_active) {
+            if (is_archived_applicable()) {
                 ret_filter.filter_atoms.push({name: "archived", op: "eq", value: vm.archived});
             }
-            if (vm.found_active) {
+            if (is_found_applicable()) {
                 ret_filter.filter_atoms.push({name: "found", op: "eq", value: vm.found});
             }
-            if (vm.owned_active) {
+            if (is_owned_applicable()) {
                 ret_filter.filter_atoms.push({name: "owned", op: vm.owned ? "eq" : "ne", value: PreferenceService.data.owner});
+            }
+            if (is_country_applicable()) {
+                ret_filter.filter_atoms.push({name: "country", op: "eq", value: vm.country});
+            }
+            if (is_state_applicable()) {
+                ret_filter.filter_atoms.push({name: "state", op: "eq", value: vm.state});
             }
             $uibModalInstance.close(ret_filter);
         }
@@ -168,11 +179,17 @@
             vm.found_active = false;
             vm.owned = true;
             vm.owned_active = false;
+            vm.country = "";
+//            vm.country_active = false;
+            vm.state = "";
+//            vm.state_active = false;
 
             // accordion[0] changed? (diff, terr, type)
             vm.changed_0 = false;
             // accordion[1] changed? (container)
             vm.changed_1 = false;
+            // accordion[2] changed? (country, state)
+            vm.changed_2 = false;
         }
 
         // map the filter to the vm
@@ -188,6 +205,7 @@
             }
             on_changed_0();
             on_changed_1();
+            on_changed_2();
         }
 
         function is_terr_applicable () {
@@ -225,7 +243,7 @@
         }
 
         function is_title_applicable () {
-            return vm.title_active && vm.title != "";
+            return vm.title_active && (vm.title != "");
         }
 
         function is_available_applicable () {
@@ -244,12 +262,31 @@
             return vm.owned_active;
         }
 
+        function is_country_applicable () {
+            return (vm.country != "");
+        }
+
+        function is_state_applicable () {
+            return (vm.state != "");
+        }
+
         function on_changed_0 () {
             vm.changed_0 = is_terr_applicable() || is_diff_applicable() || is_type_applicable();
         }
 
         function on_changed_1 () {
-            vm.changed_1 = is_container_applicable() || is_title_applicable() || is_description_applicable() || is_available_applicable() || is_archived_applicable() || is_found_applicable() || is_owned_applicable();
+            vm.changed_1 = 
+                is_container_applicable() || 
+                is_title_applicable() || 
+                is_description_applicable() || 
+                is_available_applicable() || 
+                is_archived_applicable() || 
+                is_found_applicable() || 
+                is_owned_applicable();
+        }
+
+        function on_changed_2 () {
+            vm.changed_2 = is_country_applicable() || is_state_applicable();
         }
 
         function map_diff_to_vm (filter_atom) {
@@ -309,6 +346,16 @@
         function map_owned_to_vm (filter_atom) {
             vm.owned_active = true;
             vm.owned = (filter_atom.op == "eq");
+        }
+
+        function map_country_to_vm (filter_atom) {
+//            vm.country_active = true;
+            vm.country = filter_atom.value;
+        }
+
+        function map_state_to_vm (filter_atom) {
+//            vm.state_active = true;
+            vm.state = filter_atom.value;
         }
     }
 })();

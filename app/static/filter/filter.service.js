@@ -53,10 +53,12 @@
             container: container_to_condition,
             description: description_to_condition,
             title: search_prop_to_condition,
-            available: boolean_prop_to_condition,
-            archived: boolean_prop_to_condition,
-            found: boolean_prop_to_condition,
+            available: check_equal_to_condition,
+            archived: check_equal_to_condition,
+            found: check_equal_to_condition,
             owned: owned_to_condition,
+            country: check_equal_to_condition,
+            state: check_equal_to_condition
         };
 
         var op_to_func_map = {
@@ -272,7 +274,7 @@
             return undefined; // no promise
         }
 
-        function boolean_prop_to_condition (filter_atom) {
+        function check_equal_to_condition (filter_atom) {
             serv.conditions.push({property: filter_atom.name, func: check_prop_eq, value: filter_atom.value});
             return undefined; // no promise
         }
@@ -340,7 +342,7 @@
             serv.conditions.push({property: "owner", func: op_to_func_map[filter_atom.op], value: filter_atom.value});
             return undefined; // no promise
         }
-
+        
         function check_prop_eq (geocache, condition) {
             return geocache[condition.property] == condition.value;
         }
