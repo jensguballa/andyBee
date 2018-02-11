@@ -10,6 +10,7 @@
     "angular-animate": "^1.6.4",
     "angular-file-upload": "^2.5.0",
     "angular-leaflet-directive": "^0.10.0",
+    "angular-moment-picker": "^0.10.2",
     "angular-resource": "^1.6.4",
     "angular-sanitize": "^1.6.4",
     "angular-ui-bootstrap": "^2.5.0",

@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('andyBeeApp', ['ngSanitize', 'ui.bootstrap', 'ngResource', 'ngTable', 'leaflet-directive'])
+        .module('andyBeeApp', ['ngSanitize', 'ui.bootstrap', 'ngResource', 'ngTable', 'leaflet-directive', 'moment-picker'])
         .config(function($logProvider) {
             $logProvider.debugEnabled(false);
         })

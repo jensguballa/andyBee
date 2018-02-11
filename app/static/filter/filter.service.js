@@ -58,7 +58,9 @@
             found: check_equal_to_condition,
             owned: owned_to_condition,
             country: check_equal_to_condition,
-            state: check_equal_to_condition
+            state: check_equal_to_condition,
+            hidden: int_prop_to_condition,
+            owner: search_prop_to_condition
         };
 
         var op_to_func_map = {

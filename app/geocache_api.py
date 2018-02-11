@@ -8,6 +8,9 @@ from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCo
 from flask import send_from_directory, send_file, Response, make_response
 from app.api import json_to_object
 import time
+import dateutil
+import datetime
+import calendar
 import re
 
 class DbListSchema(Schema):
@@ -76,6 +79,7 @@ class GeocacheBasicSchema(Schema):
     difficulty = fields.Float()
     found      = fields.Boolean()
     gc_code    = fields.String()
+    hidden     = fields.Integer()
     last_logs  = fields.String()
     last_updated = fields.Integer()
     lat        = fields.Float()
@@ -93,7 +97,6 @@ class GeocacheBasicSchema(Schema):
 
 class GeocacheFullSchema(GeocacheBasicSchema):
     attributes = fields.List(fields.Nested(AttributeSchema))
-    hidden     = fields.String()
     short_desc = fields.String()
     short_html = fields.Boolean()
     long_desc  = fields.String()
@@ -147,12 +150,13 @@ class GeocacheListApi(Resource):
                 'placed_by, owner_id, type_id, container_id, terrain, difficulty, ' \
                 'country_id, state_id, last_logs, last_updated, lat, lon, gc_code, url, found, ' \
                 'short_desc, short_html, long_desc, long_html, encoded_hints, ' \
-                'coords_updated, corr_lat, corr_lon '\
+                'coords_updated, corr_lat, corr_lon, hidden '\
                 'FROM cache'
         geocaches = [dict(row) for row in geocache_db.execute(stmt)]
 
         for row in geocaches:
             update_corrected_coordinates(row)
+            adapt_hidden(row)
             row['owner'] = owners[row['owner_id']]
             row['type'] = types[row['type_id']]
             row['container'] = containers[row['container_id']]
@@ -225,6 +229,7 @@ class GeocacheApi(Resource):
         geocache = dict(geocache_db.execute(stmt,(id,)).fetchone())
 
         update_corrected_coordinates(geocache)
+        adapt_hidden(geocache)
 
         stmt = '''SELECT
                 attribute.inc AS inc,
@@ -390,6 +395,11 @@ def update_corrected_coordinates(geocache):
         geocache['lon'] = geocache['corr_lon']
     else:
         geocache['coords_updated'] = False
+
+def adapt_hidden(geocache):
+    full_date = dateutil.parser.parse(geocache['hidden'])
+    date = datetime.datetime(full_date.year, full_date.month, full_date.day)
+    geocache['hidden'] = int(calendar.timegm(date.timetuple()))
 
 api.add_resource(GpxExportApi, '/andyBee/api/v1.0/db/<string:db_name>/gpx_export')
 

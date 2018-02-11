@@ -213,21 +213,50 @@
             <uib-accordion-heading><span ng-class="{'bold': basic.changed_2}">Placement, Location</span></uib-accordion-heading>
             <div class="form-group">
                 <div class="row">
-                    <div class="col-xs-3">
+                    <div class="col-xs-2">
                         <label>Country</label>
                     </div>
-                    <div class="form-inline col-xs-9">
-                        <select ng-model="basic.country" ng-options="country for country in basic.countries" ng-change="basic.on_changed_2()" ></select>
+                    <div class="form-inline col-xs-10">
+                        <select ng-model="basic.country" ng-options="country for country in basic.countries" ng-change="basic.on_changed_2()" class="form-control"></select>
                     </div>
                 </div>
             </div>
             <div class="form-group">
                 <div class="row">
-                    <div class="col-xs-3">
+                    <div class="col-xs-2">
                         <label>State</label>
                     </div>
-                    <div class="form-inline col-xs-9">
-                        <select ng-model="basic.state" ng-options="state for state in basic.states" ng-change="basic.on_changed_2()" ></select>
+                    <div class="form-inline col-xs-10">
+                        <select ng-model="basic.state" ng-options="state for state in basic.states" ng-change="basic.on_changed_2()" class="form-control" ></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div>
+                    <input type="checkbox" ng-model="basic.owner_active" ng-change="basic.on_changed_2()">
+                    <label> Cache owner</label>
+                </div>
+                <div class="form-indent" ng-class="{'text-muted': !basic.owner_active}">
+                    <input type="text" class="form-control" ng-model="basic.owner" ng-change="basic.on_changed_2()" ng-disabled="!basic.owner_active">
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <input type="checkbox" ng-model="basic.placed_active" ng-change="basic.on_changed_2()">
+                    <label> Cache placed</label>
+                </div>
+                <div class="form-indent form-inline" ng-class="{'text-muted': !basic.title_active}">
+                    <select class="form-control" ng-model="basic.placed_cond" ng-disabled="!basic.placed_active" ng-change="basic.on_changed_2()">
+                        <option value="eq">on</option>
+                        <option value="ge">on or after</option>
+                        <option value="le">on or before</option>
+                    </select>
+                    <div class="input-group" moment-picker="basic.placed" format="YYYY-MM-DD">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                        <input class="form-control" placeholder="Select a date" ng-model="basic.placed" ng-model-options="{updateOn: 'blur'}" ng-disabled="!basic.placed_active">
                     </div>
                 </div>
             </div>

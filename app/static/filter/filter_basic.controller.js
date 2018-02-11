@@ -36,7 +36,9 @@
             found: map_found_to_vm,
             owned: map_owned_to_vm,
             country: map_country_to_vm,
-            state: map_state_to_vm
+            state: map_state_to_vm,
+            owner: map_owner_to_vm,
+            hidden: map_placed_to_vm
         }
 
         vm.scratch_name = FilterService.scratch_filter.name;
@@ -55,6 +57,11 @@
         }
         
         /////////// functions
+
+        function pad_zero (value, length) {
+            // good enough for our purpose. 
+            return ("0".repeat(length) + value).slice(-length);
+        }
 
         function dismiss_modal () {
             $uibModalInstance.dismiss(); 
@@ -118,6 +125,13 @@
             }
             if (is_state_applicable()) {
                 ret_filter.filter_atoms.push({name: "state", op: "eq", value: vm.state});
+            }
+            if (is_owner_applicable()) {
+                ret_filter.filter_atoms.push({name: "owner", op: "search", value: vm.owner});
+            }
+            if (is_placed_applicable()) {
+                var date = new Date(vm.placed);
+                ret_filter.filter_atoms.push({name: "hidden", op: vm.placed_cond, value: date/1000});
             }
             $uibModalInstance.close(ret_filter);
         }
@@ -183,6 +197,11 @@
 //            vm.country_active = false;
             vm.state = "";
 //            vm.state_active = false;
+            vm.owner_active = false;
+            vm.owner = "";
+            vm.placed_active = false;
+            vm.placed_cond = "le";
+            vm.placed = "";
 
             // accordion[0] changed? (diff, terr, type)
             vm.changed_0 = false;
@@ -266,6 +285,14 @@
             return (vm.country != "");
         }
 
+        function is_owner_applicable () {
+            return (vm.owner_active && (vm.owner != ""));
+        }
+
+        function is_placed_applicable () {
+            return (vm.placed_active && (vm.placed != ""));
+        }
+
         function is_state_applicable () {
             return (vm.state != "");
         }
@@ -286,7 +313,7 @@
         }
 
         function on_changed_2 () {
-            vm.changed_2 = is_country_applicable() || is_state_applicable();
+            vm.changed_2 = is_country_applicable() || is_state_applicable() || is_owner_applicable() || is_placed_applicable();
         }
 
         function map_diff_to_vm (filter_atom) {
@@ -357,6 +384,24 @@
 //            vm.state_active = true;
             vm.state = filter_atom.value;
         }
+
+        function map_owner_to_vm (filter_atom) {
+            vm.owner_active = true;
+            vm.owner = filter_atom.value;
+        }
+
+        function map_placed_to_vm (filter_atom) {
+            vm.placed_active = true;
+            vm.placed_cond = filter_atom.op;
+            var date = new Date(filter_atom.value * 1000);
+            vm.placed = pad_zero(date.getFullYear(), 4) + "-" + pad_zero(date.getMonth() + 1, 2) + "-" + pad_zero(date.getDate(), 2);
+        }
+
+        function map_owner_to_vm (filter_atom) {
+            vm.owner_active = true;
+            vm.owner = filter_atom.value;
+        }
+
     }
 })();
 
