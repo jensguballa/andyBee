@@ -202,6 +202,8 @@
             vm.placed_active = false;
             vm.placed_cond = "le";
             vm.placed = "";
+            var date = new Date();
+            vm.placed_max = pad_zero(date.getFullYear(), 4) + "-" + pad_zero(date.getMonth() + 1, 2) + "-" + pad_zero(date.getDate(), 2);
 
             // accordion[0] changed? (diff, terr, type)
             vm.changed_0 = false;
