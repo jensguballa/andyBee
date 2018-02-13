@@ -53,15 +53,16 @@
             container: container_to_condition,
             description: description_to_condition,
             title: search_prop_to_condition,
-            available: check_equal_to_condition,
-            archived: check_equal_to_condition,
-            found: check_equal_to_condition,
+            available: bool_prop_to_condition,
+            archived: bool_prop_to_condition,
+            found: bool_prop_to_condition,
             owned: owned_to_condition,
             country: check_equal_to_condition,
             state: check_equal_to_condition,
             hidden: int_prop_to_condition,
             owner: search_prop_to_condition,
-            distance: int_prop_to_condition
+            distance: int_prop_to_condition,
+            coords_updated: bool_prop_to_condition
         };
 
         var op_to_func_map = {
@@ -279,6 +280,11 @@
             return undefined; // no promise
         }
 
+        function bool_prop_to_condition (filter_atom) {
+            serv.conditions.push({property: filter_atom.name, func: check_prop_eq, value: (filter_atom.value == "true")});
+            return undefined; // no promise
+        }
+
         function check_equal_to_condition (filter_atom) {
             serv.conditions.push({property: filter_atom.name, func: check_prop_eq, value: filter_atom.value});
             return undefined; // no promise
@@ -348,11 +354,6 @@
             return undefined; // no promise
         }
 
-//        function distance_to_condition (filter_atom) {
-//            serv.conditions.push({property: "distance", func: op_to_func_map[filter_atom.op], value: filter_atom.value});
-//            return undefined; // no promise
-//        }
-        
         function check_prop_eq (geocache, condition) {
             return geocache[condition.property] == condition.value;
         }

@@ -19,6 +19,7 @@
         vm.on_changed_0 = on_changed_0;
         vm.on_changed_1 = on_changed_1;
         vm.on_changed_2 = on_changed_2;
+        vm.on_changed_3 = on_changed_3;
 
         vm.filter_list = [];
         vm.select = -1;
@@ -40,7 +41,8 @@
             state: map_state_to_vm,
             owner: map_owner_to_vm,
             hidden: map_placed_to_vm,
-            distance: map_distance_to_vm
+            distance: map_distance_to_vm,
+            coords_updated: map_coords_updated_to_vm,
         }
 
         vm.scratch_name = FilterService.scratch_filter.name;
@@ -115,13 +117,13 @@
                 ret_filter.filter_atoms.push({name: "description", op: vm.description_case ? "search_case" : "search", value: vm.description});
             }
             if (is_available_applicable()) {
-                ret_filter.filter_atoms.push({name: "available", op: "eq", value: vm.available});
+                ret_filter.filter_atoms.push({name: "available", op: "eq", value: vm.available.toString()});
             }
             if (is_archived_applicable()) {
-                ret_filter.filter_atoms.push({name: "archived", op: "eq", value: vm.archived});
+                ret_filter.filter_atoms.push({name: "archived", op: "eq", value: vm.archived.toString()});
             }
             if (is_found_applicable()) {
-                ret_filter.filter_atoms.push({name: "found", op: "eq", value: vm.found});
+                ret_filter.filter_atoms.push({name: "found", op: "eq", value: vm.found.toString()});
             }
             if (is_owned_applicable()) {
                 ret_filter.filter_atoms.push({name: "owned", op: vm.owned ? "eq" : "ne", value: PreferenceService.data.owner});
@@ -141,6 +143,9 @@
             }
             if (is_distance_applicable()) {
                 ret_filter.filter_atoms.push({name: "distance", op: vm.distance_cond, value: (vm.distance * 1000).toString()});
+            }
+            if (is_corrected_applicable()) {
+                ret_filter.filter_atoms.push({name: "coords_updated", op: "eq", value: vm.corrected.toString()});
             }
             $uibModalInstance.close(ret_filter);
         }
@@ -217,6 +222,8 @@
             vm.distance = "";
             vm.distance_cond = "lt";
             vm.distance_invalid = false;
+            vm.corrected_active = false;
+            vm.corrected = true;
 
             // accordion[0] changed? (diff, terr, type)
             vm.changed_0 = false;
@@ -224,6 +231,8 @@
             vm.changed_1 = false;
             // accordion[2] changed? (country, state)
             vm.changed_2 = false;
+            // accordion[3] changed? (coords_updated)
+            vm.changed_3 = false;
         }
 
         // map the filter to the vm
@@ -316,6 +325,10 @@
             return vm.distance_active && !vm.distance_invalid && vm.distance != "";
         }
 
+        function is_corrected_applicable () {
+            return vm.corrected_active;
+        }
+
         function on_changed_0 () {
             vm.changed_0 = is_terr_applicable() || is_diff_applicable() || is_type_applicable();
         }
@@ -333,6 +346,10 @@
 
         function on_changed_2 () {
             vm.changed_2 = is_country_applicable() || is_state_applicable() || is_owner_applicable() || is_placed_applicable() || is_distance_applicable();
+        }
+
+        function on_changed_3 () {
+            vm.changed_3 = is_corrected_applicable();
         }
 
         function map_diff_to_vm (filter_atom) {
@@ -428,6 +445,11 @@
             vm.distance_cond = filter_atom.op;
             vm.distance = filter_atom.value / 1000;
             vm.distance_invalid = false;
+        }
+
+        function map_coords_updated_to_vm (filter_atom) {
+            vm.corrected_active = true;
+            vm.corrected = (filter_atom.value == "true");
         }
 
     }

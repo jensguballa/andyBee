@@ -275,7 +275,19 @@
             </div>
         </div>
         <div uib-accordion-group class="panel-default">
-            <uib-accordion-heading>Notes, User Data, Waypoints, Corrected</uib-accordion-heading>
+            <uib-accordion-heading><span ng-class="{'bold': basic.changed_3}">Notes, User Data, Waypoints, Corrected</span></uib-accordion-heading>
+            <div class="form-group">
+                <div>
+                    <input type="checkbox" ng-model="basic.corrected_active" ng-change="basic.on_changed_3()">
+                    <label> Corrected Coordinates</label>
+                </div>
+                <div class="form-indent" ng-class="{'text-muted': !basic.corrected_active}">
+                    <form>
+                        <label><input type="radio" ng-model="basic.corrected" ng-value="true"  ng-disabled="!basic.corrected_active" /> Cache has corrected coordinates</label><br/>
+                        <label><input type="radio" ng-model="basic.corrected" ng-value="false" ng-disabled="!basic.corrected_active" /> Cache does not have corrected coordinates</label><br/>
+                    </form>
+                </div>
+            </div>
         </div>
         <div uib-accordion-group class="panel-default">
             <uib-accordion-heading>Attributes</uib-accordion-heading>
