@@ -16,10 +16,13 @@
         vm.load_filter = load_filter;
 
         vm.validate_distance = validate_distance;
+        vm.validate_age = validate_age;
         vm.on_changed_0 = on_changed_0;
         vm.on_changed_1 = on_changed_1;
         vm.on_changed_2 = on_changed_2;
         vm.on_changed_3 = on_changed_3;
+        vm.on_changed_4 = on_changed_4;
+        vm.on_changed_5 = on_changed_5;
 
         vm.filter_list = [];
         vm.select = -1;
@@ -43,6 +46,7 @@
             hidden: map_placed_to_vm,
             distance: map_distance_to_vm,
             coords_updated: map_coords_updated_to_vm,
+            age: map_age_to_vm
         }
 
         vm.scratch_name = FilterService.scratch_filter.name;
@@ -69,6 +73,10 @@
 
         function validate_distance () {
             vm.distance_invalid = isNaN(vm.distance);
+        }
+
+        function validate_age () {
+            vm.age_invalid = isNaN(vm.age) || (Math.floor(vm.age) != vm.age);
         }
 
         function dismiss_modal () {
@@ -147,6 +155,9 @@
             if (is_corrected_applicable()) {
                 ret_filter.filter_atoms.push({name: "coords_updated", op: "eq", value: vm.corrected.toString()});
             }
+            if (is_age_applicable()) {
+                ret_filter.filter_atoms.push({name: "age", op: vm.age_cond, value: vm.age.toString()});
+            }
             $uibModalInstance.close(ret_filter);
         }
 
@@ -224,6 +235,10 @@
             vm.distance_invalid = false;
             vm.corrected_active = false;
             vm.corrected = true;
+            vm.age_active = false;
+            vm.age_cond = "gt";
+            vm.age = "0";
+            vm.age_invalid = false;
 
             // accordion[0] changed? (diff, terr, type)
             vm.changed_0 = false;
@@ -233,6 +248,10 @@
             vm.changed_2 = false;
             // accordion[3] changed? (coords_updated)
             vm.changed_3 = false;
+            // accordion[4] changed? (attributes)
+            vm.changed_4 = false;
+            // accordion[5] changed? (age)
+            vm.changed_5 = false;
         }
 
         // map the filter to the vm
@@ -249,6 +268,10 @@
             on_changed_0();
             on_changed_1();
             on_changed_2();
+            on_changed_3();
+            on_changed_4();
+            on_changed_5();
+
         }
 
         function is_terr_applicable () {
@@ -329,6 +352,10 @@
             return vm.corrected_active;
         }
 
+        function is_age_applicable () {
+            return vm.age_active && !vm.age_invalid && vm.age != "";
+        }
+
         function on_changed_0 () {
             vm.changed_0 = is_terr_applicable() || is_diff_applicable() || is_type_applicable();
         }
@@ -350,6 +377,13 @@
 
         function on_changed_3 () {
             vm.changed_3 = is_corrected_applicable();
+        }
+
+        function on_changed_4 () {
+        }
+
+        function on_changed_5 () {
+            vm.changed_5 = is_age_applicable();
         }
 
         function map_diff_to_vm (filter_atom) {
@@ -450,6 +484,13 @@
         function map_coords_updated_to_vm (filter_atom) {
             vm.corrected_active = true;
             vm.corrected = (filter_atom.value == "true");
+        }
+
+        function map_age_to_vm (filter_atom) {
+            vm.age_active = true;
+            vm.age_cond = filter_atom.op;
+            vm.age = filter_atom.value;
+            vm.age_invalid = false;
         }
 
     }

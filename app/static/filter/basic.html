@@ -293,7 +293,20 @@
             <uib-accordion-heading>Attributes</uib-accordion-heading>
         </div>
         <div uib-accordion-group class="panel-default">
-            <uib-accordion-heading>Updated, Found</uib-accordion-heading>
+            <uib-accordion-heading><span ng-class="{'bold': basic.changed_5}">Updated, Found</span></uib-accordion-heading>
+            <div class="form-group">
+                <div>
+                    <input type="checkbox" ng-model="basic.age_active" ng-change="basic.on_changed_5()">
+                    <label> Last update</label>
+                </div>
+                <div class="form-indent form-inline" ng-class="{'text-muted': !basic.age_active}">
+                    <select class="form-control" ng-model="basic.age_cond" ng-disabled="!basic.age_active" ng-change="basic.on_changed_5()">
+                        <option value="lt">less than</option>
+                        <option value="gt">more than</option>
+                    </select>
+                    <input type="text" class="form-control" ng-model="basic.age" ng-change="basic.validate_age(); basic.on_changed_5()" ng-class="{'invalid_input': basic.age_invalid}" ng-disabled="!basic.age_active"> days ago
+                </div>
+            </div>
         </div>
     </uib-accordion>
     <div class="right-aligned">

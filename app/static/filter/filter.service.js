@@ -62,7 +62,8 @@
             hidden: int_prop_to_condition,
             owner: search_prop_to_condition,
             distance: int_prop_to_condition,
-            coords_updated: bool_prop_to_condition
+            coords_updated: bool_prop_to_condition,
+            age: int_prop_to_condition
         };
 
         var op_to_func_map = {
