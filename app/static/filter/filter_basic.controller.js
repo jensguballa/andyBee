@@ -15,6 +15,7 @@
         vm.reset = reset_filter;
         vm.load_filter = load_filter;
 
+        vm.validate_distance = validate_distance;
         vm.on_changed_0 = on_changed_0;
         vm.on_changed_1 = on_changed_1;
         vm.on_changed_2 = on_changed_2;
@@ -38,7 +39,8 @@
             country: map_country_to_vm,
             state: map_state_to_vm,
             owner: map_owner_to_vm,
-            hidden: map_placed_to_vm
+            hidden: map_placed_to_vm,
+            distance: map_distance_to_vm
         }
 
         vm.scratch_name = FilterService.scratch_filter.name;
@@ -61,6 +63,10 @@
         function pad_zero (value, length) {
             // good enough for our purpose. 
             return ("0".repeat(length) + value).slice(-length);
+        }
+
+        function validate_distance () {
+            vm.distance_invalid = isNaN(vm.distance);
         }
 
         function dismiss_modal () {
@@ -131,7 +137,10 @@
             }
             if (is_placed_applicable()) {
                 var date = new Date(vm.placed);
-                ret_filter.filter_atoms.push({name: "hidden", op: vm.placed_cond, value: date/1000});
+                ret_filter.filter_atoms.push({name: "hidden", op: vm.placed_cond, value: (date / 1000).toString()});
+            }
+            if (is_distance_applicable()) {
+                ret_filter.filter_atoms.push({name: "distance", op: vm.distance_cond, value: (vm.distance * 1000).toString()});
             }
             $uibModalInstance.close(ret_filter);
         }
@@ -204,6 +213,10 @@
             vm.placed = "";
             var date = new Date();
             vm.placed_max = pad_zero(date.getFullYear(), 4) + "-" + pad_zero(date.getMonth() + 1, 2) + "-" + pad_zero(date.getDate(), 2);
+            vm.distance_active = false;
+            vm.distance = "";
+            vm.distance_cond = "lt";
+            vm.distance_invalid = false;
 
             // accordion[0] changed? (diff, terr, type)
             vm.changed_0 = false;
@@ -299,6 +312,10 @@
             return (vm.state != "");
         }
 
+        function is_distance_applicable () {
+            return vm.distance_active && !vm.distance_invalid && vm.distance != "";
+        }
+
         function on_changed_0 () {
             vm.changed_0 = is_terr_applicable() || is_diff_applicable() || is_type_applicable();
         }
@@ -315,7 +332,7 @@
         }
 
         function on_changed_2 () {
-            vm.changed_2 = is_country_applicable() || is_state_applicable() || is_owner_applicable() || is_placed_applicable();
+            vm.changed_2 = is_country_applicable() || is_state_applicable() || is_owner_applicable() || is_placed_applicable() || is_distance_applicable();
         }
 
         function map_diff_to_vm (filter_atom) {
@@ -379,11 +396,13 @@
 
         function map_country_to_vm (filter_atom) {
 //            vm.country_active = true;
+            GeocacheService.add_country(filter_atom.value);
             vm.country = filter_atom.value;
         }
 
         function map_state_to_vm (filter_atom) {
 //            vm.state_active = true;
+            GeocacheService.add_state(filter_atom.value);
             vm.state = filter_atom.value;
         }
 
@@ -402,6 +421,13 @@
         function map_owner_to_vm (filter_atom) {
             vm.owner_active = true;
             vm.owner = filter_atom.value;
+        }
+
+        function map_distance_to_vm (filter_atom) {
+            vm.distance_active = true;
+            vm.distance_cond = filter_atom.op;
+            vm.distance = filter_atom.value / 1000;
+            vm.distance_invalid = false;
         }
 
     }

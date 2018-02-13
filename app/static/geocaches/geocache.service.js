@@ -37,6 +37,8 @@
             geocache_list: [],
             countries: [],
             states: [],
+            add_country: add_country,
+            add_state: add_state,
             read_list: read_list,
             update_coord_dialog: update_coord_dialog,
 
@@ -193,6 +195,20 @@
                     modal: true
                 });
 
+            }
+        }
+
+        function add_country (country) {
+            if (serv.countries.indexOf(country) == -1) {
+                serv.countries.push(country);
+                serv.countries = serv.countries.sort();
+            }
+        }
+
+        function add_state (state) {
+            if (serv.states.indexOf(state) == -1) {
+                serv.states.push(state);
+                serv.states = serv.states.sort();
             }
         }
 

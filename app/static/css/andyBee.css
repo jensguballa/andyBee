@@ -266,4 +266,8 @@ hr.dark {
     margin-bottom: 3px;
 }
 
+.invalid_input,
+.invalid_input:focus {
+    border: 1px solid red;
+}
 

@@ -60,7 +60,8 @@
             country: check_equal_to_condition,
             state: check_equal_to_condition,
             hidden: int_prop_to_condition,
-            owner: search_prop_to_condition
+            owner: search_prop_to_condition,
+            distance: int_prop_to_condition
         };
 
         var op_to_func_map = {
@@ -68,6 +69,8 @@
             ne: check_prop_ne,
             ge: check_prop_ge,
             le: check_prop_le,
+            gt: check_prop_gt,
+            lt: check_prop_lt,
             search: check_prop_search
         };
 
@@ -344,6 +347,11 @@
             serv.conditions.push({property: "owner", func: op_to_func_map[filter_atom.op], value: filter_atom.value});
             return undefined; // no promise
         }
+
+//        function distance_to_condition (filter_atom) {
+//            serv.conditions.push({property: "distance", func: op_to_func_map[filter_atom.op], value: filter_atom.value});
+//            return undefined; // no promise
+//        }
         
         function check_prop_eq (geocache, condition) {
             return geocache[condition.property] == condition.value;
@@ -359,6 +367,14 @@
 
         function check_prop_le (geocache, condition) {
             return geocache[condition.property] <= condition.value;
+        }
+
+        function check_prop_gt (geocache, condition) {
+            return geocache[condition.property] > condition.value;
+        }
+
+        function check_prop_lt (geocache, condition) {
+            return geocache[condition.property] < condition.value;
         }
 
         function check_prop_in_array (geocache, condition) {
