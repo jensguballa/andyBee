@@ -117,7 +117,7 @@
             scope.title = attr.attr;
 
             attr.$observe('attr', function () {
-                scope.src = Functions.attr_to_img(attr.attr, attr.inc);
+                scope.src = Functions.attr_to_img(attr.attr, (attr.inc == "true") ? 'yes' : 'no');
             });
         }
     }

@@ -350,14 +350,35 @@ class GpxExportApi(Resource):
         return response 
 
 
-class FilterOnDescrSchema(Schema):
-    search_for = fields.String()
-    case_sensitive = fields.Boolean()
+class FilterConditionSchema(Schema):
+    property = fields.String()
+    op = fields.String()
+    value = fields.String()
 
 class FilteredListSchema(Schema):
     filtered_list = fields.List(fields.Integer())
 
-class FilterOnDescrApi(Resource):
+class FilterConditionApi(Resource):
+
+    def filter_on_description(self, condition):
+        search_for = condition['value']
+        if condition['op'] == 'search':
+            search_for = '(?i)' + search_for
+        rows = geocache_db.execute('SELECT id FROM cache WHERE long_desc REGEXP ? OR short_desc REGEXP ?', (search_for, search_for))
+        return rows
+
+    def filter_on_attributes(self, condition):
+        txt_to_attr = {}
+        for attribute in geocache_db.execute('SELECT id, inc, name FROM attribute'):
+            txt_to_attr[('+' if (attribute['inc'] == 1) else '-') + attribute['name']] = attribute['id']
+
+        attr_ids = []
+        for attr_name in condition['value'].split(','):
+            attr_ids.append(txt_to_attr[attr_name])
+        placeholders = ','.join('?' * len(attr_ids))
+        query = 'SELECT cache_id AS id, count(*) AS attr_count FROM cache_to_attribute WHERE attribute_id IN (%s) GROUP BY cache_id HAVING attr_count = ?' % placeholders 
+        rows = geocache_db.execute(query, tuple(attr_ids) + (len(attr_ids),))
+        return rows
 
     def post(self, db_name):
         if db_name is None:
@@ -367,15 +388,18 @@ class FilterOnDescrApi(Resource):
             return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
         geocache_db.set_db(file_path)
 
-        obj, status_code = json_to_object(FilterOnDescrSchema())
+        obj, status_code = json_to_object(FilterConditionSchema())
         if status_code != 200:
             return obj, status_code
-        if obj['case_sensitive']:
-            search_for = obj['search_for']
-        else:
-            search_for = '(?i)' + obj['search_for']
+
+        rows = []
+        if obj['property'] == 'description':
+            rows = self.filter_on_description(obj)
+        elif obj['property'] == 'attributes':
+            rows = self.filter_on_attributes(obj)
+
         filtered_list = []
-        for row in geocache_db.execute('SELECT id FROM cache WHERE long_desc REGEXP ? OR short_desc REGEXP ?', (search_for, search_for)):
+        for row in rows:
             filtered_list.append(row['id'])
         data, errors = FilteredListSchema().dump({
             'filtered_list': filtered_list
@@ -385,7 +409,7 @@ class FilterOnDescrApi(Resource):
             return errors, 422
         return data
 
-api.add_resource(FilterOnDescrApi, '/andyBee/api/v1.0/db/<string:db_name>/filter_on_descr')
+api.add_resource(FilterConditionApi, '/andyBee/api/v1.0/db/<string:db_name>/filter_condition')
 
 def update_corrected_coordinates(geocache):
     geocache['orig_lat'] = geocache['lat']

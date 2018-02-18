@@ -13,7 +13,7 @@
             create: {method: 'POST'}
         });
 
-        var rest_filter_on_descr = $resource('/andyBee/api/v1.0/db/:db/filter_on_descr', null, {
+        var rest_filter_on_server = $resource('/andyBee/api/v1.0/db/:db/filter_condition', null, {
             post: {method: 'POST'}
         });
 
@@ -51,7 +51,7 @@
             terrain: int_prop_to_condition,
             type: type_to_condition,
             container: container_to_condition,
-            description: description_to_condition,
+            description: filter_on_server_to_condition,
             title: search_prop_to_condition,
             available: bool_prop_to_condition,
             archived: bool_prop_to_condition,
@@ -63,7 +63,8 @@
             owner: search_prop_to_condition,
             distance: int_prop_to_condition,
             coords_updated: bool_prop_to_condition,
-            age: int_prop_to_condition
+            age: int_prop_to_condition,
+            attributes: filter_on_server_to_condition
         };
 
         var op_to_func_map = {
@@ -322,13 +323,13 @@
             return undefined; // no promise
         }
 
-        function description_to_condition (filter_atom) {
+        function filter_on_server_to_condition (filter_atom) {
             var hash = {};
             var db_name =  $injector.get('GeocacheService').db_name;
 
-            var resource = rest_filter_on_descr.post(
+            var resource = rest_filter_on_server.post(
                 {db: db_name}, 
-                {search_for: filter_atom.value, case_sensitive: filter_atom.op == "search_case"}, 
+                {property: filter_atom.name, op: filter_atom.op, value: filter_atom.value},
                 on_post_response, 
                 on_post_error
             );
@@ -343,7 +344,7 @@
 
             function on_post_error(result) {
                 LoggingService.log({
-                    msg: ERROR.FAILURE_FILTER_ON_DESCRIPTION,
+                    msg: ERROR.FAILURE_FILTER_ON_SERVER,
                     http_response: result,
                     modal: true
                 });

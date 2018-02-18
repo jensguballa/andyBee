@@ -271,3 +271,6 @@ hr.dark {
     border: 1px solid red;
 }
 
+.dimmed {
+    opacity: 0.5;
+}

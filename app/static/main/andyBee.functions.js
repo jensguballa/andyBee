@@ -150,6 +150,7 @@
             attr_to_img: attr_to_img,
             log_to_img: log_to_img,
             type_to_marker_img: type_to_marker_img,
+            get_attributes: get_attributes,
 
             obj_to_coord: obj_to_coord,
             coord_to_obj: coord_to_obj,
@@ -189,11 +190,21 @@
             return imgs;
         }
 
-        function attr_to_img(attr, inc) {
+        function get_attributes () {
+            var attributes = [];
+            for (var i in attr_trans) {
+                if (attr_trans.hasOwnProperty(i)) {
+                    attributes.push(i);
+                }
+            }
+            return attributes;
+        }
+
+        function attr_to_img(attr, state) {
             var img;
             var img_name = attr_trans[attr];
             if (img_name) {
-                img = 'static/images/attributes/' + (inc == "true" ? 'yes' : 'no') + '_' + img_name;
+                img = 'static/images/attributes/' + state + '_' + img_name;
             }
             else {
                 img = 'static/images/not_supported.svg';

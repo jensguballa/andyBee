@@ -5,8 +5,8 @@
         .module('andyBeeApp')
         .controller('BasicFilterCtrl', BasicFilterCtrl);
 
-    BasicFilterCtrl.$inject = ['$uibModalInstance', 'FilterService', 'PreferenceService', 'GeocacheService', 'filter', 'TYPE_TRANSLATION', 'TYPE_TO_PROP', 'CONTAINER_TRANSLATION', 'CONTAINER_TO_PROP'];
-    function BasicFilterCtrl($uibModalInstance, FilterService, PreferenceService, GeocacheService, filter, TYPE_TRANSLATION, TYPE_TO_PROP, CONTAINER_TRANSLATION, CONTAINER_TO_PROP) {
+    BasicFilterCtrl.$inject = ['$uibModalInstance', 'FilterService', 'PreferenceService', 'GeocacheService', 'Functions', 'filter', 'TYPE_TRANSLATION', 'TYPE_TO_PROP', 'CONTAINER_TRANSLATION', 'CONTAINER_TO_PROP'];
+    function BasicFilterCtrl($uibModalInstance, FilterService, PreferenceService, GeocacheService, Functions, filter, TYPE_TRANSLATION, TYPE_TO_PROP, CONTAINER_TRANSLATION, CONTAINER_TO_PROP) {
         var vm = this;
 
         // modal controls
@@ -14,6 +14,7 @@
         vm.close = close_modal;
         vm.reset = reset_filter;
         vm.load_filter = load_filter;
+        vm.attribute_clicked = attribute_clicked;
 
         vm.validate_distance = validate_distance;
         vm.validate_age = validate_age;
@@ -46,7 +47,8 @@
             hidden: map_placed_to_vm,
             distance: map_distance_to_vm,
             coords_updated: map_coords_updated_to_vm,
-            age: map_age_to_vm
+            age: map_age_to_vm,
+            attributes: map_attributes_to_vm
         }
 
         vm.scratch_name = FilterService.scratch_filter.name;
@@ -158,6 +160,18 @@
             if (is_age_applicable()) {
                 ret_filter.filter_atoms.push({name: "age", op: vm.age_cond, value: vm.age.toString()});
             }
+            if (vm.attributes_active) {
+                var arr = [];
+                for (var i = 0, len = vm.attributes.length; i < len; i++) {
+                    var attr = vm.attributes[i];
+                    if (attr.state != 'dis') {
+                        arr.push((attr.state == 'yes' ? '+' : '-') + attr.string);
+                    }
+                }
+                if (arr.length > 0) {
+                    ret_filter.filter_atoms.push({name: "attributes", op: "set", value: arr.join(',')});
+                }
+            }
             $uibModalInstance.close(ret_filter);
         }
 
@@ -172,6 +186,23 @@
 
         function reset_filter () {
             filter_to_vm([]);    
+        }
+
+        function attribute_clicked (idx) {
+            if (!vm.attributes_active) {
+                return;
+            }
+            var attr = vm.attributes[idx];
+            if (attr.state == "dis") {
+                attr.state = "yes";
+            }
+            else if (attr.state == "yes") {
+                attr.state = "no";
+            }
+            else {
+                attr.state = "dis";
+            }
+            attr.src = Functions.attr_to_img(attr.string, attr.state);
         }
 
         function init_vm () {
@@ -239,6 +270,19 @@
             vm.age_cond = "gt";
             vm.age = "0";
             vm.age_invalid = false;
+
+            vm.attributes_active = false;
+            vm.attributes = [];
+            var attr_str = Functions.get_attributes();
+            for (var i = 0, len = attr_str.length; i < len; i++) {
+                var string = attr_str[i];
+                vm.attributes[i] = {
+                    string: string,
+                    state: "dis",
+                    src: Functions.attr_to_img(string, "dis")
+                };
+            }
+
 
             // accordion[0] changed? (diff, terr, type)
             vm.changed_0 = false;
@@ -356,6 +400,18 @@
             return vm.age_active && !vm.age_invalid && vm.age != "";
         }
 
+        function is_attribute_applicable () {
+            if (!vm.attributes_active) {
+                return false;
+            }
+            for (var i = 0, len = vm.attributes.length; i < len; i++) {
+                if (vm.attributes[i].state != "dis") {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         function on_changed_0 () {
             vm.changed_0 = is_terr_applicable() || is_diff_applicable() || is_type_applicable();
         }
@@ -380,6 +436,7 @@
         }
 
         function on_changed_4 () {
+            vm.changed_4 = is_attribute_applicable();
         }
 
         function on_changed_5 () {
@@ -491,6 +548,23 @@
             vm.age_cond = filter_atom.op;
             vm.age = filter_atom.value;
             vm.age_invalid = false;
+        }
+
+        function map_attributes_to_vm (filter_atom) {
+            var attributes = filter_atom.value.split(',');
+            for (var i = 0, len = attributes.length; i < len; i++) {
+                var plus_min = attributes[i].substr(0,1);
+                var attr_name = attributes[i].substr(1);
+                for (var j = 0, len2 = vm.attributes.length; j < len2; j++) {
+                    if (vm.attributes[j].string == attr_name) {
+                        var state = (plus_min == '+' ? 'yes' : 'no');
+                        vm.attributes[j].state = state;
+                        vm.attributes[j].src = Functions.attr_to_img(vm.attributes[j].string, state);
+                        vm.attributes_active = true;
+                        break;
+                    }
+                }
+            }
         }
 
     }

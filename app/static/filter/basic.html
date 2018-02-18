@@ -290,7 +290,16 @@
             </div>
         </div>
         <div uib-accordion-group class="panel-default">
-            <uib-accordion-heading>Attributes</uib-accordion-heading>
+            <uib-accordion-heading><span ng-class="{'bold': basic.changed_4}">Attributes</span></uib-accordion-heading>
+            <div class="form-group">
+                <div>
+                    <input type="checkbox" ng-model="basic.attributes_active" ng-change="basic.on_changed_4()">
+                    <label> Select caches with all of the following attributes:</label>
+                </div>
+                <div class="form-indent" ng-class="{'dimmed': !basic.attributes_active}">
+                    <img class="attr_detail" ng-repeat="attr in basic.attributes" ng-src="{{attr.src}}" ng-click="basic.attribute_clicked($index); basic.on_changed_4()" title="{{attr.string}}" />
+                </div>
+            </div>
         </div>
         <div uib-accordion-group class="panel-default">
             <uib-accordion-heading><span ng-class="{'bold': basic.changed_5}">Updated, Found</span></uib-accordion-heading>
