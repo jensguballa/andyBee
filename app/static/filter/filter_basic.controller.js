@@ -196,7 +196,7 @@
             if (attr.state == "dis") {
                 attr.state = "yes";
             }
-            else if (attr.state == "yes") {
+            else if (attr.state == "yes" && Functions.attr_invertable(vm.attributes[idx].string)) {
                 attr.state = "no";
             }
             else {

@@ -374,7 +374,8 @@ class FilterConditionApi(Resource):
 
         attr_ids = []
         for attr_name in condition['value'].split(','):
-            attr_ids.append(txt_to_attr[attr_name])
+            if attr_name in txt_to_attr:
+                attr_ids.append(txt_to_attr[attr_name])
         placeholders = ','.join('?' * len(attr_ids))
         query = 'SELECT cache_id AS id, count(*) AS attr_count FROM cache_to_attribute WHERE attribute_id IN (%s) GROUP BY cache_id HAVING attr_count = ?' % placeholders 
         rows = geocache_db.execute(query, tuple(attr_ids) + (len(attr_ids),))

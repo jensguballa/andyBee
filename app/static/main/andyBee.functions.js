@@ -48,69 +48,69 @@
     };
 
     var attr_trans = {
-        'Abandoned Structure': 'Abandoned_Structure.svg',
-        'Abandoned mines': 'Abandoned_mines.svg',
-        'Access or parking fee': 'Access_or_parking_fee.svg',
-        'Available at all times': 'Available_at_all_times.svg',
-        'Available during winter': 'Available_during_winter.svg',
-        'Bicycles': 'Bicycles.svg',
-        'Boat': 'Boat.svg',
-        'Campfires': 'Campfires.svg',
-        'Camping available': 'Camping_available.svg',
-        'Cliff / falling rocks': 'Cliff___falling_rocks.svg',
-        'Climbing gear': 'Climbing_gear.svg',
-        'Cross Country Skis': 'Cross_Country_Skis.svg',
-        'Dangerous Animals': 'Dangerous_Animals.svg',
-        'Dangerous area': 'Dangerous_area.svg',
-        'Difficult climbing': 'Difficult_climbing.svg',
-        'Dogs': 'Dogs.svg',
-        'Drinking water nearby': 'Drinking_water_nearby.svg',
-        'Field Puzzle': 'Field_Puzzle.svg',
-        'Flashlight required': 'Flashlight_required.svg',
-        'Food Nearby': 'Food_Nearby.svg',
-        'Front Yard (Private Residence)': 'Frontyard.svg',
-        'Fuel Nearby': 'Fuel_Nearby.svg',
-        'Horses': 'Horses.svg',
-        'Hunting': 'Hunting.svg',
-        'Long Hike (+10km)': 'Long_Hike_(+10km).svg',
-        'May require swimming': 'May_require_swimming.svg',
-        'May require wading': 'May_require_wading.svg',
-        'Medium hike (1km-10km)': 'Medium_hike_(1km-10km).svg',
-        'Motorcycles': 'Motorcycles.svg',
-        'Needs maintenance': 'Needs_maintenance.svg',
-        'Night Cache': 'Night_Cache.svg',
-        'Off-road vehicles': 'Off-road_vehicles.svg',
-        'Park and Grab': 'Park_and_Grab.svg',
-        'Parking available': 'Parking_available.svg',
-        'Picnic tables nearby': 'Picnic_tables_nearby.svg',
-        'Poison plants': 'Poison_plants.svg',
-        'Public restrooms nearby': 'Public_restrooms_nearby.svg',
-        'Public transportation': 'Public_transportation.svg',
-        'Quads': 'Quads.svg',
-        'Recommended at night': 'Recommended_at_night.svg',
-        'Recommended for kids': 'Recommended_for_kids.svg',
-        'Scenic view': 'Scenic_view.svg',
-        'Scuba gear': 'Scuba_gear.svg',
-        'Seasonal Access': 'Seasonal_access.svg',
-        'Short hike (less than 1km)': 'Short_hike_(less_than_1km).svg',
-        'Significant Hike': 'Significant_Hike.svg',
-        'Snowmobiles': 'Snowmobiles.svg',
-        'Snowshoes': 'Snowshoes.svg',
-        'Special Tool Required': 'Special_Tool_Required.svg',
-        'Stealth required': 'Stealth_required.svg',
-        'Stroller accessible': 'Stroller_accessible.svg',
-        'Takes less than an hour': 'Takes_less_than_an_hour.svg',
-        'Teamwork Required': 'Teamwork_required.svg',
-        'Telephone nearby': 'Telephone_nearby.svg',
-        'Thorns': 'Thorns.svg',
-        'Ticks': 'Ticks.svg',
-        'Tourist Friendly': 'Tourist_friendly.svg',
-        'Tree Climbing': 'Tree_climbing.svg',
-        'Truck Driver/RV': 'Truck_Driver_RV.svg',
-        'UV Light Required': 'UV_Light_Required.svg',
-        'Watch for livestock': 'Watch_for_livestock.svg',
-        'Wheelchair accessible': 'Wheelchair_accessible.svg',
-        'Wireless Beacon': 'Wireless_Beacon.svg',
+        'Abandoned Structure': {img: 'Abandoned_Structure.svg', invertable: true},
+        'Abandoned mines': {img: 'Abandoned_mines.svg', invertable: false},
+        'Access or parking fee': {img: 'Access_or_parking_fee.svg', invertable: false},
+        'Available at all times': {img: 'Available_at_all_times.svg', invertable: true},
+        'Available during winter': {img: 'Available_during_winter.svg', invertable: true},
+        'Bicycles': {img: 'Bicycles.svg', invertable: true},
+        'Boat': {img: 'Boat.svg', invertable: false},
+        'Campfires': {img: 'Campfires.svg', invertable: true},
+        'Camping available': {img: 'Camping_available.svg', invertable: true},
+        'Cliff / falling rocks': {img: 'Cliff___falling_rocks.svg', invertable: false},
+        'Climbing gear': {img: 'Climbing_gear.svg', invertable: false},
+        'Cross Country Skis': {img: 'Cross_Country_Skis.svg', invertable: false},
+        'Dangerous Animals': {img: 'Dangerous_Animals.svg', invertable: false},
+        'Dangerous area': {img: 'Dangerous_area.svg', invertable: false},
+        'Difficult climbing': {img: 'Difficult_climbing.svg', invertable: true},
+        'Dogs': {img: 'Dogs.svg', invertable: true},
+        'Drinking water nearby': {img: 'Drinking_water_nearby.svg', invertable: true},
+        'Field Puzzle': {img: 'Field_Puzzle.svg', invertable: true},
+        'Flashlight required': {img: 'Flashlight_required.svg', invertable: false},
+        'Food Nearby': {img: 'Food_Nearby.svg', invertable: true},
+        'Front Yard (Private Residence)': {img: 'Frontyard.svg', invertable: true},
+        'Fuel Nearby': {img: 'Fuel_Nearby.svg', invertable: true},
+        'Horses': {img: 'Horses.svg', invertable: true},
+        'Hunting': {img: 'Hunting.svg', invertable: false},
+        'Long Hike (+10km)': {img: 'Long_Hike_(+10km).svg', invertable: true},
+        'May require swimming': {img: 'May_require_swimming.svg', invertable: false},
+        'May require wading': {img: 'May_require_wading.svg', invertable: false},
+        'Medium hike (1km-10km)': {img: 'Medium_hike_(1km-10km).svg', invertable: true},
+        'Motorcycles': {img: 'Motorcycles.svg', invertable: true},
+        'Needs maintenance': {img: 'Needs_maintenance.svg', invertable: false},
+        'Night Cache': {img: 'Night_Cache.svg', invertable: true},
+        'Off-road vehicles': {img: 'Off-road_vehicles.svg', invertable: true},
+        'Park and Grab': {img: 'Park_and_Grab.svg', invertable: true},
+        'Parking available': {img: 'Parking_available.svg', invertable: true},
+        'Picnic tables nearby': {img: 'Picnic_tables_nearby.svg', invertable: true},
+        'Poison plants': {img: 'Poison_plants.svg', invertable: true},
+        'Public restrooms nearby': {img: 'Public_restrooms_nearby.svg', invertable: true},
+        'Public transportation': {img: 'Public_transportation.svg', invertable: false},
+        'Quads': {img: 'Quads.svg', invertable: true},
+        'Recommended at night': {img: 'Recommended_at_night.svg', invertable: true},
+        'Recommended for kids': {img: 'Recommended_for_kids.svg', invertable: true},
+        'Scenic view': {img: 'Scenic_view.svg', invertable: true},
+        'Scuba gear': {img: 'Scuba_gear.svg', invertable: false},
+        'Seasonal Access': {img: 'Seasonal_access.svg', invertable: true},
+        'Short hike (less than 1km)': {img: 'Short_hike_(less_than_1km).svg', invertable: true},
+        'Significant Hike': {img: 'Significant_Hike.svg', invertable: true},
+        'Snowmobiles': {img: 'Snowmobiles.svg', invertable: true},
+        'Snowshoes': {img: 'Snowshoes.svg', invertable: false},
+        'Special Tool Required': {img: 'Special_Tool_Required.svg', invertable: false},
+        'Stealth required': {img: 'Stealth_required.svg', invertable: true},
+        'Stroller accessible': {img: 'Stroller_accessible.svg', invertable: true},
+        'Takes less than an hour': {img: 'Takes_less_than_an_hour.svg', invertable: true},
+        'Teamwork Required': {img: 'Teamwork_required.svg', invertable: true},
+        'Telephone nearby': {img: 'Telephone_nearby.svg', invertable: true},
+        'Thorns': {img: 'Thorns.svg', invertable: false},
+        'Ticks': {img: 'Ticks.svg', invertable: false},
+        'Tourist Friendly': {img: 'Tourist_friendly.svg', invertable: true},
+        'Tree Climbing': {img: 'Tree_climbing.svg', invertable: true},
+        'Truck Driver/RV': {img: 'Truck_Driver_RV.svg', invertable: true},
+        'UV Light Required': {img: 'UV_Light_Required.svg', invertable: false},
+        'Watch for livestock': {img: 'Watch_for_livestock.svg', invertable: false},
+        'Wheelchair accessible': {img: 'Wheelchair_accessible.svg', invertable: true},
+        'Wireless Beacon': {img: 'Wireless_Beacon.svg', invertable: false},
     };
 
     var log_trans = {
@@ -148,6 +148,7 @@
             size_to_img: size_to_img,
             rating_to_imgs: rating_to_imgs,
             attr_to_img: attr_to_img,
+            attr_invertable: attr_invertable,
             log_to_img: log_to_img,
             type_to_marker_img: type_to_marker_img,
             get_attributes: get_attributes,
@@ -173,7 +174,7 @@
             return size_trans[size];
         }
 
-        function rating_to_imgs(rating) {
+        function rating_to_imgs (rating) {
             var imgs = [];
             for (var i = 0; i < 5; i++) {
                 if (rating >= 1) {
@@ -200,9 +201,13 @@
             return attributes;
         }
 
-        function attr_to_img(attr, state) {
+        function attr_invertable (attr) {
+            return attr_trans[attr].invertable;
+        }
+
+        function attr_to_img (attr, state) {
             var img;
-            var img_name = attr_trans[attr];
+            var img_name = attr_trans[attr].img;
             if (img_name) {
                 img = 'static/images/attributes/' + state + '_' + img_name;
             }
@@ -212,7 +217,7 @@
             return img;
         }
 
-        function log_to_img(log) {
+        function log_to_img (log) {
             var img = log_trans[log];
             if (!img) {
                 img = log_trans['Not Supported'];
@@ -220,7 +225,7 @@
             return img;
         }
 
-        function coord_to_obj(coord, str1, str2) {
+        function coord_to_obj (coord, str1, str2) {
             var str = str1;
             if (coord < 0) {
                 coord = -coord;
@@ -235,7 +240,7 @@
             };
         }
 
-        function obj_to_coord(obj) {
+        function obj_to_coord (obj) {
             var coord = obj.degrees + obj.minutes / 60;
             if ((obj.type == 'W') || (obj.type == 'S')) {
                 coord = -coord;
@@ -243,13 +248,13 @@
             return coord;
         }
 
-        function coord_equal(coord1, coord2) {
+        function coord_equal (coord1, coord2) {
             var c1 = coord_to_obj(coord1, 'A', 'B');
             var c2 = coord_to_obj(coord2, 'A', 'B');
             return ((c1.type == c2.type) && (c1.degrees == c2.degrees) && (c1.minutes == c2.minutes));
         }
 
-        function latlng_equal(latlng1, latlng2) {
+        function latlng_equal (latlng1, latlng2) {
             return (coord_equal(latlng1.lat, latlng2.lat) && coord_equal(latlng1.lng, latlng2.lng));
         }
 
