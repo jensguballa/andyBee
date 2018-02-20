@@ -5,8 +5,8 @@
         .module('andyBeeApp')
         .controller('andyBeeCtrl', andyBeeCtrl);
             
-    andyBeeCtrl.$inject = ['$uibModal', '$timeout', 'ERROR', 'GeocacheService', 'GpxService', 'PreferenceService', 'DbService', 'LoggingService', 'FilterService'];
-    function andyBeeCtrl ($uibModal, $timeout, ERROR, GeocacheService, GpxService, PreferenceService, DbService, LoggingService, FilterService) {
+    andyBeeCtrl.$inject = ['$scope', '$uibModal', '$timeout', 'ERROR', 'GeocacheService', 'GpxService', 'PreferenceService', 'DbService', 'LoggingService', 'FilterService'];
+    function andyBeeCtrl ($scope, $uibModal, $timeout, ERROR, GeocacheService, GpxService, PreferenceService, DbService, LoggingService, FilterService) {
 
         var vm = this;
         vm.geocache = GeocacheService;
@@ -23,6 +23,20 @@
         vm.manage_filter_dialog = manage_filter_dialog;
         vm.apply_filter = apply_filter;
         vm.reset_filter = reset_filter;
+
+        // Well, the following is really dirty, as it modifies service data...
+        $scope.$on('geocache_list_updated', function (event, args) {
+            // switch to list view if current cache is not in the list anymore
+            for (var i = 0, len = vm.geocache.geocache_list.length; i < len; i++) {
+                if (vm.geocache.geocache_list[i].id == vm.geocache.detail.id) {
+                    return;
+                }
+            }
+            vm.geocache.detail.id = 0;
+            if (vm.geocache.selected_tab == 2) { // Cache details
+                vm.geocache.selected_tab = 0; // Cache list
+            }
+        });
 
         ////////////////
 

@@ -46,7 +46,6 @@
             get_geocache: get_geocache
 
         };
-
         return serv;
 
         function resolve_db_name () {
@@ -288,6 +287,7 @@
                 }, 0);
             });
         }
+
     }
 
 })();
