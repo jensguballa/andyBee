@@ -159,7 +159,9 @@
         }
 
         function apply_filter (idx) {
-            FilterService.filter_settings_updated(idx);
+            if (vm.geocache.db_name) {
+                FilterService.filter_settings_updated(idx);
+            }
         }
 
         function reset_filter() {
