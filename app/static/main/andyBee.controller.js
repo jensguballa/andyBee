@@ -64,7 +64,9 @@
                 }).result.then(on_dialog_close, on_dialog_close);
 
                 function on_dialog_close (db_name) {
-                    GeocacheService.read_list(db_name);
+                    if (db_name != "") {
+                        GeocacheService.read_list(db_name);
+                    }
                 }
             }
         }
