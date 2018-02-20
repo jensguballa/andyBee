@@ -10,7 +10,7 @@
     function GeocacheListCtrl($scope, $rootScope, $filter, GeocacheService, NgTableParams) {
         var vm = this;
         vm.cols = [];
-        vm.tableParams = new NgTableParams({}, {
+        vm.tableParams = new NgTableParams({count: 25}, {
             filterOptions: {filterFn: geocache_filter}
         });
         vm.show_details = show_details;
