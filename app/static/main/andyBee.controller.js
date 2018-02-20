@@ -118,7 +118,9 @@
 
 
         function basic_filter_dialog () {
-            FilterService.read_list(on_read_response);
+            if (vm.geocache.db_name) {
+                FilterService.read_list(on_read_response);
+            }
 
             function on_read_response(resp) {
                 $uibModal.open({
