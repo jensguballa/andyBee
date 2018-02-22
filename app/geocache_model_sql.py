@@ -1,5 +1,22 @@
 from db import SqlTable
 
+RELEASE = 1
+VERSION = 1
+
+class DbModel(SqlTable):
+    _table_name = 'db_model'
+    _key = 'id'
+    _create_stmt = """
+    CREATE TABLE IF NOT EXISTS db_model (
+            id INTEGER NOT NULL, 
+            release INTEGER, 
+            version INTEGER, 
+            PRIMARY KEY (id) 
+    )
+    """
+    _init_cmd = """
+    INSERT INTO db_model (id, release, version) VALUES (1,1,1) 
+    """
 
 class Attribute(SqlTable):
     _table_name = 'attribute'
@@ -224,9 +241,20 @@ geocache_tables = (
         CacheToAttribute,
         CacheType,
         Cacher,
+        DbModel,
         Log,
         LogType,
         Waypoint,
         WaypointSym,
         WaypointType)
+
+def db_model_update(geocache_db):
+    row = dict(geocache_db.get_by_id(DbModel, 1))
+    if row['release'] == RELEASE:
+        if row['version'] != VERSION:
+            for cur_version in range(row['version'], VERSION):
+                if cur_version == 1:
+                    pass
+            geocache_db.update(DbModel, 1, {'version': VERSION})
+            geocache_db.commit()
 

@@ -102,6 +102,9 @@ class Db(object):
     def create_all(self):
         for table in self.tables:
             self.execute(table.create_table())
+            init_cmd = table.init_cmd()
+            if init_cmd:
+                self.execute(init_cmd)
         self.connection.commit()
 
     def get_by_id(self, cls, id):
@@ -188,6 +191,13 @@ class SqlTable():
     @classmethod
     def create_table(cls):
         return cls._create_stmt
+
+    @classmethod
+    def init_cmd(cls):
+        if hasattr(cls, '_init_cmd'):
+            return cls._init_cmd
+        else:
+            return None
 
     @classmethod
     def drop_table(cls):

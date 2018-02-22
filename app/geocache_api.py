@@ -4,7 +4,7 @@ from flask_restful import Resource, reqparse, request
 from app import app, api, geocache_db
 from marshmallow import Schema, fields
 from gpx import export_gpx, GpxImporter
-from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState
+from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState, db_model_update
 from flask import send_from_directory, send_file, Response, make_response
 from app.api import json_to_object
 import time
@@ -12,6 +12,7 @@ import dateutil
 import datetime
 import calendar
 import re
+
 
 class DbListSchema(Schema):
     dbs = fields.List(fields.String())
@@ -125,6 +126,8 @@ class GeocacheListApi(Resource):
         if not os.path.isfile(file_path):
             return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
         geocache_db.set_db(file_path)
+
+        db_model_update(geocache_db)
 
         owners = {}
         for row in geocache_db.execute('SELECT * from cacher'):

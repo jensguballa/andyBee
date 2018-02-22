@@ -4,7 +4,7 @@ from app.config_model import config_tables
 from app import api, app
 from flask_restful import abort, Resource
 from marshmallow import Schema, fields
-from config_model import Preferences, Filter, FilterAtom
+from config_model import Preferences, Filter, FilterAtom, db_model_update
 
 from flask import request, jsonify
 
@@ -48,7 +48,10 @@ class PrefApi(Resource):
 
     def get(self, id):
         config_db.init()
-        return PrefCompleteSchema().dump({'preference': dict(config_db.get_by_id(Preferences, id))})
+        pref =  dict(config_db.get_by_id(Preferences, id))
+        if db_model_update(pref['db_model_release'], pref['db_model_version'], config_db, id):
+            pref =  dict(config_db.get_by_id(Preferences, id))
+        return PrefCompleteSchema().dump({'preference': pref})
 
     def put(self, id):
         config_db.init()
@@ -148,6 +151,8 @@ class ConfigDb(Db):
             self.create_all()
             pref = {'auto_load': 0, 
                     'cluster_zoom': 14,
+                    'db_model_version': 1,
+                    'db_model_release': 1,
                     'default_db': '', 
                     'owner': '', 
                     'used_db': '', 
