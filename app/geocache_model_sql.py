@@ -1,7 +1,7 @@
 from db import SqlTable
 
 RELEASE = 1
-VERSION = 1
+VERSION = 2
 
 class DbModel(SqlTable):
     _table_name = 'db_model'
@@ -15,8 +15,8 @@ class DbModel(SqlTable):
     )
     """
     _init_cmd = """
-    INSERT INTO db_model (id, release, version) VALUES (1,1,1) 
-    """
+    INSERT INTO db_model (id, release, version) VALUES (1,{0},{1}) 
+    """.format(RELEASE, VERSION)
 
 class Attribute(SqlTable):
     _table_name = 'attribute'
@@ -183,6 +183,17 @@ class LogType(SqlTable):
     )
     """
 
+class UserNote(SqlTable):
+    _table_name = 'user_note'
+    _key = 'id'
+    _create_stmt = """
+    CREATE TABLE IF NOT EXISTS user_note (
+            id INTEGER NOT NULL, 
+            note TEXT, 
+            PRIMARY KEY (id) 
+    )
+    """
+
 class Waypoint(SqlTable):
     _table_name = 'waypoint'
     _key = 'id'
@@ -244,6 +255,7 @@ geocache_tables = (
         DbModel,
         Log,
         LogType,
+        UserNote,
         Waypoint,
         WaypointSym,
         WaypointType)
@@ -254,7 +266,7 @@ def db_model_update(geocache_db):
         if row['version'] != VERSION:
             for cur_version in range(row['version'], VERSION):
                 if cur_version == 1:
-                    pass
+                    bbb = geocache_db.execute(UserNote.create_table())
             geocache_db.update(DbModel, 1, {'version': VERSION})
             geocache_db.commit()
 
