@@ -1,7 +1,7 @@
 from db import SqlTable
 
 RELEASE = 1
-VERSION = 2
+VERSION = 3
 
 class DbModel(SqlTable):
     _table_name = 'db_model'
@@ -57,6 +57,7 @@ class Cache(SqlTable):
             long_desc TEXT, 
             long_html BOOLEAN, 
             name TEXT, 
+            note_present BOOLEAN DEFAULT 0,
             owner_id INTEGER, 
             placed_by TEXT, 
             short_desc TEXT, 
@@ -266,7 +267,10 @@ def db_model_update(geocache_db):
         if row['version'] != VERSION:
             for cur_version in range(row['version'], VERSION):
                 if cur_version == 1:
-                    bbb = geocache_db.execute(UserNote.create_table())
+                    geocache_db.execute(UserNote.create_table())
+                elif cur_version == 2:
+                    geocache_db.execute('ALTER TABLE cache ADD COLUMN note_present BOOLEAN DEFAULT 0')
+
             geocache_db.update(DbModel, 1, {'version': VERSION})
             geocache_db.commit()
 

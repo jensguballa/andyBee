@@ -4,7 +4,7 @@ from flask_restful import Resource, reqparse, request
 from app import app, api, geocache_db
 from marshmallow import Schema, fields
 from gpx import export_gpx, GpxImporter
-from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState, db_model_update
+from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState, UserNote, db_model_update
 from flask import send_from_directory, send_file, Response, make_response
 from app.api import json_to_object
 import time
@@ -85,6 +85,7 @@ class GeocacheBasicSchema(Schema):
     last_updated = fields.Integer()
     lat        = fields.Float()
     lon        = fields.Float()
+    note_present = fields.Boolean()
     orig_lat   = fields.Float()
     orig_lon   = fields.Float()
     owner      = fields.String()
@@ -104,6 +105,7 @@ class GeocacheFullSchema(GeocacheBasicSchema):
     long_html  = fields.Boolean()
     encoded_hints = fields.String()
     logs       = fields.List(fields.Nested(LogSchema))
+    user_note  = fields.String()
     waypoints  = fields.List(fields.Nested(WaypointSchema))
 
 class GeocacheListSchema(Schema):
@@ -153,7 +155,7 @@ class GeocacheListApi(Resource):
                 'placed_by, owner_id, type_id, container_id, terrain, difficulty, ' \
                 'country_id, state_id, last_logs, last_updated, lat, lon, gc_code, url, found, ' \
                 'short_desc, short_html, long_desc, long_html, encoded_hints, ' \
-                'coords_updated, corr_lat, corr_lon, hidden '\
+                'coords_updated, corr_lat, corr_lon, hidden, note_present '\
                 'FROM cache'
         geocaches = [dict(row) for row in geocache_db.execute(stmt)]
 
@@ -214,6 +216,7 @@ class GeocacheApi(Resource):
                 cache.long_html AS long_html,
                 cache.name AS name,
                 cacher.name AS owner,
+                cache.note_present AS note_present,
                 cache.placed_by AS placed_by,
                 cache.short_desc AS short_desc,
                 cache.short_html AS short_html,
@@ -230,6 +233,11 @@ class GeocacheApi(Resource):
                 WHERE cache.id = ?
         '''
         geocache = dict(geocache_db.execute(stmt,(id,)).fetchone())
+
+        user_note = ""
+        if geocache['note_present']:
+            user_note = geocache_db.get_by_id(UserNote, id)['note']
+        geocache['user_note'] = user_note
 
         update_corrected_coordinates(geocache)
         adapt_hidden(geocache)
@@ -309,6 +317,32 @@ class GeocacheUpdateCoordsApi(Resource):
         return {}
 
 api.add_resource(GeocacheUpdateCoordsApi, '/andyBee/api/v1.0/db/<string:db_name>/geocaches/<int:id>/update_coords')
+
+class GeocacheUpdateNoteApi(Resource):
+
+    def post(self, db_name, id):
+        parse = reqparse.RequestParser()
+        parse.add_argument('user_note', type=str, location='json')
+        args = parse.parse_args()
+        user_note = args['user_note']
+        file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
+        if not os.path.isfile(file_path):
+            return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
+        geocache_db.set_db(file_path)
+        res = geocache_db.get_by_id(UserNote, id)
+        if user_note == "":
+            if res is not None:
+                geocache_db.delete(UserNote, id)
+        else:
+            if res is not None:
+                geocache_db.update(UserNote, id, {'note': user_note})
+            else:
+                geocache_db.insert(UserNote, {'id': id, 'note': user_note})
+        geocache_db.update(Cache, id, {'note_present': (res != '')})
+        geocache_db.commit()
+        return {}
+
+api.add_resource(GeocacheUpdateNoteApi, '/andyBee/api/v1.0/db/<string:db_name>/geocaches/<int:id>/update_note')
 
 
 class GpxImportApi(Resource):

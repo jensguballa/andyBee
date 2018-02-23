@@ -28,6 +28,7 @@
             // related to a single geocache
             FAILURE_GEOCACHE_FROM_SERVER:      'Cannot retrieve the details for the selected geocache from the server.',
             FAILURE_GEOCACHE_UPDATE_COORD:     'Cannot update coordinates on the server',
+            FAILURE_GEOCACHE_UPDATE_NOTE:      'Cannot update user note on the server',
 
             // related to filter
             FAILURE_FILTER_FROM_SERVER:        'Cannot retrieve the list of filter from the server.',

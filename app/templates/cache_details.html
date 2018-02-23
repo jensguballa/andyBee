@@ -106,5 +106,14 @@
             </table>
 
         </uib-tab>
+        <uib-tab index="4" heading="User Notes">
+            <div class="form-group">
+                <label>User Note:</label>
+                <textarea class="form-control" rows="10" ng-model="geocache.note" ng-trim="false" ng-change="geocache.note_changed=true" ng-class="{'invalid_input': geocache.note_changed}"></textarea>
+                <button class="btn btn-primary tiny-gap-top" ng-click="geocache.save_note()" ng-disabled="!geocache.note_changed"> Save </button>
+                <button class="btn btn-warning tiny-gap-top" ng-click="geocache.note='';geocache.note_changed=true"> Clear </button>
+                <button class="btn btn-warning tiny-gap-top" ng-click="geocache.note=geocache.serv.detail.user_note;geocache.note_changed=false" ng-disabled="!geocache.note_changed"> Reset </button>
+            </div>
+        </uib-tab>
     </uib-tabset>    
 </div>

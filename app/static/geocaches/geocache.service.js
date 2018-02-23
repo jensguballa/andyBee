@@ -13,6 +13,9 @@
         var rest_upd_coord = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id/update_coords/', null, {
             post: {method: 'POST'}
         });
+        var rest_upd_note = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id/update_note/', null, {
+            post: {method: 'POST'}
+        });
 
         var geocache_list_unfiltered = [];
         var unfiltered_id_to_idx = {};
@@ -43,7 +46,8 @@
             update_coord_dialog: update_coord_dialog,
 
             refreshMap: refreshMap,
-            get_geocache: get_geocache
+            get_geocache: get_geocache,
+            save_note: save_note
 
         };
         return serv;
@@ -265,7 +269,7 @@
                     $rootScope.$broadcast('coordinates_updated', {geocache: geocache});
                 }
 
-                function on_post_error(result) {
+                function on_post_error (result) {
                     LoggingService.log({
                         msg: ERROR.FAILURE_GEOCACHE_UPDATE_COORD,
                         http_response: result, 
@@ -276,16 +280,33 @@
 
         }
 
-        function get_geocache(id) {
+        function get_geocache (id) {
             return geocache_list_unfiltered[unfiltered_id_to_idx[id]]
         }
 
-        function refreshMap() {
+        function refreshMap () {
             leafletData.getMap().then(function(map) {
                 $timeout(function() {
                   map.invalidateSize();
                 }, 0);
             });
+        }
+
+        function save_note (id, note, cb_success) {
+            rest_upd_note.post({db: serv.db_name, geocache_id: id}, {user_note: note}, on_post_response, on_post_error);
+
+            function on_post_response (result) {
+                serv.detail.user_note = note;
+                cb_success();
+            }
+
+            function on_post_error (result) {
+                LoggingService.log({
+                    msg: ERROR.FAILURE_GEOCACHE_UPDATE_NOTE,
+                    http_response: result, 
+                    modal: true
+                });
+            }
         }
 
     }

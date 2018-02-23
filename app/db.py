@@ -134,6 +134,9 @@ class Db(object):
         vs.append(key)
         self.execute('UPDATE ' + cls._table_name + ' SET ' + ','.join(ks) + ' WHERE ' + cls._key + ' = ?', tuple(vs))
 
+    def delete(self, cls, id):
+        self.execute('DELETE FROM ' + cls._table_name + ' WHERE ' + cls._key + ' = ?', (id,))
+
     def debug(self):
         ''' 
         Scratch method for debug purposes
