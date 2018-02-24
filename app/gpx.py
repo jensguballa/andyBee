@@ -136,7 +136,15 @@ def geocache_to_xml(parent, geocache, data):
         if geocache.long_html:
             orig_coords_txt = '<p>' + orig_coords_txt + '</p>'
 
-    subnode(cache_node, GS+"long_description", text=geocache.long_desc + orig_coords_txt,
+    user_note = ''
+    if geocache.note_present:
+        note = geocache_db.session.query(UserNote).get(geocache.id)
+        user_note = note.note
+        if geocache.long_html:
+            user_note = '<pre>' + user_note + '</pre>'
+
+
+    subnode(cache_node, GS+"long_description", text=geocache.long_desc + orig_coords_txt + user_note,
             attrib={'html': "True" if geocache.long_html else "False"})
     subnode(cache_node, GS+"encoded_hints", text=geocache.encoded_hints)
     if len(geocache.logs) and (data['max_logs'] > 0):
