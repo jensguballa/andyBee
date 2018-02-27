@@ -5,6 +5,7 @@ from app import app, api, geocache_db
 from marshmallow import Schema, fields
 from gpx import export_gpx, GpxImporter
 from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState, UserNote, db_model_update
+from geocache import Geocache, GeocacheList
 from flask import send_from_directory, send_file, Response, make_response
 from app.api import json_to_object
 import time
@@ -131,47 +132,11 @@ class GeocacheListApi(Resource):
 
         db_model_update(geocache_db)
 
-        owners = {}
-        for row in geocache_db.execute('SELECT * from cacher'):
-            owners[row['id']] = row['name']
-        
-        types = {}
-        for row in geocache_db.execute('SELECT * from cache_type'):
-            types[row['id']] = row['name']
-
-        containers = {}
-        for row in geocache_db.execute('SELECT * from cache_container'):
-            containers[row['id']] = row['name']
-
-        countries = {}
-        for row in geocache_db.execute('SELECT * from cache_country'):
-            countries[row['id']] = row['name']
-
-        states = {}
-        for row in geocache_db.execute('SELECT * from cache_state'):
-            states[row['id']] = row['name']
-
-        stmt = 'SELECT id, available, archived, name, ' \
-                'placed_by, owner_id, type_id, container_id, terrain, difficulty, ' \
-                'country_id, state_id, last_logs, last_updated, lat, lon, gc_code, url, found, ' \
-                'short_desc, short_html, long_desc, long_html, encoded_hints, ' \
-                'coords_updated, corr_lat, corr_lon, hidden, note_present '\
-                'FROM cache'
-        geocaches = [dict(row) for row in geocache_db.execute(stmt)]
-
-        for row in geocaches:
-            update_corrected_coordinates(row)
-            adapt_hidden(row)
-            row['owner'] = owners[row['owner_id']]
-            row['type'] = types[row['type_id']]
-            row['container'] = containers[row['container_id']]
-            row['country'] = countries[row['country_id']]
-            row['state'] = states[row['state_id']]
+        geocaches = GeocacheList(geocache_db).get_data_for_rest_itf()
 
         data, errors = GeocacheListSchema().dump({
             'geocaches': geocaches,
             'db_name': db_name,
-            #'nbr_caches': geocache_db.session.query(func.count(Cache.id)).scalar()
             'nbr_caches': len(geocaches)
             })
         if errors:
@@ -192,100 +157,9 @@ class GeocacheApi(Resource):
         file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
         if not os.path.isfile(file_path):
             return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
-        geocache_db.set_db(file_path)
-
-        stmt = '''SELECT 
-                cache.id AS id,
-                cache.archived AS archived,
-                cache.available AS available,
-                cache_container.name AS container,
-                cache.coords_updated AS coords_updated,
-                cache.corr_lat AS corr_lat,
-                cache.corr_lon AS corr_lon,
-                cache_country.name AS country,
-                cache.difficulty AS difficulty,
-                cache.encoded_hints AS encoded_hints,
-                cache.found AS found,
-                cache.gc_code AS gc_code,
-                cache.hidden AS hidden,
-                cache.last_logs AS last_logs,
-                cache.last_updated AS last_updated,
-                cache.lat AS lat,
-                cache.lon AS lon,
-                cache.long_desc AS long_desc,
-                cache.long_html AS long_html,
-                cache.name AS name,
-                cacher.name AS owner,
-                cache.note_present AS note_present,
-                cache.placed_by AS placed_by,
-                cache.short_desc AS short_desc,
-                cache.short_html AS short_html,
-                cache_state.name AS state,
-                cache.terrain AS terrain,
-                cache_type.name AS type,
-                cache.url AS url
-                FROM cache
-                INNER JOIN cache_container ON cache_container.id = cache.container_id
-                INNER JOIN cache_country ON cache_country.id = cache.country_id
-                INNER JOIN cacher ON cacher.id = cache.owner_id
-                INNER JOIN cache_state ON cache_state.id = cache.state_id
-                INNER JOIN cache_type ON cache_type.id = cache.type_id
-                WHERE cache.id = ?
-        '''
-        geocache = dict(geocache_db.execute(stmt,(id,)).fetchone())
-
-        user_note = ""
-        if geocache['note_present']:
-            user_note = geocache_db.get_by_id(UserNote, id)['note']
-        geocache['user_note'] = user_note
-
-        update_corrected_coordinates(geocache)
-        adapt_hidden(geocache)
-
-        stmt = '''SELECT
-                attribute.inc AS inc,
-                attribute.name AS name
-                FROM cache_to_attribute
-                INNER JOIN attribute ON attribute.id = cache_to_attribute.attribute_id
-                WHERE cache_to_attribute.cache_id = ?
-                '''
-        geocache['attributes'] = [dict(row) for row in geocache_db.execute(stmt, (id,))]
-
-        stmt = '''SELECT
-                log.date AS date,
-                cacher.name AS finder,
-                log.lat AS lat,
-                log.lon AS lon,
-                log.text AS text,
-                log.text_encoded AS text_encoded,
-                log_type.name AS type
-                FROM log
-                INNER JOIN cacher ON cacher.id = log.finder_id
-                INNER JOIN log_type ON log_type.id = log.type_id
-                WHERE log.cache_id = ?
-                '''
-        geocache['logs'] = [dict(row) for row in geocache_db.execute(stmt, (id,))]
-
-        stmt = '''SELECT
-                waypoint.lat AS lat,
-                waypoint.lon AS lon, 
-                waypoint.time AS time, 
-                waypoint.name AS name, 
-                waypoint.descr AS descr, 
-                waypoint.url AS url, 
-                waypoint.urlname AS urlname,
-                waypoint_sym.name AS sym,
-                waypoint_type.name AS type,
-                waypoint.cmt AS cmt
-                FROM waypoint
-                INNER JOIN waypoint_sym ON waypoint_sym.id = waypoint.sym_id
-                INNER JOIN waypoint_type ON waypoint_type.id = waypoint.type_id
-                WHERE cache_id = ? AND waypoint.name != waypoint.gc_code
-                '''
-        geocache['waypoints'] = [dict(row) for row in geocache_db.execute(stmt, (id,))]
 
         data, errors = GeocacheSingleSchema().dump({
-            'geocache': geocache
+            'geocache': Geocache(id, geocache_db).get_data_for_rest_itf()
         })
         if errors:
             errors['msg'] = 'Internal error, could not dump geocache data.'
@@ -322,7 +196,7 @@ class GeocacheUpdateNoteApi(Resource):
 
     def post(self, db_name, id):
         parse = reqparse.RequestParser()
-        parse.add_argument('user_note', type=str, location='json')
+        parse.add_argument('user_note', type=unicode, location='json')
         args = parse.parse_args()
         user_note = args['user_note']
         file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
@@ -376,7 +250,7 @@ class GpxExportApi(Resource):
         file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
         if not os.path.isfile(file_path):
             return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
-        geocache_db.set_db(app.config['CACHE_URI_PREFIX'] + file_path)
+        geocache_db.set_db(file_path)
 
         obj, status_code = json_to_object(GeocacheExportSchema())
         if status_code != 200:

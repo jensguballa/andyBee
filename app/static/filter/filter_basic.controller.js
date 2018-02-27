@@ -250,9 +250,9 @@
             vm.owned = true;
             vm.owned_active = false;
             vm.country = "";
-//            vm.country_active = false;
+            vm.country_active = false;
             vm.state = "";
-//            vm.state_active = false;
+            vm.state_active = false;
             vm.owner_active = false;
             vm.owner = "";
             vm.placed_active = false;
@@ -373,7 +373,7 @@
         }
 
         function is_country_applicable () {
-            return (vm.country != "");
+            return (vm.country_active && vm.country != "");
         }
 
         function is_owner_applicable () {
@@ -385,7 +385,7 @@
         }
 
         function is_state_applicable () {
-            return (vm.state != "");
+            return (vm.state_active && vm.state != "");
         }
 
         function is_distance_applicable () {
@@ -503,13 +503,13 @@
         }
 
         function map_country_to_vm (filter_atom) {
-//            vm.country_active = true;
+            vm.country_active = true;
             GeocacheService.add_country(filter_atom.value);
             vm.country = filter_atom.value;
         }
 
         function map_state_to_vm (filter_atom) {
-//            vm.state_active = true;
+            vm.state_active = true;
             GeocacheService.add_state(filter_atom.value);
             vm.state = filter_atom.value;
         }

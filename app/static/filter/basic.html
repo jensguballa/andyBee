@@ -212,26 +212,23 @@
         <div uib-accordion-group class="panel-default">
             <uib-accordion-heading><span ng-class="{'bold': basic.changed_2}">Placement, Location</span></uib-accordion-heading>
             <div class="form-group">
-                <div class="row">
-                    <div class="col-xs-2">
-                        <label>Country</label>
-                    </div>
-                    <div class="form-inline col-xs-10">
-                        <select ng-model="basic.country" ng-options="country for country in basic.countries" ng-change="basic.on_changed_2()" class="form-control"></select>
-                    </div>
+                <div>
+                    <input type="checkbox" ng-model="basic.country_active" ng-change="basic.on_changed_2()">
+                    <label> Country</label>
+                </div>
+                <div class="form-indent form-inline">
+                    <select ng-model="basic.country" ng-options="country for country in basic.countries" ng-change="basic.on_changed_2()" ng-disabled="!basic.country_active" class="form-control"></select>
                 </div>
             </div>
             <div class="form-group">
-                <div class="row">
-                    <div class="col-xs-2">
-                        <label>State</label>
-                    </div>
-                    <div class="form-inline col-xs-10">
-                        <select ng-model="basic.state" ng-options="state for state in basic.states" ng-change="basic.on_changed_2()" class="form-control" ></select>
-                    </div>
+                <div>
+                    <input type="checkbox" ng-model="basic.state_active" ng-change="basic.on_changed_2()">
+                    <label> State</label>
+                </div>
+                <div class="form-indent form-inline">
+                    <select ng-model="basic.state" ng-options="state for state in basic.states" ng-change="basic.on_changed_2()" ng-disabled="!basic.state_active" class="form-control" ></select>
                 </div>
             </div>
-
             <div class="form-group">
                 <div>
                     <input type="checkbox" ng-model="basic.owner_active" ng-change="basic.on_changed_2()">

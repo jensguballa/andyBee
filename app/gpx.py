@@ -1,6 +1,7 @@
 from lxml import etree
 from app import geocache_db
-from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState, CacheToAttribute, Waypoint, WaypointSym, WaypointType, Log, LogType, Attribute
+from geocache_model_sql import Cache, Cacher, CacheType, CacheContainer, CacheCountry, CacheState, CacheToAttribute, Waypoint, WaypointSym, WaypointType, Log, LogType, Attribute, UserNote
+from geocache import Geocache
 from db import DbInterface
 import re
 import datetime
@@ -23,10 +24,6 @@ lonmax = 0
 deleted_wpt = {}
 log_pool = {}
 cacher_pool = None
-
-max_logs = 5
-pref_owner = 'bauchansatz'
-pref_owner_id = 0
 
 #class LogTypePool():
 #
@@ -81,86 +78,90 @@ def coords_to_string(coord, str1, str2):
     string += ' ' + str(degrees) + ' ' + '%.3f' % ((coord - degrees) * 60)
     return string
 
-def wpt_to_xml(parent, geocache, data):
-    waypoint = geocache.waypoint
-    if geocache.coords_updated:
-        lat = geocache.corr_lat
-        lon = geocache.corr_lon
-    else:
-        lat = waypoint.lat
-        lon = waypoint.lon
+def wpt_to_xml(parent, waypoint, geocache, data):
+    w_wpt = None
+    lat = waypoint['lat']
+    lon = waypoint['lon']
+    if waypoint['name'] == waypoint['gc_code']:
+        if geocache['coords_updated']:
+            lat = geocache['corr_lat']
+            lon = geocache['corr_lon']
     data['latmin'] = min(data['latmin'], lat)
     data['latmax'] = max(data['latmax'], lat)
     data['lonmin'] = min(data['lonmin'], lon)
     data['lonmax'] = max(data['lonmax'], lon)
     w_wpt = subnode(parent, GPX+"wpt", attrib={'lat': str(lat), 'lon': str(lon)})
-    subnode(w_wpt, GPX+"time", text=waypoint.time)
-    subnode(w_wpt, GPX+"name", text=waypoint.name)
-    subnode(w_wpt, GPX+"cmt", text=waypoint.cmt)
-    subnode(w_wpt, GPX+"desc", text=waypoint.desc)
-    subnode(w_wpt, GPX+"url", text=waypoint.url)
-    subnode(w_wpt, GPX+"urlname", text=waypoint.urlname)
-    subnode(w_wpt, GPX+"sym", text=waypoint.sym.name)
-    subnode(w_wpt, GPX+"type", text=waypoint.type.name)
+    subnode(w_wpt, GPX+"time", text=waypoint['time'])
+    subnode(w_wpt, GPX+"name", text=waypoint['name'])
+    subnode(w_wpt, GPX+"cmt", text=waypoint['cmt'])
+    subnode(w_wpt, GPX+"desc", text=waypoint['descr'])
+    subnode(w_wpt, GPX+"url", text=waypoint['url'])
+    subnode(w_wpt, GPX+"urlname", text=waypoint['urlname'])
+    subnode(w_wpt, GPX+"sym", text=waypoint['sym'])
+    subnode(w_wpt, GPX+"type", text=waypoint['type'])
     return w_wpt
 
 def geocache_to_xml(parent, geocache, data):
-    wpt_node = wpt_to_xml(parent, geocache, data)
+    wpt_node = None
+    print "DB01", geocache['waypoints']
+    for waypoint in geocache['waypoints']:
+        if waypoint['name'] == waypoint['gc_code']:
+            wpt_node = wpt_to_xml(parent, waypoint, geocache, data)
+
     cache_node = subnode(wpt_node, GS+"cache", nsmap={'groundspeak':GS_NS}, 
             attrib={
-                'id': str(geocache.id),
-                'available': "True" if geocache.available else "False",
-                'archived': "True" if geocache.archived else "False"})
-    subnode(cache_node, GS+"name", text=geocache.name)
-    subnode(cache_node, GS+"placed_by", text=geocache.placed_by)
-    subnode(cache_node, GS+"owner", text=geocache.owner.name, attrib={'id': str(geocache.owner_id)})
-    subnode(cache_node, GS+"type", text=geocache.type.name)
-    subnode(cache_node, GS+"container", text=geocache.container.name)
-    if len(geocache.attributes):
+                'id': str(geocache['id']),
+                'available': "True" if geocache['available'] else "False",
+                'archived': "True" if geocache['archived'] else "False"})
+    subnode(cache_node, GS+"name", text=geocache['name'])
+    subnode(cache_node, GS+"placed_by", text=geocache['placed_by'])
+    subnode(cache_node, GS+"owner", text=geocache['owner'], attrib={'id': str(geocache['owner_id'])})
+    subnode(cache_node, GS+"type", text=geocache['type'])
+    subnode(cache_node, GS+"container", text=geocache['container'])
+    if len(geocache['attributes']):
         attr_node = subnode(cache_node, GS+"attributes")
-        for attribute in geocache.attributes:
-            subnode(attr_node, GS+"attribute", text=attribute.name, 
+        for attribute in geocache['attributes']:
+            subnode(attr_node, GS+"attribute", text=attribute['name'], 
                     attrib={
-                        'id': str(attribute.gc_id),
-                        'inc': "1" if attribute.inc else "0"})
-    subnode(cache_node, GS+"difficulty", text=re.sub('\.0','', str(geocache.difficulty)))
-    subnode(cache_node, GS+"terrain", text=re.sub('\.0','',str(geocache.terrain)))
-    subnode(cache_node, GS+"country", text=geocache.country.name)
-    subnode(cache_node, GS+"state", text=geocache.state.name)
-    subnode(cache_node, GS+"short_description", text=geocache.short_desc,
-            attrib={'html': "True" if geocache.short_html else "False"})
+                        'id': str(attribute['gc_id']),
+                        'inc': "1" if attribute['inc'] else "0"})
+    subnode(cache_node, GS+"difficulty", text=re.sub('\.0','', str(geocache['difficulty'])))
+    subnode(cache_node, GS+"terrain", text=re.sub('\.0','',str(geocache['terrain'])))
+    subnode(cache_node, GS+"country", text=geocache['country'])
+    subnode(cache_node, GS+"state", text=geocache['state'])
+    subnode(cache_node, GS+"short_description", text=geocache['short_desc'],
+            attrib={'html': "True" if geocache['short_html'] else "False"})
 
     orig_coords_txt = ''
-    if geocache.update_coords:
-        orig_coords_txt = 'Original coordinates: ' + coords_to_string(geocache.lat, 'N', 'S') + ' ' + coords_to_string(geocache.lon, 'E', 'W')
-        if geocache.long_html:
+    if geocache['coords_updated']:
+        orig_coords_txt = 'Original coordinates: ' + coords_to_string(geocache['lat'], 'N', 'S') + ' ' + coords_to_string(geocache['lon'], 'E', 'W')
+        if geocache['long_html']:
             orig_coords_txt = '<p>' + orig_coords_txt + '</p>'
 
     user_note = ''
-    if geocache.note_present:
-        note = geocache_db.session.query(UserNote).get(geocache.id)
-        user_note = note.note
-        if geocache.long_html:
-            user_note = '<pre>' + user_note + '</pre>'
+    if geocache['note_present']:
+        note = geocache_db.get_by_id(UserNote, geocache['id'])
+        user_note = note['note']
+        if geocache['long_html']:
+            user_note = '<div>' + user_note.replace("\n", "<br />") + '</div>'
 
 
-    subnode(cache_node, GS+"long_description", text=geocache.long_desc + orig_coords_txt + user_note,
-            attrib={'html': "True" if geocache.long_html else "False"})
-    subnode(cache_node, GS+"encoded_hints", text=geocache.encoded_hints)
-    if len(geocache.logs) and (data['max_logs'] > 0):
-        sort_logs = sorted(geocache.logs, key=lambda log: log.date)
+    subnode(cache_node, GS+"long_description", text=geocache['long_desc'] + orig_coords_txt + user_note,
+            attrib={'html': "True" if geocache['long_html'] else "False"})
+    subnode(cache_node, GS+"encoded_hints", text=geocache['encoded_hints'])
+    if len(geocache['logs']) and (data['max_logs'] > 0):
+        sort_logs = sorted(geocache['logs'], key=lambda log: log['date'])
         logs_node = subnode(cache_node, GS+"logs")
         for log in sort_logs[0:data['max_logs']]:
-            log_node = subnode(logs_node, GS+"log", attrib={'id': str(log.id)})
-            subnode(log_node, GS+"date", text=log.date)
-            subnode(log_node, GS+"type", text=log.type.name)
-            subnode(log_node, GS+"finder", text=log.finder.name, attrib={'id': str(log.finder_id)})
-            subnode(log_node, GS+"text", text=log.text, attrib={'encoded': 'True' if log.text_encoded else 'False'})
+            log_node = subnode(logs_node, GS+"log", attrib={'id': str(log['id'])})
+            subnode(log_node, GS+"date", text=log['date'])
+            subnode(log_node, GS+"type", text=log['type'])
+            subnode(log_node, GS+"finder", text=log['finder'], attrib={'id': str(log['finder_id'])})
+            subnode(log_node, GS+"text", text=log['text'], attrib={'encoded': 'True' if log['text_encoded'] else 'False'})
     if data['waypoints']:
-        wpts = geocache_db.session.query(Waypoint).filter_by(gc_code=geocache.waypoint.name).all()
-        for wpt in wpts:
-            if wpt.cache_id is None:
-                wpt_to_xml(parent, wpt, data)
+        for waypoint in geocache['waypoints']:
+            if waypoint['name'] == waypoint['gc_code']:
+                wpt_to_xml(parent, waypoint, geocache, data)
 
 
 def subnode(parent, tag_name, text=None, attrib=None, nsmap=None):
@@ -184,10 +185,10 @@ def export_gpx(data):
     root.attrib["creator"] = "geodb, all rights reserved"
     root.attrib[XSI+"schemaLocation"] = "{} {}/gpx.xsd {} {}/cache.xsd".format(GPX_NS,GPX_NS,GS_NS,GS_NS)
 
-    subnode(root, GPX+"name"   , text="Cache Listing Generated by andiBee")                        
-    subnode(root, GPX+"desc"   , text="This is an individual list of geocaches generated by andiBee.")
-    subnode(root, GPX+"author" , text="Hi, that's me: Jens Guballa")                             
-    subnode(root, GPX+"email"  , text="andiBee@guballa.de")                                        
+    subnode(root, GPX+"name"   , text="Cache Listing Generated by andyBee")                        
+    subnode(root, GPX+"desc"   , text="This is an individual list of geocaches generated by andyBee.")
+    subnode(root, GPX+"author" , text="Hi, it's me: Jens Guballa")                             
+    subnode(root, GPX+"email"  , text="andyBee@guballa.de")                                        
     subnode(root, GPX+"url"    , text="http://www.guballa.de")                                   
     subnode(root, GPX+"urlname", text="Geocaching. What else?")                                  
     subnode(root, GPX+"time"   , text=datetime.datetime.now().isoformat())                       
@@ -195,8 +196,8 @@ def export_gpx(data):
     bounds = subnode(root, GPX+"bounds")                                                                  
 
     for id in data['list']:
-        geocache = geocache_db.session.query(Cache).get(id)
-        geocache_to_xml(root, geocache, data)
+        geocache = Geocache(id, geocache_db).fetch_singular()
+        geocache_to_xml(root, geocache.get_data(), data)
 
     bounds.attrib['minlat'] = str(data['latmin'])
     bounds.attrib['minlon'] = str(data['lonmin'])
@@ -232,7 +233,6 @@ class GpxImporter():
             start = time.time()
             tree = etree.parse(gpx_file)
             end = time.time()
-            print("DB01: ", end - start)
         except:
             return
         gpx = tree.getroot()
@@ -382,9 +382,12 @@ class GpxImporter():
         #cache_exists = geocache_db.get_singleton_id(Cache, {'gc_code': gc_code}) != None
         cache_exists = self.cache_itf.get_id('gc_code', gc_code) != None
         if cache_exists:
-            if gc_code not in self.deleted_wpt:
-                self.waypoint_itf.delete('gc_code', gc_code)
-                self.deleted_wpt[gc_code] = True
+            if gc_code == wpt.db['name']: # waypoint for the cache itself
+                geocache_db.execute('DELETE FROM waypoint WHERE gc_code = ? AND name = ?', (gc_code, gc_code))
+            else: # additional waypoint
+                if gc_code not in self.deleted_wpt:
+                    geocache_db.execute('DELETE FROM waypoint WHERE gc_code = ? AND name != ?', (gc_code, gc_code))
+                    self.deleted_wpt[gc_code] = True
         self.waypoint_itf.insert(wpt.db)
         if wpt.cache is not None:
             self._merge_cache(wpt.cache, cache_exists)
