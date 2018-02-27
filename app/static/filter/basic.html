@@ -111,7 +111,7 @@
                 
         </div>
         <div uib-accordion-group class="panel-default">
-            <uib-accordion-heading><span ng-class="{'bold': basic.changed_1}">Container, Description, Title, Status</span></uib-accordion-heading>
+            <uib-accordion-heading><span ng-class="{'bold': basic.changed_1}">Container, Title, Description, Status</span></uib-accordion-heading>
             <div class="form-group">
                 <div>
                     <input type="checkbox" ng-model="basic.container_active" ng-change="basic.on_changed_1()">
@@ -208,27 +208,22 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group">
+                <div>
+                    <input type="checkbox" ng-model="basic.age_active" ng-change="basic.on_changed_1()">
+                    <label> Last update</label>
+                </div>
+                <div class="form-indent form-inline" ng-class="{'text-muted': !basic.age_active}">
+                    <select class="form-control" ng-model="basic.age_cond" ng-disabled="!basic.age_active" ng-change="basic.on_changed_1()">
+                        <option value="lt">less than</option>
+                        <option value="gt">more than</option>
+                    </select>
+                    <input type="text" class="form-control" ng-model="basic.age" ng-change="basic.validate_age(); basic.on_changed_1()" ng-class="{'invalid_input': basic.age_invalid}" ng-disabled="!basic.age_active"> days ago
+                </div>
+            </div>
         </div>
         <div uib-accordion-group class="panel-default">
-            <uib-accordion-heading><span ng-class="{'bold': basic.changed_2}">Placement, Location</span></uib-accordion-heading>
-            <div class="form-group">
-                <div>
-                    <input type="checkbox" ng-model="basic.country_active" ng-change="basic.on_changed_2()">
-                    <label> Country</label>
-                </div>
-                <div class="form-indent form-inline">
-                    <select ng-model="basic.country" ng-options="country for country in basic.countries" ng-change="basic.on_changed_2()" ng-disabled="!basic.country_active" class="form-control"></select>
-                </div>
-            </div>
-            <div class="form-group">
-                <div>
-                    <input type="checkbox" ng-model="basic.state_active" ng-change="basic.on_changed_2()">
-                    <label> State</label>
-                </div>
-                <div class="form-indent form-inline">
-                    <select ng-model="basic.state" ng-options="state for state in basic.states" ng-change="basic.on_changed_2()" ng-disabled="!basic.state_active" class="form-control" ></select>
-                </div>
-            </div>
+            <uib-accordion-heading><span ng-class="{'bold': basic.changed_2}">Owner, Placement, Location</span></uib-accordion-heading>
             <div class="form-group">
                 <div>
                     <input type="checkbox" ng-model="basic.owner_active" ng-change="basic.on_changed_2()">
@@ -270,9 +265,27 @@
                     <input type="text" class="form-control" ng-model="basic.distance" ng-change="basic.validate_distance(); basic.on_changed_2()" ng-class="{'invalid_input': basic.distance_invalid}" ng-disabled="!basic.distance_active"> km
                 </div>
             </div>
+            <div class="form-group">
+                <div>
+                    <input type="checkbox" ng-model="basic.country_active" ng-change="basic.on_changed_2()">
+                    <label> Country</label>
+                </div>
+                <div class="form-indent form-inline">
+                    <select ng-model="basic.country" ng-options="country for country in basic.countries" ng-change="basic.on_changed_2()" ng-disabled="!basic.country_active" class="form-control"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <input type="checkbox" ng-model="basic.state_active" ng-change="basic.on_changed_2()">
+                    <label> State</label>
+                </div>
+                <div class="form-indent form-inline">
+                    <select ng-model="basic.state" ng-options="state for state in basic.states" ng-change="basic.on_changed_2()" ng-disabled="!basic.state_active" class="form-control" ></select>
+                </div>
+            </div>
         </div>
         <div uib-accordion-group class="panel-default">
-            <uib-accordion-heading><span ng-class="{'bold': basic.changed_3}">Notes, User Data, Waypoints, Corrected</span></uib-accordion-heading>
+            <uib-accordion-heading><span ng-class="{'bold': basic.changed_3}">Corrected Coordinates, User Notes</span></uib-accordion-heading>
             <div class="form-group">
                 <div>
                     <input type="checkbox" ng-model="basic.corrected_active" ng-change="basic.on_changed_3()">
@@ -285,6 +298,27 @@
                     </form>
                 </div>
             </div>
+            <div class="form-group">
+                <div>
+                    <input type="checkbox" ng-model="basic.user_note_active" ng-change="basic.on_changed_3()">
+                    <label> User notes</label>
+                </div>
+                <div class="form-indent" ng-class="{'text-muted': !basic.user_note_active}">
+                    <form>
+                        <label><input type="radio" ng-model="basic.user_note" ng-value="false"  ng-disabled="!basic.user_note_active" /> Cache does not have user notes</label><br/>
+                        <label><input type="radio" ng-model="basic.user_note" ng-value="true" ng-disabled="!basic.user_note_active" /> Cache has user notes</label><br/>
+                    </form>
+                    <div class="form-indent" ng-class="{'text-muted': !basic.user_note}">
+                        <input type="checkbox" ng-model="basic.user_note_search_active" ng-disabled="!basic.user_note_active || !basic.user_note">
+                        <label> User note contains the following text:</label>
+                        <div class="form-indent" ng-class="{'text-muted': !basic.user_note_active || !basic.user_note || !basic.user_note_search_active}">
+                            <input type="text" class="form-control" ng-model="basic.user_note_search" ng-disabled="!basic.user_note_active || !basic.user_note || !basic.user_note_search_active">
+                            <input type="checkbox" ng-model="basic.user_note_case" ng-disabled="!basic.user_note_active || !basic.user_note || !basic.user_note_search_active">
+                            <label>case-sensitive</label>
+                        </div>  
+                    </div>
+                </div>
+            </div>
         </div>
         <div uib-accordion-group class="panel-default">
             <uib-accordion-heading><span ng-class="{'bold': basic.changed_4}">Attributes</span></uib-accordion-heading>
@@ -295,22 +329,6 @@
                 </div>
                 <div class="form-indent" ng-class="{'dimmed': !basic.attributes_active}">
                     <img class="attr_detail" ng-repeat="attr in basic.attributes" ng-src="{{attr.src}}" ng-click="basic.attribute_clicked($index); basic.on_changed_4()" title="{{attr.string}}" />
-                </div>
-            </div>
-        </div>
-        <div uib-accordion-group class="panel-default">
-            <uib-accordion-heading><span ng-class="{'bold': basic.changed_5}">Updated, Found</span></uib-accordion-heading>
-            <div class="form-group">
-                <div>
-                    <input type="checkbox" ng-model="basic.age_active" ng-change="basic.on_changed_5()">
-                    <label> Last update</label>
-                </div>
-                <div class="form-indent form-inline" ng-class="{'text-muted': !basic.age_active}">
-                    <select class="form-control" ng-model="basic.age_cond" ng-disabled="!basic.age_active" ng-change="basic.on_changed_5()">
-                        <option value="lt">less than</option>
-                        <option value="gt">more than</option>
-                    </select>
-                    <input type="text" class="form-control" ng-model="basic.age" ng-change="basic.validate_age(); basic.on_changed_5()" ng-class="{'invalid_input': basic.age_invalid}" ng-disabled="!basic.age_active"> days ago
                 </div>
             </div>
         </div>

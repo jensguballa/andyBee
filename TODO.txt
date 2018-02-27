@@ -2,11 +2,6 @@ TODO list, backlog.
 
 Most important item comes first. Hm, not really.
 
-    o Filter: The settings for the default filter should not
-      be reset when called another time
-    o Filter: a Reset-to-default button
-    o Manage-Filter: reapply the current filter after the modal
-      is closed
     o Manage-Filter: Confirmation dialog for delete operation
     o Import of GPX-files
       - allow a "merge"- and a replace mode
@@ -26,11 +21,6 @@ Most important item comes first. Hm, not really.
     o Use https for map tiles
     o Add more info logs, e.g. when reading a DB, exporting, etc
     o Catch exceptions in case DB-access fails
-    o Implement DB-upgrade into the app
     o Maintenance for DB, e.g. check for dead entries, "compress" DB
-    o Special fields per geocache:
-      - date of last update (used to cleanup the DB)
     o Waypoint not yet treated at all
-    o Support user defined notes per geocache
-    o Map: provide more indications per geocache, e.g. found, owned, disabled 
     o Add a route planer, e.g. by selecting dedicated geocaches

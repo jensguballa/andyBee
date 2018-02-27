@@ -278,6 +278,14 @@ class FilterConditionApi(Resource):
         rows = geocache_db.execute('SELECT id FROM cache WHERE long_desc REGEXP ? OR short_desc REGEXP ?', (search_for, search_for))
         return rows
 
+    def filter_on_note(self, condition):
+        search_for = condition['value']
+        if condition['op'] == 'search':
+            search_for = '(?i)' + search_for
+        rows = geocache_db.execute('SELECT id FROM user_note WHERE note REGEXP ?', (search_for,))
+        return rows
+
+
     def filter_on_attributes(self, condition):
         txt_to_attr = {}
         for attribute in geocache_db.execute('SELECT id, inc, name FROM attribute'):
@@ -309,6 +317,10 @@ class FilterConditionApi(Resource):
             rows = self.filter_on_description(obj)
         elif obj['property'] == 'attributes':
             rows = self.filter_on_attributes(obj)
+        elif obj['property'] == 'note_search':
+            rows = self.filter_on_note(obj)
+        else:
+            return {'msg': 'Cannot filter on property "{}".'.format(obj['property'])}, 422 # unprocessable entity
 
         filtered_list = []
         for row in rows:

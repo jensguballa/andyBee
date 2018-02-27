@@ -64,7 +64,9 @@
             distance: int_prop_to_condition,
             coords_updated: bool_prop_to_condition,
             age: int_prop_to_condition,
-            attributes: filter_on_server_to_condition
+            attributes: filter_on_server_to_condition,
+            note_present: bool_prop_to_condition,
+            note_search: filter_on_server_to_condition
         };
 
         var op_to_func_map = {

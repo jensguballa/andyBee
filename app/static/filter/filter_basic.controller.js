@@ -23,7 +23,6 @@
         vm.on_changed_2 = on_changed_2;
         vm.on_changed_3 = on_changed_3;
         vm.on_changed_4 = on_changed_4;
-        vm.on_changed_5 = on_changed_5;
 
         vm.filter_list = [];
         vm.select = -1;
@@ -48,7 +47,9 @@
             distance: map_distance_to_vm,
             coords_updated: map_coords_updated_to_vm,
             age: map_age_to_vm,
-            attributes: map_attributes_to_vm
+            attributes: map_attributes_to_vm,
+            note_present: map_note_present_to_vm,
+            note_search: map_note_search_to_vm
         }
 
         vm.scratch_name = FilterService.scratch_filter.name;
@@ -160,7 +161,7 @@
             if (is_age_applicable()) {
                 ret_filter.filter_atoms.push({name: "age", op: vm.age_cond, value: vm.age.toString()});
             }
-            if (vm.attributes_active) {
+            if (is_attribute_applicable()) {
                 var arr = [];
                 for (var i = 0, len = vm.attributes.length; i < len; i++) {
                     var attr = vm.attributes[i];
@@ -170,6 +171,12 @@
                 }
                 if (arr.length > 0) {
                     ret_filter.filter_atoms.push({name: "attributes", op: "set", value: arr.join(',')});
+                }
+            }
+            if (is_user_note_applicable()) {
+                ret_filter.filter_atoms.push({name: "note_present", op: "eq", value: vm.user_note.toString()});
+                if (vm.user_note && vm.user_note_search) {
+                    ret_filter.filter_atoms.push({name: "note_search", op: vm.user_note_case ? "search_case" : "search", value: vm.user_note_search});
                 }
             }
             $uibModalInstance.close(ret_filter);
@@ -271,6 +278,12 @@
             vm.age = "0";
             vm.age_invalid = false;
 
+            vm.user_note_active = false;
+            vm.user_note = false;
+            vm.user_note_search_active = false;
+            vm.user_note_search = "";
+            vm.user_note_case = false;
+
             vm.attributes_active = false;
             vm.attributes = [];
             var attr_str = Functions.get_attributes();
@@ -314,7 +327,6 @@
             on_changed_2();
             on_changed_3();
             on_changed_4();
-            on_changed_5();
 
         }
 
@@ -412,6 +424,10 @@
             return false;
         }
 
+        function is_user_note_applicable () {
+            return vm.user_note_active;
+        }
+
         function on_changed_0 () {
             vm.changed_0 = is_terr_applicable() || is_diff_applicable() || is_type_applicable();
         }
@@ -424,7 +440,8 @@
                 is_available_applicable() || 
                 is_archived_applicable() || 
                 is_found_applicable() || 
-                is_owned_applicable();
+                is_owned_applicable() ||
+                is_age_applicable();
         }
 
         function on_changed_2 () {
@@ -432,15 +449,11 @@
         }
 
         function on_changed_3 () {
-            vm.changed_3 = is_corrected_applicable();
+            vm.changed_3 = is_corrected_applicable() || is_user_note_applicable();
         }
 
         function on_changed_4 () {
             vm.changed_4 = is_attribute_applicable();
-        }
-
-        function on_changed_5 () {
-            vm.changed_5 = is_age_applicable();
         }
 
         function map_diff_to_vm (filter_atom) {
@@ -565,6 +578,17 @@
                     }
                 }
             }
+        }
+
+        function map_note_present_to_vm (filter_atom) {
+            vm.user_note_active = true;
+            vm.user_note = (filter_atom.value == "true");
+        }
+
+        function map_note_search_to_vm (filter_atom) {
+            vm.user_note_search_active = true;
+            vm.user_note_search = filter_atom.value;
+            vm.user_note_case = (filter_atom.op == "search_case");
         }
 
     }
