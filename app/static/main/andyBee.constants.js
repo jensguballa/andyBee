@@ -24,6 +24,7 @@
            
             // related to the list of geocaches
             FAILURE_GEOCACHE_LIST_FROM_SERVER: 'Cannot retrieve the list of geocaches from the server.',
+            FAILURE_DELETE_GEOCACHE_LIST:      'Failing to delete geocaches on the server.',
            
             // related to a single geocache
             FAILURE_GEOCACHE_FROM_SERVER:      'Cannot retrieve the details for the selected geocache from the server.',

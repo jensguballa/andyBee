@@ -25,50 +25,6 @@ deleted_wpt = {}
 log_pool = {}
 cacher_pool = None
 
-#class LogTypePool():
-#
-#    def __init__(self):
-#        self._pool = {}
-#        for row in geocache_db.execute('SELECT id, name FROM log_type'):
-#            self._pool[row['id']] = row['name']
-#
-#    def get_name(self, id):
-#        if id in self._pool:
-#            return self._pool[id]
-#        else:
-#            return None
-#
-#    def create_singleton(self, id, name):
-#        if id in self._pool:
-#            if name != self._pool[id]:
-#                geocache_db.execute('UPDATE log_type SET name = ? WHERE id = ?', (name, id))
-#                self._pool[id] = name
-#        else:
-#            geocache_db.execute('INSERT INTO log_type (id, name) VALUES (?,?)', (id, name))
-#            self._pool[id] = name
-#
-#class CacherPool():
-#
-#    def __init__(self, pref_owner):
-#        self._pool = {}
-#        self._pref_owner_id = None
-#        for row in geocache_db.execute('SELECT id, name FROM cacher'):
-#            self._pool[int(row['id'])] = row['name']
-#            if row['name'] == pref_owner:
-#                self._pref_owner_id = int(row['id'])
-#
-#    def get_pref_owner_id(self):
-#        return self._pref_owner_id
-#
-#    def create_singleton(self, id, name):
-#        if id in self._pool:
-#            if name != self._pool[id]:
-#                geocache_db.execute('UPDATE cacher SET name = ? WHERE id = ?', (name, id))
-#                self._pool[id] = name
-#        else:
-#            geocache_db.execute('INSERT INTO cacher (id, name) VALUES (?,?)', (id, name))
-#            self._pool[id] = name
-
 def coords_to_string(coord, str1, str2):
     string = str1
     if coord < 0:
@@ -419,7 +375,7 @@ class GpxImporter():
 
         log_cntr = 1
         for log in sorted_logs:
-            if (log_cntr <= self.max_logs) or (log['db']['finder_id'] == pref_owner_id):
+            if (log_cntr <= self.max_logs) or (log['finder'] == self.pref_owner):
                 if log['action'] == 'insert':
                     self.cacher_itf.create_singleton(log['db']['finder_id'], log['finder'])
                     self.log_itf.insert(log['db'])
@@ -432,7 +388,6 @@ class GpxImporter():
 
         last_logs = ';'.join([self.log_type_itf.get_value(log['type_id'], 'name')  for log in sorted_logs[:5]])
         return last_logs
-
 
 
     def _merge_attributes(self, attributes, cache_id, cache_exists):

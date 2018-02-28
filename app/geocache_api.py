@@ -120,6 +120,9 @@ class GeocacheExportSchema(Schema):
     waypoints   = fields.Boolean()
     list        = fields.List(fields.Integer())
 
+class GeocacheDeleteSchema(Schema):
+    geocaches   = fields.List(fields.Integer())
+
 class GeocacheListApi(Resource):
 
     def get(self, db_name):
@@ -144,8 +147,31 @@ class GeocacheListApi(Resource):
             return errors, 422
         return data
 
-
 api.add_resource(GeocacheListApi, '/andyBee/api/v1.0/db/<string:db_name>/geocaches')
+
+class GeocacheDeleteListApi(Resource):
+
+    def post(self, db_name):
+        if db_name is None:
+            return {'msg': 'Database name missing.'}, 400 # bad request
+        file_path = os.path.join(app.config['CACHE_DB_DIR'], db_name)
+        if not os.path.isfile(file_path):
+            return {'msg': 'Database is not existing.'}, 422 # unprocessable entity
+        geocache_db.set_db(file_path)
+        parse = reqparse.RequestParser()
+        parse.add_argument('geocaches', type=list, location='json')
+        args = parse.parse_args()
+        for geocache_id in args['geocaches']:
+            geocache_db.delete(Cache, geocache_id)
+            geocache_db.delete(UserNote, geocache_id)
+            geocache_db.execute('DELETE FROM cache_to_attribute WHERE cache_id = ?', (geocache_id,))
+            geocache_db.execute('DELETE FROM log WHERE cache_id = ?', (geocache_id,))
+            geocache_db.execute('DELETE FROM waypoint WHERE cache_id = ?', (geocache_id,))
+        geocache_db.commit()
+        return {}
+
+api.add_resource(GeocacheDeleteListApi, '/andyBee/api/v1.0/db/<string:db_name>/geocaches/delete_list')
+
 
 class GeocacheSingleSchema(Schema):
     geocache   = fields.Nested(GeocacheFullSchema)
@@ -212,7 +238,7 @@ class GeocacheUpdateNoteApi(Resource):
                 geocache_db.update(UserNote, id, {'note': user_note})
             else:
                 geocache_db.insert(UserNote, {'id': id, 'note': user_note})
-        geocache_db.update(Cache, id, {'note_present': (res != '')})
+        geocache_db.update(Cache, id, {'note_present': (user_note != '')})
         geocache_db.commit()
         return {}
 

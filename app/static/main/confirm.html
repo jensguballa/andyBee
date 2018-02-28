@@ -1,0 +1,16 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="confirm.cancel()" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3 class="modal-title" id="modal-title">{{confirm.headline}}</h3>
+</div>
+<div class="modal-body">
+    <div class="text-danger confirm-warning">
+        {{confirm.info}}
+    </div>
+    <div class="">
+        {{confirm.question}}
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="confirm.ok()">OK</button>
+    <button class="btn btn-warning" type="button" ng-click="confirm.cancel()">Cancel</button>
+</div>

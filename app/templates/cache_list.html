@@ -18,7 +18,7 @@
                         </button>
                         <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
                             <li role="menuitem"><a href="#" ng-click="geolist.set_center(row.lat, row.lon)">Set as Map Center</a></li>
-                            <li role="menuitem" class="disabled"><a href="#">Delete Geocache ...</a></li>
+                            <li role="menuitem"><a href="#" ng-click="geolist.delete_geocache(row.id)">Delete Geocache ...</a></li>
                             <li role="menuitem"><a href="#" ng-click="geolist.update_coordinates(row.id)">Update Coordinates ...</a></li>
                             <li class="divider"></li>
                             <li role="menuitem" class="disabled"><a href="#">Separated link</a></li>

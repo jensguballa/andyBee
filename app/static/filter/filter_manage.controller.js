@@ -5,8 +5,8 @@
         .module('andyBeeApp')
         .controller('ManageFilterCtrl', ManageFilterCtrl);
 
-    ManageFilterCtrl.$inject = ['$uibModalInstance', 'FilterService'];
-    function ManageFilterCtrl($uibModalInstance, FilterService) {
+    ManageFilterCtrl.$inject = ['$uibModalInstance', 'FilterService', 'ConfirmService'];
+    function ManageFilterCtrl($uibModalInstance, FilterService, ConfirmService) {
         var vm = this;
         vm.serv = FilterService;
         vm.dismiss = dismiss_modal;
@@ -32,7 +32,11 @@
         }
 
         function delete_filter(idx) {
-            FilterService.delete_filter(idx);
+            ConfirmService.confirm_dialog("Delete Filter '" + FilterService.get_filter(idx).name + "'", "", "Do you really want to delete this filter?", cb_ok);
+
+            function cb_ok () {
+                FilterService.delete_filter(idx);
+            }
         }
 
         function edit_filter(idx) {

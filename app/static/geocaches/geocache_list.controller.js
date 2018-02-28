@@ -6,8 +6,8 @@
         .controller('GeocacheListCtrl', GeocacheListCtrl);
 
 
-    GeocacheListCtrl.$inject = ['$scope', '$rootScope', '$filter', 'GeocacheService', 'NgTableParams'];
-    function GeocacheListCtrl($scope, $rootScope, $filter, GeocacheService, NgTableParams) {
+    GeocacheListCtrl.$inject = ['$scope', '$rootScope', '$filter', 'GeocacheService', 'ConfirmService', 'NgTableParams'];
+    function GeocacheListCtrl($scope, $rootScope, $filter, GeocacheService, ConfirmService, NgTableParams) {
         var vm = this;
         vm.cols = [];
         vm.tableParams = new NgTableParams({count: 25}, {
@@ -18,6 +18,7 @@
         vm.update_coordinates = update_coordinates;
         vm.set_center = set_center;
         vm.reset_filter = reset_filter;
+        vm.delete_geocache = delete_geocache;
 
         var rating = [
             {id: 1.0, title: '1', },
@@ -80,6 +81,27 @@
 
         function update_coordinates(geocache_id) {
             GeocacheService.update_coord_dialog(geocache_id);
+        }
+
+        function delete_geocache(geocache_id) {
+            var info = "";
+            var question = "Are you sure you want to delete this geocache from the database?";
+            var geocache = GeocacheService.get_geocache(geocache_id);
+
+            if (geocache.note_present && geocache.coords_updated) {
+                info = "This geocache has corrected coordinates and user notes. This information will be lost and cannot be restored!";
+            } 
+            else if (geocache.note_present) {
+                info = "A user note for this geocache exists. This user note will be lost and cannot be restored!";
+            }
+            else if (geocache.coords_updated) {
+                info = "This geocache has corrected coordinates. These corrected coordinates will be lost and cannot be restored!";
+            }
+            ConfirmService.confirm_dialog("Delete Geocache", info, question, cb_ok);
+
+            function cb_ok () {
+                GeocacheService.delete_geocaches([geocache_id]);
+            }
         }
 
         function set_center(lat, lon) {

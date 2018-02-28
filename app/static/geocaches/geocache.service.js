@@ -10,12 +10,16 @@
         L.LatLng.MAX_MARGIN = 1e-6;
         var modal;
         var rest = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id');
+        var rest_delete_list = $resource('/andyBee/api/v1.0/db/:db/geocaches/delete_list', null, {
+            post: {method: 'POST'}
+        });
         var rest_upd_coord = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id/update_coords/', null, {
             post: {method: 'POST'}
         });
         var rest_upd_note = $resource('/andyBee/api/v1.0/db/:db/geocaches/:geocache_id/update_note/', null, {
             post: {method: 'POST'}
         });
+
 
         var geocache_list_unfiltered = [];
         var unfiltered_id_to_idx = {};
@@ -47,7 +51,8 @@
 
             refreshMap: refreshMap,
             get_geocache: get_geocache,
-            save_note: save_note
+            save_note: save_note,
+            delete_geocaches: delete_geocaches
 
         };
         return serv;
@@ -201,6 +206,24 @@
             }
         }
 
+        function delete_geocaches(list, success_cb, error_cb) {
+            error_cb = error_cb || on_delete_error;
+            rest_delete_list.post({db: serv.db_name}, {geocaches: list}, delete_response, error_cb);
+
+            function delete_response (result) {
+                read_list(serv.db_name, success_cb, error_cb);
+            }
+
+            function on_delete_error (result) {
+                LoggingService.log({
+                    msg: ERROR.FAILURE_DELETE_GEOCACHE_LIST, 
+                    http_response: result, 
+                    modal: true
+                });
+                read_list(serv.db_name, success_cb, error_cb);
+            }
+        }
+
         function add_country (country) {
             if (serv.countries.indexOf(country) == -1) {
                 serv.countries.push(country);
@@ -297,6 +320,8 @@
 
             function on_post_response (result) {
                 serv.detail.user_note = note;
+                serv.detail.note_present = (note != "");
+                get_geocache(id).note_present = (note != "");
                 cb_success();
             }
 

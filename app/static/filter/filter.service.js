@@ -20,6 +20,7 @@
         var serv = {
             read_list: read_list,
             apply_basic_filter: apply_basic_filter,
+            get_filter: get_filter,
             create_filter: create_filter,
             delete_filter: delete_filter,
             edit_filter: edit_filter,
@@ -113,6 +114,10 @@
             }
         }
 
+        function get_filter (idx) {
+            return serv.filter_list[idx];
+        }
+
         function create_filter (filter_name, on_success, on_error) {
             on_error = on_error || on_create_error;
             rest.create({id: 1}, {
@@ -175,7 +180,7 @@
             }).result.then(on_dialog_ok, function(){});
 
             function resolve_filter_idx () {
-                return serv.filter_list[idx];
+                return get_filter(idx);
             }
 
             function on_dialog_ok (filter) {
