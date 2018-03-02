@@ -245,6 +245,7 @@
                         break;
                     }
                 }
+                geocache.filtered = filtered;
                 if (!filtered) {
                     filtered_list.push(geocache);
                 }

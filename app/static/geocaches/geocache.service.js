@@ -52,13 +52,43 @@
             refreshMap: refreshMap,
             get_geocache: get_geocache,
             save_note: save_note,
-            delete_geocaches: delete_geocaches
+            delete_geocaches: delete_geocaches,
+            check_user_supplied_info: check_user_supplied_info
 
         };
         return serv;
 
         function resolve_db_name () {
             return serv.db_name;
+        }
+
+        function check_user_supplied_info (selection) {
+            var user_info = false;
+            var nbr_entries = 0;
+            var list = [];
+            if ((selection == "all") || (selection == "selected")) {
+                var geocaches = (selection == "all" ? geocache_list_unfiltered : serv.geocache_list);
+                nbr_entries = geocaches.length;
+                for (var i = 0; i < nbr_entries; i++) {
+                    if (geocaches[i].note_present || geocaches[i].coords_updated) {
+                        user_info = true;
+                    }
+                    list.push(geocaches[i].id);
+                }
+            }
+            else if (selection == "unselected") {
+                nbr_entries = geocache_list_unfiltered.length - serv.geocache_list.length;
+                for (var i = 0, len = geocache_list_unfiltered.length; i < len; i++) {
+                    var geocache = geocache_list_unfiltered[i];
+                    if (geocache.filtered) {
+                        if (geocache.note_present || geocache.coords_updated) {
+                            user_info = true;
+                        }
+                        list.push(geocache.id);
+                    }
+                }
+            }
+            return {geocache_list: list, user_info: user_info};
         }
 
         function apply_filter(list) {
@@ -71,6 +101,9 @@
         }
 
         function on_filter_reset() {
+            for (var i = 0, len = geocache_list_unfiltered.length; i < len; i++) {
+                geocache_list_unfiltered[i].filtered = false;
+            }
             serv.geocache_list = geocache_list_unfiltered;
             $rootScope.$broadcast('geocache_list_updated');
         }
@@ -115,6 +148,7 @@
                 var now = Date.now() / 1000;
                 for (var i = 0; i < geocache_list_unfiltered.length; i++) {
                     geocache_list_unfiltered[i].age = Math.floor((now - geocache_list_unfiltered[i].last_updated) / (24*3600));
+                    geocache_list_unfiltered[i].filtered = false;
                     unfiltered_id_to_idx[geocache_list_unfiltered[i].id] = i;
 
                     var country = geocache_list_unfiltered[i].country;

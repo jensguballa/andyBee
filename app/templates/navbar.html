@@ -16,6 +16,8 @@
                 <li role="menuitem"><a href="#" ng-click="app.open_db_dialog()" title="Open a database or create a new one">Open database ...</a></li>
                 <li ng-class="{'disabled': !app.geocache.db_name}" role="menuitem"><a href="#" ng-click="app.import_gpx_dialog()" title="Import a GPX-file into the database">Import from GPX ...</a></li>
                 <li ng-class="{'disabled': !app.geocache.db_name}" role="menuitem"><a href="#" ng-click="app.export_gpx_dialog()" title="Export the database to a GPX-file">Export to GPX ...</a></li>
+                <li class="divider"></li>
+                <li ng-class="{'disabled': !app.geocache.db_name}" role="menuitem"><a href="#" ng-click="app.delete_dialog()" title="Delete geocaches">Delete geocaches ...</a></li>
               </ul>
             </li>
             <li class="dropdown" uib-dropdown>
