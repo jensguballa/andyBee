@@ -31,7 +31,7 @@ The installation of *andyBee* depends on the following SW:
 
 ## Installation of python packages
 
-It is recommended to use virtualenv for installing the python packages, as this creates a virtual phyton environment and allows installation of packages without impacting other (system-) python installations. 
+It is recommended to use virtualenv for installing the python packages, as this creates a virtual python environment and allows installation of packages without impacting other (system-) python installations. 
 
 Commands to create the virtual environment (optional):
 
